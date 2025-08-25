@@ -1,11 +1,13 @@
-﻿using Zenject;
+﻿using UnityEngine;
+using Zenject;
 
-public class ServicesInstaller : MonoInstaller
+public class GameInstaller : MonoInstaller
 {
+    public GameObject WorldItemPrefab;
     public override void InstallBindings()
     {
         // Регистрируем сервис
-        Container.BindInterfacesAndSelfTo<LootService>().AsSingle();
+        Container.BindInterfacesAndSelfTo<LootService>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<DropItem>().AsSingle().NonLazy();
 
         // Включаем сигналы
@@ -13,5 +15,9 @@ public class ServicesInstaller : MonoInstaller
 
         // Регистрируем сигнал выпадения
         Container.DeclareSignal<ItemDropSignal>();
+
+        Container.BindInstance(WorldItemPrefab);
+
+        Container.Bind<LootTable>().FromScriptableObjectResource("Loot Table").AsSingle();
     }
 }

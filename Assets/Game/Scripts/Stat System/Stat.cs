@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Stat
 {
-    [SerializeField] StatTypes name;
+    [SerializeField] private StatTypes _name;
     [SerializeField] private int _value;
     [SerializeField] private int _minValue;
     [SerializeField] private int _maxValue;
@@ -16,11 +16,11 @@ public class Stat
 
     public Stat(StatTypes name, int minValue)
     {
-        Name = name;
+        _name = name;
         _minValue = minValue;
     }
 
-    public StatTypes Name { get { return name; } private set { name = value; } }
+    public StatTypes Name { get { return _name; } private set { _name = value; } }
     public int Value
     {
         get { return _value; }
@@ -30,6 +30,7 @@ public class Stat
             {
                 OnChanged?.Invoke();
             }
+
             _value = Mathf.Clamp(value, _minValue, _maxValue);
             if (_value == _minValue)
             {
@@ -88,11 +89,6 @@ public class StatModifier
         this.value = value;
         this.time = time;
     }
-}
-
-public interface IStats
-{
-    public void InitializeStats();
 }
 
 public enum StatTypes
