@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Stat
@@ -9,6 +10,10 @@ public class Stat
     [SerializeField] private int _maxValue;
     [SerializeField] private List<StatModifier> _statModifiers;
 
+    public event Action OnChanged;
+    public event Action OnMinValueReached;
+    public event Action OnMaxValueReached;
+
     public Stat(StatTypes name, int minValue)
     {
         Name = name;
@@ -16,7 +21,28 @@ public class Stat
     }
 
     public StatTypes Name { get { return name; } private set { name = value; } }
-    public int Value { get { return _value; } set { _value = value; } }
+    public int Value
+    {
+        get { return _value; }
+        set
+        {
+            if (value != _value)
+            {
+                OnChanged?.Invoke();
+            }
+            _value = Mathf.Clamp(value, _minValue, _maxValue);
+            if (_value == _minValue)
+            {
+                OnMinValueReached?.Invoke();
+                return;
+            }
+            if (_value == _maxValue)
+            {
+                OnMaxValueReached?.Invoke();
+                return;
+            }
+        }
+    }
     public int MinValue => _minValue;
     public int MaxValue => _maxValue;
     public List<StatModifier> StatModifiers => _statModifiers;
@@ -24,11 +50,17 @@ public class Stat
     public void ChangeMinValue(int newValue)
     {
         _minValue = newValue;
+
+        if (_value <= _minValue)
+            OnMinValueReached?.Invoke();
     }
 
     public void ChangeMaxValue(int newValue)
     {
         _maxValue = newValue;
+
+        if (_value >= _maxValue)
+            OnMaxValueReached?.Invoke();
     }
 
     public void AddStatModifier(string name, int value, int time)
@@ -65,7 +97,7 @@ public interface IStats
 
 public enum StatTypes
 {
-    Durability,
+    Durability
 }
 
 

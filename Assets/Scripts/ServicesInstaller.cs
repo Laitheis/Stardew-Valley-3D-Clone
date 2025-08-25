@@ -6,11 +6,12 @@ public class ServicesInstaller : MonoInstaller
     {
         // Регистрируем сервис
         Container.BindInterfacesAndSelfTo<LootService>().AsSingle();
+        Container.BindInterfacesAndSelfTo<DropItem>().AsSingle().NonLazy();
 
         // Включаем сигналы
         SignalBusInstaller.Install(Container);
 
         // Регистрируем сигнал выпадения
-        Container.DeclareSignal<LootDropSignal>();
+        Container.DeclareSignal<ItemDropSignal>();
     }
 }

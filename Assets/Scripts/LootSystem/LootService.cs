@@ -14,15 +14,15 @@ public class LootService : Zenject.IInitializable, IDisposable
 
     public void Initialize()
     {
-        _signalBus.Subscribe<LootDropSignal>(OnLootDrop);
+        _signalBus.Subscribe<ItemDropSignal>(OnLootDrop);
     }
 
     public void Dispose()
     {
-        _signalBus.Unsubscribe<LootDropSignal>(OnLootDrop);
+        _signalBus.Unsubscribe<ItemDropSignal>(OnLootDrop);
     }
 
-    private void OnLootDrop(LootDropSignal signal)
+    private void OnLootDrop(ItemDropSignal signal)
     {
         Debug.Log($"Выпадает лут из таблицы {signal.LootTableId} на позиции {signal.Position}");
 
@@ -35,12 +35,13 @@ public class LootService : Zenject.IInitializable, IDisposable
 
 
 
-public class LootDropSignal
+public class ItemDropSignal
 {
     public Vector3 Position;
+    //TODO
     public int LootTableId;
 
-    public LootDropSignal(Vector3 position, int lootTableId)
+    public ItemDropSignal(Vector3 position, int lootTableId)
     {
         Position = position;
         LootTableId = lootTableId;

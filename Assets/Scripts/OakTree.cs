@@ -4,7 +4,7 @@
     {
         base.InitializeStats();
 
-        StatContainer.GetStat(StatTypes.Durability).Value = 100;
+        _statContainer.GetStat(StatTypes.Durability).Value = 100;
     }
 }
 
