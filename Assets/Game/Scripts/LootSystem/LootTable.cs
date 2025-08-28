@@ -40,5 +40,9 @@ public class LootByGrade
 public class ItemDropChance
 {
     [Range(0, 100)] public float Chance;
+
     public ItemDefinition Item;
+
+    [Min(0)] public int MinCount = 1;
+    [Min(0)] public int MaxCount = 1;
 }

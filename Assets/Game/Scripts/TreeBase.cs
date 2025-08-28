@@ -5,77 +5,66 @@ using Zenject;
 public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, IStats
 {
     [Inject] private SignalBus _signalBus;
-    protected LootTable _loot;
 
+    protected LootGenerator _lootGenerator;
     protected StatContainter _statContainer;
+    protected List<ItemInstance> _pendingLoot;
+
+    protected Animator _animator;
 
     public StatContainter StatContainer => _statContainer;
 
     [Inject]
-    public void Construct(LootTable loot)
+    public void Construct(LootGenerator lootGenerator)
     {
-        _loot = loot;
+        _lootGenerator = lootGenerator;
+
+        _animator = GetComponent<Animator>();
+
         InitializeStats();
         InitializeLoot();
     }
 
     public virtual void InitializeStats()
     {
-        var stats = new List<Stat>();
+        _statContainer = new StatContainter();
 
-        var durability = new Stat(StatTypes.Durability, 0);
+        var durability = _statContainer.Add(StatTypes.Durability, 100);
+
         durability.OnMinValueReached += OnHarvest;
         durability.OnMinValueReached += OnDestroyed;
-
-        stats.Add(durability);
-
-        _statContainer = new StatContainter(stats);
     }
 
     public virtual void InitializeLoot()
     {
-        
-    }
-
-    //HACK
-    public List<ItemDefinition> DropLoot()
-    {
-        //HACK 
-        EntityLoot entityLoot = _loot.FindByName("Oak");
-        LootByGrade lootByGrade = entityLoot.GetByGrade(0);
-
-        //TODO инкапсулировать
-        List<ItemDefinition> droppedItems = new List<ItemDefinition>();
-
-        foreach (var item in lootByGrade.Loot)
-        {
-            float roll = UnityEngine.Random.Range(0f, 100f);
-            if (roll <= item.Chance)
-            {
-                droppedItems.Add(item.Item);
-                Debug.Log($"Выпал предмет: {item.Item.name} (шанс {item.Chance}%)");
-                return droppedItems;
-            }
-        }
-
-        return null;
+        _pendingLoot = _lootGenerator.GenerateLoot("Oak", 0);
     }
 
     public virtual void OnHarvest()
     {
-        int lootTableId = 1; // заглушка
-        _signalBus.Fire(new ItemDropSignal(new Vector3(1, 2, 3), DropLoot(), lootTableId));
+        if (_pendingLoot == null) return;
+
+        foreach (var item in _pendingLoot)
+        {
+            _signalBus.Fire(new ItemDropSignal(transform.position, item));
+        }
     }
 
     public virtual void TakeDamage(int amount)
     {
         Debug.Log($"{gameObject} has {amount} damage.");
+
         _statContainer.GetStat(StatTypes.Durability).Value -= amount;
+
+        _animator.SetTrigger("Cut");
+
         Debug.Log($"new {gameObject} durability is {_statContainer.GetStat(StatTypes.Durability).Value}");
     }
 
     public virtual void OnDestroyed()
     {
         Debug.Log($"{gameObject} has been destroyed");
+
+        //Destroy(gameObject);
     }
 }

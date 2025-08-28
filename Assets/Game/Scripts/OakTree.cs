@@ -4,14 +4,12 @@
     {
         base.InitializeStats();
 
-        _statContainer.GetStat(StatTypes.Durability).Value = 100;
+        _statContainer.GetStat(StatTypes.Durability).Value = 85;
     }
 
     public override void InitializeLoot()
     {
-        base.InitializeLoot();
-
-        EntityLoot entityLoot = _loot.FindByName("Oak");
+        _pendingLoot = _lootGenerator.GenerateLoot("Oak", 0);
     }
 }
 

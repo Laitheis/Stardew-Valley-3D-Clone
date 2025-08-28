@@ -1,27 +1,36 @@
 ﻿using System;
 using UnityEngine;
 
+[System.Serializable]
 public class ItemInstance
 {
     [SerializeField] private ItemDefinition _itemDefinition;
 
-    [SerializeField] private string _customName;
-    [SerializeField] private int _customPrice;
     [SerializeField] private string _id;
-    [SerializeField] private int _count;
+    [SerializeField] public int _count;
+
+    public ChangeableProperties Properties;
+
+    [System.Serializable]
+    public class ChangeableProperties
+    {
+        [SerializeField] public string CustomName;
+        [SerializeField] public int CustomPrice;
+    }
 
     public ItemDefinition ItemDefinition => _itemDefinition;
 
-    public string Name => string.IsNullOrEmpty(_customName) ? _itemDefinition.Name : _customName;
-    public int Price => _customPrice != 0 ? _customPrice : _itemDefinition.Price;
+    public string Name => string.IsNullOrEmpty(Properties.CustomName) ? _itemDefinition.Name : Properties.CustomName;
+    public int Price => Properties.CustomPrice != 0 ? Properties.CustomPrice : _itemDefinition.Price;
     public string Id => _id;
     public int Count => _count;
 
-    public ItemInstance(ItemDefinition definition, int count = 1)
+    public ItemInstance(ItemDefinition definition, int count = 0)
     {
         _itemDefinition = definition;
-        _customName = definition.Name;
-        _customPrice = definition.Price;
+        Properties = new ChangeableProperties();
+        Properties.CustomName = definition.Name;
+        Properties.CustomPrice = definition.Price;
         _id = Guid.NewGuid().ToString();
         _count = Mathf.Clamp(count, 0, definition.MaxCountInStack);
     }
@@ -30,7 +39,7 @@ public class ItemInstance
     {
         if (_itemDefinition.IsRenameable && !string.IsNullOrEmpty(newName))
         {
-            _customName = newName;
+            Properties.CustomName = newName;
             return true;
         }
         return false;
@@ -78,10 +87,20 @@ public class ItemInstance
         return true;
     }
 
+    public bool SetCount(int newCount)
+    {
+        if (!(newCount > 0 && newCount <= _itemDefinition.MaxCountInStack))
+            return false;
+
+        _count = newCount;
+
+        return true;
+    }
+
     public void SetPrice(int newPrice)
     {
         if (newPrice >= 0)
-            _customPrice = newPrice;
+            Properties.CustomPrice = newPrice;
     }
 
     public bool IsFull() => _count >= _itemDefinition.MaxCountInStack;

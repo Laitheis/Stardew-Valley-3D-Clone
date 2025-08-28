@@ -14,10 +14,10 @@ public class Stat
     public event Action OnMinValueReached;
     public event Action OnMaxValueReached;
 
-    public Stat(StatTypes name, int minValue)
+    public Stat(StatTypes name, int maxValue)
     {
         _name = name;
-        _minValue = minValue;
+        _maxValue = maxValue;
     }
 
     public StatTypes Name { get { return _name; } private set { _name = value; } }

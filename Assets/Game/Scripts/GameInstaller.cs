@@ -6,18 +6,16 @@ public class GameInstaller : MonoInstaller
     public GameObject WorldItemPrefab;
     public override void InstallBindings()
     {
-        // Регистрируем сервис
-        Container.BindInterfacesAndSelfTo<LootService>().AsSingle().NonLazy();
-        Container.BindInterfacesAndSelfTo<DropItem>().AsSingle().NonLazy();
-
-        // Включаем сигналы
-        SignalBusInstaller.Install(Container);
-
-        // Регистрируем сигнал выпадения
-        Container.DeclareSignal<ItemDropSignal>();
+        Container.BindInterfacesAndSelfTo<DropItemToWorld>().AsSingle().NonLazy();
 
         Container.BindInstance(WorldItemPrefab);
 
         Container.Bind<LootTable>().FromScriptableObjectResource("Loot Table").AsSingle();
+        Container.Bind<LootGenerator>().AsSingle();
+
+        SignalBusInstaller.Install(Container);
+
+        Container.DeclareSignal<ItemDropSignal>();
+
     }
 }
