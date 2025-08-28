@@ -4,11 +4,14 @@ using Zenject;
 
 public class DropItemToWorld : Zenject.IInitializable
 {
-    [Inject] private readonly SignalBus _signalBus;
-    private readonly DiContainer _container;
-    private readonly GameObject _itemPrefab;
+    [Inject] private SignalBus _signalBus;
 
-    public DropItemToWorld(DiContainer container, GameObject itemPrefab)
+    private DiContainer _container;
+    private GameObject _itemPrefab;
+
+    private Vector3 _defaultSpawnOffset = new Vector3(1, 1, 1);
+
+    public DropItemToWorld(DiContainer container, [Inject(Id = "WorldItem")]GameObject itemPrefab)
     {
         _container = container;
         _itemPrefab = itemPrefab;
@@ -34,9 +37,18 @@ public class DropItemToWorld : Zenject.IInitializable
             itemInstances.Add(_itemInstance);
         }
 
+        Vector3 _spawnOffset = _defaultSpawnOffset;
         foreach (var item in itemInstances)
         {
-            var itemGO = _container.InstantiatePrefab(_itemPrefab, signal.Position, Quaternion.identity, null);
+            var itemGO = _container.InstantiatePrefab(
+                _itemPrefab,
+                signal.Position + _spawnOffset,
+                Quaternion.identity,
+                null);
+
+            _spawnOffset += new Vector3(0, 1, 0);
+
+            itemGO.GetComponent<Rigidbody>().AddForce(Vector3.up * 10f, ForceMode.Impulse);
 
             var itemInstance = itemGO.GetComponent<ItemInstanceHolder>();
 
@@ -45,6 +57,5 @@ public class DropItemToWorld : Zenject.IInitializable
 
         Debug.Log($"Loot named {signal.Item} drops at position {signal.Position} with quantity {signal.Item.Count}");
     }
-
 }
 

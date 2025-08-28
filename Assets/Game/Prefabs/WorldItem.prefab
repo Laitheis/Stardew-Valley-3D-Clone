@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2205557991118626392}
   - component: {fileID: 2844823561450977635}
   - component: {fileID: 805126707775963067}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WorldItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 6376372425519703063}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 39.26, y: 0.7, z: 25.25}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 60, y: 60, z: 60}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -151,5 +151,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.019629888, y: 0.026728624, z: 0.03757872}
-  m_Center: {x: 0.000012465287, y: -0.0037289923, z: -0.000004975125}
+  m_Size: {x: 0.019629888, y: 0.01929821, z: 0.03757872}
+  m_Center: {x: 0.000012465119, y: -0.00001381278, z: -0.0000049746036}

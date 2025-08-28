@@ -2,6 +2,6 @@
 
 public interface IHarvestable
 {
-    public void OnHarvest();
+    public void Harvest();
 }
 

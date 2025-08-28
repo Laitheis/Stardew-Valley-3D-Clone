@@ -3,12 +3,9 @@ using Zenject;
 
 public class GameInstaller : MonoInstaller
 {
-    public GameObject WorldItemPrefab;
     public override void InstallBindings()
     {
         Container.BindInterfacesAndSelfTo<DropItemToWorld>().AsSingle().NonLazy();
-
-        Container.BindInstance(WorldItemPrefab);
 
         Container.Bind<LootTable>().FromScriptableObjectResource("Loot Table").AsSingle();
         Container.Bind<LootGenerator>().AsSingle();
@@ -16,6 +13,5 @@ public class GameInstaller : MonoInstaller
         SignalBusInstaller.Install(Container);
 
         Container.DeclareSignal<ItemDropSignal>();
-
     }
 }
