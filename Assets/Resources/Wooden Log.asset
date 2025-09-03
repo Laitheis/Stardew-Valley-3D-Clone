@@ -17,3 +17,6 @@ MonoBehaviour:
   _maxCountInStack: 64
   _isStackable: 1
   _price: 25
+  _description: 
+  _sprite: {fileID: 1544412793, guid: b23301147933de146aab11686704ea1e, type: 3}
+  _prefab: {fileID: 6376372425519703063, guid: f9fc3558dc2fe4f41bb6c7526ca4c2ce, type: 3}

@@ -7,6 +7,8 @@ TagManager:
   - ship
   - asteroid
   - DamageZone
+  - InventorySlot
+  - Wall
   layers:
   - Default
   - TransparentFX

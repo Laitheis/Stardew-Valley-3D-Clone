@@ -16,3 +16,6 @@ MonoBehaviour:
     type: 3}
   SmokeExplosionEffect: {fileID: 6173978310697550846, guid: 3f14aab7cc8b0f040a29738a4263147a,
     type: 3}
+  DraggedImagePrefab: {fileID: 3713797426686455791, guid: 35044733adca2e94da2280343e967d03,
+    type: 3}
+  ItemDatabase: {fileID: 11400000, guid: 1caa0a176f1ca9d4f8a6e7fbb903fd8d, type: 2}
