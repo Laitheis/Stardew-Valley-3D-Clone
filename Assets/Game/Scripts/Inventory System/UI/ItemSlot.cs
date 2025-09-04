@@ -13,7 +13,7 @@ namespace InventorySystem
         [SerializeField] GameObject _highlightImage;
         [SerializeField] GameObject _selectImage;
 
-        [HideInInspector] public ItemsCollection ItemsCollection { get; set; }
+        [HideInInspector] public ItemsCollection ItemsCollection;
 
         public Image ItemImage;
 

@@ -23,6 +23,7 @@ public class UIDragHandler : MonoBehaviour
     private bool _makeCopyOfDraggedRect = true;
 
     private int _slotUnderCursorNum;
+    private int _originalSlotNum;
     private RectTransform _draggedRect;
     private GameObject _objectUnderCursor;
     private ItemsCollection _sourceItemsCollection;
@@ -104,7 +105,11 @@ public class UIDragHandler : MonoBehaviour
             _slotUnderCursorNum = draggable.GetHierarchyIndex();
             _objectUnderCursor = clickedObject;
 
-            OnStartDrag?.Invoke(new() { draggedRect = _draggedRect, objectUnderCursor = _objectUnderCursor, slotUnderCursorNum = _slotUnderCursorNum });
+            _sourceItemsCollection = clickedObject.transform.parent.GetComponentInParent<ItemsCollection>();
+
+            _originalSlotNum = _slotUnderCursorNum;
+
+            OnStartDrag?.Invoke(new() { DraggedRect = _draggedRect, ObjectUnderCursor = _objectUnderCursor, SlotUnderCursorNum = _slotUnderCursorNum, SourceItemsCollection = _sourceItemsCollection});
         }
     }
 
@@ -125,9 +130,9 @@ public class UIDragHandler : MonoBehaviour
 
         if (_destroyImageObjectOnEnd)
         {
-            UnityEngine.Object.Destroy(_draggedRect.gameObject);
+            Destroy(_draggedRect.gameObject);
         }
-        OnEndDrag?.Invoke(new() { draggedRect = _draggedRect, ItemInstance = _itemInstance, objectUnderCursor = targetObject, slotUnderCursorNum = _slotUnderCursorNum, sourceItemsCollection = _sourceItemsCollection });
+        OnEndDrag?.Invoke(new() { DraggedRect = _draggedRect, ItemInstance = _itemInstance, ObjectUnderCursor = targetObject, SlotUnderCursorNum = _slotUnderCursorNum, SourceItemsCollection = _sourceItemsCollection, OriginalSlotNum = _originalSlotNum });
     }
 
     private void DragUpdate()
@@ -160,10 +165,12 @@ public class UIDragHandler : MonoBehaviour
 
 public class DragEventInfo
 {
-    public int slotUnderCursorNum;
-    public ItemsCollection sourceItemsCollection;
+    public int SlotUnderCursorNum;
+    public int OriginalSlotNum;
+
+    public ItemsCollection SourceItemsCollection;
     public ItemInstance ItemInstance;
-    public GameObject objectUnderCursor;
-    public RectTransform draggedRect;
+    public GameObject ObjectUnderCursor;
+    public RectTransform DraggedRect;
 }
 

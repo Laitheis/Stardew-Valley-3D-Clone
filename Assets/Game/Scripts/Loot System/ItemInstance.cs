@@ -35,6 +35,11 @@ public class ItemInstance
         _count = Mathf.Clamp(count, 0, definition.MaxCountInStack);
     }
 
+    public ItemInstance()
+    {
+        _id = Guid.NewGuid().ToString();
+    }
+
     public bool Rename(string newName)
     {
         if (_itemDefinition.IsRenameable && !string.IsNullOrEmpty(newName))
