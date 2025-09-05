@@ -16,6 +16,7 @@ namespace InventorySystem
         [HideInInspector] public ItemsCollection ItemsCollection;
 
         public Image ItemImage;
+        public Image ItemBG;
 
         public object Info;
 
@@ -42,9 +43,9 @@ namespace InventorySystem
 
         public void OnLanding(RectTransform r, object info) { }
 
-        public int GetHierarchyIndex() => transform.parent.GetSiblingIndex();
+        public int GetHierarchyIndex() => transform.GetSiblingIndex();
 
-        public RectTransform GetRect()
+        public RectTransform GetItemIconRect()
         {
             return ItemImage.GetComponent<RectTransform>();
         }

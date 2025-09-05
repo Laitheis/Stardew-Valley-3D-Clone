@@ -6,7 +6,7 @@ namespace UI.Dragging
     {
         bool AbleToDrag();
         void OnStartDrag();
-        RectTransform GetRect();
+        RectTransform GetItemIconRect();
         object GetInfo();
         void OnEndDrag(bool success);
         int GetHierarchyIndex();

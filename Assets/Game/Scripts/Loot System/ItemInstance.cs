@@ -8,6 +8,7 @@ public class ItemInstance
 
     [SerializeField] private string _id;
     [SerializeField] private int _count;
+    [SerializeField] private ItemFlags _itemFlags;
 
     public ChangeableProperties Properties;
 
@@ -24,6 +25,7 @@ public class ItemInstance
     public int Price => Properties.CustomPrice != 0 ? Properties.CustomPrice : _itemDefinition.Price;
     public string Id => _id;
     public int Count => _count;
+    public ItemFlags ItemFlags => _itemFlags;
 
     public ItemInstance(ItemDefinition definition, int count = 0)
     {
@@ -49,7 +51,6 @@ public class ItemInstance
         }
         return false;
     }
-
     public bool AddCount(int amount, out int overflow)
     {
         overflow = 0;
@@ -111,8 +112,43 @@ public class ItemInstance
     public bool IsFull() => _count >= _itemDefinition.MaxCountInStack;
     public bool IsEmpty() => _count <= 0;
 
+    // Flags methods
+    public void AddFlag(ItemFlags flag)
+    {
+        _itemFlags |= flag;
+    }
+
+    public void RemoveFlag(ItemFlags flag)
+    {
+        _itemFlags &= ~flag;
+    }
+
+    public void ToggleFlag(ItemFlags flag)
+    {
+        _itemFlags ^= flag;
+    }
+
+    public bool HasFlag(ItemFlags flag)
+    {
+        return (_itemFlags & flag) == flag;
+    }
+
+    public void ClearFlags()
+    {
+        _itemFlags = ItemFlags.None;
+    }
+
+    // Use Item
     public void UseItem()
     {
         _itemDefinition.UseItem();
     }
+}
+
+
+[System.Flags]
+public enum ItemFlags
+{
+    None = 0,
+    IsDragging = 1 << 0
 }

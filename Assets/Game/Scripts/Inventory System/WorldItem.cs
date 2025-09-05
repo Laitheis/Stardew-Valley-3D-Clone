@@ -39,12 +39,12 @@ namespace InventorySystem
                 yield return null;
             }
         }
-        private void OnCollisionEnter(Collision collision)
-        {
-            if (collision.gameObject.tag == "Player")
-            {
-                collision.transform.GetComponentInChildren<InventoryController>().AddFromWorld(this);
-            }
-        }
+        //private void OnCollisionEnter(Collision collision)
+        //{
+        //    if (collision.gameObject.tag == "Player")
+        //    {
+        //        collision.transform.GetComponentInChildren<InventoryController>().AddFromWorld(this);
+        //    }
+        //}
     }
 }

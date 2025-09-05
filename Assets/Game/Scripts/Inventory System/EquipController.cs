@@ -92,12 +92,12 @@ namespace InventorySystem
         }
         public void AddItem(ItemDefinition i)
         {
-            _collection.TryAdd(i, 1);
+            //_collection.TryAdd(i, 1);
         }
-        public void Remove(ItemDefinition i)
-        {
-            _collection.Remove(i);
-        }
+        //public void Remove(ItemDefinition i)
+        //{
+        //    _collection.Remove(i);
+        //}
         public void EquipWeapon(ItemDefinition weapon)
         {
 

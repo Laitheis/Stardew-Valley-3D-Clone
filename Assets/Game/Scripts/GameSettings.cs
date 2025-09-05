@@ -9,6 +9,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public GameObject SmokeExplosionEffect;
     public Image DraggedImagePrefab;
     public ItemDatabase ItemDatabase;
+    public GameObject ItemSlotPrefab;
 
     public override void InstallBindings()
     {
@@ -16,5 +17,6 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
         Container.BindInstance(SmokeExplosionEffect).WithId("SmokeEffect");
         Container.BindInstance(DraggedImagePrefab).WithId("DraggedImagePrefab").AsSingle();
         Container.BindInstance(ItemDatabase).AsSingle().NonLazy();
+        Container.BindInstance(ItemSlotPrefab).WithId("ItemSlot");
     }
 }

@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using Zenject;
 
 namespace InventorySystem
 {
@@ -11,196 +9,212 @@ namespace InventorySystem
     {
         public Action onChange;
 
-        [SerializeField] private ItemInstance[] _itemInstances;
+        [SerializeField] private List<ItemInstance> _itemInstances;
 
-        // параллельные массивы для флагов
-        private bool[] _isDragging;
-        private bool[] _isReloading;
-
-        private void Awake()
-        {
-            _isDragging = new bool[_itemInstances.Length];
-            _isReloading = new bool[_itemInstances.Length];
-        }
-
-        public int Count => _itemInstances.Length;
+        public int Count => _itemInstances.Count;
         public bool RemoveWhenQuantityZero { get; set; } = true;
-
-        // ==== Flags methods ====
-        public void SetDragging(int index, bool value)
-        {
-            if (index >= 0 && index < _isDragging.Length)
-                _isDragging[index] = value;
-        }
-        public bool GetDraggingFlag(int index) =>
-            (index >= 0 && index < _isDragging.Length) && _isDragging[index];
-
-        public void SetReloading(int index, bool value)
-        {
-            if (index >= 0 && index < _isReloading.Length)
-                _isReloading[index] = value;
-        }
-        public bool GetReloading(int index) =>
-            (index >= 0 && index < _isReloading.Length) && _isReloading[index];
+        public bool IsReadOnly => throw new NotImplementedException();
 
         // ==== Collection logic ====
-        public bool CanAdd(ItemDefinition item, int quantity, int slot)
+        //public bool CanAdd(ItemDefinition item, int quantity, int slot)
+        //{
+        //    return _itemInstances[slot].ItemDefinition == null;
+        //}
+
+        public void AddEmpty() => _itemInstances.Add(new ItemInstance());
+
+        public void AddRange(int count)
         {
-            return _itemInstances[slot].ItemDefinition == null;
+            for (int i = 0; i < count; i++)
+            {
+                AddEmpty();
+            }
         }
 
-        public void Add(ItemInstance e) => TryAdd(e);
 
-        public bool TryAdd(ItemInstance e) =>
-            TryAdd(e.ItemDefinition, e.Count);
+        public void Add(ItemInstance itemInstance) => Debug.Log(""); //TryAdd(itemInstance);
 
-        public bool TryAdd(ItemDefinition item, int count)
-        {
-            int num = GetFree(item);
-            if (num == -1)
-                return false;
+        //private void TryAdd(ItemInstance itemInstance)
+        //{
+        //    if(itemInstance.ItemDefinition == null)
+        //    {
 
-            _itemInstances[num] = new ItemInstance(item, count);
+        //    }
 
-            onChange?.Invoke();
-            return true;
-        }
+        //    TryAdd(itemInstance.ItemDefinition, itemInstance.Count);
+        //}
 
-        public bool SetItemAt(ItemInstance entry, int num)
-        {
-            if (_itemInstances[num].ItemDefinition != null)
-                return false;
+        //public bool TryAdd(ItemDefinition item, int count)
+        //{
+        //    int num = GetFree(item);
+        //    if (num == -1)
+        //        return false;
 
-            _itemInstances[num] = entry;
-            return true;
-        }
+        //    _itemInstances[num] = new ItemInstance(item, count);
 
-        public void Remove(ItemDefinition item)
-        {
-            int entryToRemove = Array.IndexOf(_itemInstances, Array.Find(_itemInstances, e => e.ItemDefinition == item));
-            _itemInstances[entryToRemove] = null;
+        //    onChange?.Invoke();
+        //    return true;
+        //}
 
-            ResetFlags(entryToRemove);
-            onChange?.Invoke();
-        }
+        //public bool SetItemAt(ItemInstance entry, int index)
+        //{
+        //    if (_itemInstances[index].ItemDefinition != null)
+        //        return false;
+
+        //    _itemInstances[index] = entry;
+        //    return true;
+        //}
+
+        //public void Remove(ItemDefinition item)
+        //{
+        //    int entryToRemove = Array.IndexOf(_itemInstances, Array.Find(_itemInstances, e => e.ItemDefinition == item));
+        //    _itemInstances[entryToRemove] = null;
+
+        //    ResetFlags(entryToRemove);
+        //    onChange?.Invoke();
+        //}
 
         public void Remove(int itemIndex)
         {
             _itemInstances[itemIndex] = new ItemInstance();
-            ResetFlags(itemIndex);
 
             onChange?.Invoke();
         }
 
-        public bool Remove(ItemInstance ItemInstance)
-        {
-            Remove(Array.IndexOf(_itemInstances, ItemInstance));
-            return true;
-        }
+        //public bool Remove(ItemInstance ItemInstance)
+        //{
+        //    Remove(Array.IndexOf(_itemInstances, ItemInstance));
+        //    return true;
+        //}
 
-        public bool Reduce(int itemIndex, int reduceAmount)
-        {
-            ItemInstance e = _itemInstances[itemIndex];
-            int newQuantity = reduceAmount >= e.Count ? 0 : e.Count - reduceAmount;
+        //public bool Reduce(int itemIndex, int reduceAmount)
+        //{
+        //    ItemInstance e = _itemInstances[itemIndex];
+        //    int newQuantity = reduceAmount >= e.Count ? 0 : e.Count - reduceAmount;
 
-            _itemInstances[itemIndex].SetCount(newQuantity);
-            onChange?.Invoke();
-            if (RemoveWhenQuantityZero && newQuantity == 0)
-            {
-                Remove(e);
-                return true;
-            }
-            return false;
-        }
+        //    _itemInstances[itemIndex].SetCount(newQuantity);
+        //    onChange?.Invoke();
+        //    if (RemoveWhenQuantityZero && newQuantity == 0)
+        //    {
+        //        Remove(e);
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
-        public ItemInstance GetItemAt(int num)
-        {
-            if (num >= _itemInstances.Length)
-                return null;
-            return _itemInstances[num];
-        }
+        //public ItemInstance GetItemAt(int index)
+        //{
+        //    if (index >= _itemInstances.Length)
+        //        return null;
+        //    return _itemInstances[index];
+        //}
 
-        public ItemInstance Find(ItemDefinition i) =>
-            Array.Find(_itemInstances, e => e.ItemDefinition == i);
+        //public ItemInstance Find(ItemDefinition i) =>
+        //    Array.Find(_itemInstances, e => e.ItemDefinition == i);
 
-        public int FindIndex(ItemDefinition i) =>
-            Array.IndexOf(_itemInstances, Array.Find(_itemInstances, e => e.ItemDefinition == i));
+        //public int FindIndex(ItemDefinition i) =>
+        //    Array.IndexOf(_itemInstances, Array.Find(_itemInstances, e => e.ItemDefinition == i));
 
-        public int FindIndex(ItemInstance e) =>
-            Array.IndexOf(_itemInstances, e);
+        public int FindIndex(ItemInstance itemInstance) =>
+            _itemInstances.IndexOf(itemInstance);
 
-        public int GetFirstValidSlot(ItemDefinition i, int quantity)
-        {
-            ItemInstance finded = Array.Find(_itemInstances, i => i.ItemDefinition == null);
+        //public int GetFirstValidSlot(ItemDefinition i, int quantity)
+        //{
+        //    ItemInstance finded = Array.Find(_itemInstances, i => i.ItemDefinition == null);
 
-            if (finded == null)
-                return -1;
-            else
-                return Array.IndexOf(_itemInstances, finded);
-        }
+        //    if (finded == null)
+        //        return -1;
+        //    else
+        //        return Array.IndexOf(_itemInstances, finded);
+        //}
 
-        public IEnumerator<ItemInstance> GetEnumerator() =>
-            new ItemCollectionEnumerator(_itemInstances);
+        //public IEnumerator<ItemInstance> GetEnumerator() =>
+        //    new ItemCollectionEnumerator(_itemInstances);
 
-        public void Clear()
-        {
-            Array.Clear(_itemInstances, 0, _itemInstances.Length);
-            Array.Clear(_isDragging, 0, _isDragging.Length);
-            Array.Clear(_isReloading, 0, _isReloading.Length);
+        //public void Clear()
+        //{
+        //    Array.Clear(_itemInstances, 0, _itemInstances.Length);
+        //    Array.Clear(_isDragging, 0, _isDragging.Length);
+        //    Array.Clear(_isReloading, 0, _isReloading.Length);
 
-            onChange?.Invoke();
-        }
+        //    onChange?.Invoke();
+        //}
 
-        public bool Contains(ItemInstance e) =>
-            _itemInstances.Contains(e);
+        //public bool Contains(ItemInstance e) =>
+        //    _itemInstances.Contains(e);
 
-        public void CopyTo(ItemInstance[] c, int index) =>
-            c = _itemInstances;
+        //public void CopyTo(ItemInstance[] c, int index) =>
+        //    c = _itemInstances;
 
-        public bool IsReadOnly => false;
+        //public bool IsReadOnly => false;
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        //IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public ItemInstance this[int index]
         {
             get => _itemInstances[index];
             set
             {
-                if (index < _itemInstances.Length)
+                if (index < _itemInstances.Count)
                 {
                     _itemInstances[index] = value;
-                    ResetFlags(index); // сбросить флаги при замене
                     onChange?.Invoke();
                 }
             }
         }
 
-        int GetFree(ItemDefinition item)
+        //int GetFree(ItemDefinition item)
+        //{
+        //    for (int i = 0; i < _itemInstances.Count; i++)
+        //    {
+        //        if (_itemInstances[i].ItemDefinition == null)
+        //            return i;
+        //    }
+        //    return -1;
+        //}
+
+        //public void ResetAllFlags()
+        //{
+        //    for (int i = 0; i < _itemInstances.Count; i++)
+        //    {
+        //        _isDragging[i] = false;
+        //        _isReloading[i] = false;
+        //    }
+        //}
+
+        public void Clear()
         {
-            for (int i = 0; i < _itemInstances.Length; i++)
-            {
-                if (_itemInstances[i].ItemDefinition == null)
-                    return i;
-            }
-            return -1;
+            throw new NotImplementedException();
         }
 
-        public void ResetAllFlags()
+        public void CopyTo(ItemInstance[] array, int arrayIndex)
         {
-            for (int i = 0; i < _itemInstances.Length; i++)
-            {
-                _isDragging[i] = false;
-                _isReloading[i] = false;
-            }
+            throw new NotImplementedException();
         }
 
-        private void ResetFlags(int index)
+        public bool Remove(ItemInstance item)
         {
-            if (index >= 0 && index < _itemInstances.Length)
-            {
-                _isDragging[index] = false;
-                _isReloading[index] = false;
-            }
+            throw new NotImplementedException();
+        }
+
+        public IEnumerator<ItemInstance> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public bool Contains(ItemInstance item)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void RemoveRange(int count)
+        {
+            _itemInstances.RemoveRange(_itemInstances.Count - count, count);
         }
     }
 
