@@ -126,7 +126,7 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
     {
         if (rigidbody == null) return;
 
-        rigidbody.mass = 50f;
+        rigidbody.mass = 25f;
         rigidbody.drag = 0.2f;
         rigidbody.angularDrag = 0.1f;
     }
