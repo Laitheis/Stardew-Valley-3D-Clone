@@ -12,6 +12,9 @@ namespace InventorySystem
         [Header("Properties")]
         [Min(0)][SerializeField] private int _inventoryCapacity;
 
+        //HACK
+        public InventoryFiller InventoryFiller;
+
         private UIDragController _dragHandler;
 
         private GameObject _itemSlotPrefab;
@@ -34,6 +37,9 @@ namespace InventorySystem
             SetRightCollectionCount();
             SetRightSlotsCount();
 
+            //HACK
+            InventoryFiller.Fill();
+
             _dragHandler = UIDragController.Instance;
 
             for (int i = 0; i < _itemsCollection.Count; i++)
@@ -41,8 +47,6 @@ namespace InventorySystem
                 ItemSlot slot = transform.GetChild(i).GetComponentInChildren<ItemSlot>();
                 slot.ItemsCollection = _itemsCollection;
             }
-
-            //_itemsCollection.ResetAllFlags();
         }
 
         private void SetRightCollectionCount()
@@ -50,7 +54,7 @@ namespace InventorySystem
             if (_itemsCollection.Count < _inventoryCapacity)
             {
                 int diff = _inventoryCapacity - _itemsCollection.Count;
-                _itemsCollection.AddRange(diff);
+                _itemsCollection.AddRangeEmpty(diff);
             }
 
             if (_itemsCollection.Count > _inventoryCapacity)
@@ -75,27 +79,20 @@ namespace InventorySystem
             }
         }
 
-
         protected virtual void OnDragStarted(DragEventInfo dragEventInfo)
         {
+            // Validate InvHandler
             if (dragEventInfo.ObjectUnderCursor.transform.GetComponentInParent<InventoryHandler>() != this)
                 return;
 
-            dragEventInfo.draggableComponent.GetItemIconRect().GetComponent<Image>().enabled = false;
-
             ItemInstance itemInstance = _itemsCollection[dragEventInfo.SlotUnderCursorNum];
-
-            if (itemInstance.ItemDefinition == null)
-            {
-                _dragHandler.IsDragging = false;
-                return;
-            }
 
             itemInstance.AddFlag(ItemFlags.IsDragging);
 
             _dragHandler.SetDraggedSprite(itemInstance.ItemDefinition.Sprite);
             _dragHandler.SetDraggedItem(itemInstance);
 
+            _dragHandler.GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = itemInstance.Count.ToString();
         }
 
         protected virtual void OnDragEnd(DragEventInfo dragEventInfo)
@@ -107,20 +104,33 @@ namespace InventorySystem
 
             ItemInstance landedItemInstance = _itemsCollection[dragEventInfo.SlotUnderCursorNum];
 
-            _itemsCollection[dragEventInfo.SlotUnderCursorNum] = draggedItemInstance;
+            //_itemsCollection[dragEventInfo.SlotUnderCursorNum] = draggedItemInstance;
+            SetItemInstance(draggedItemInstance, dragEventInfo.SlotUnderCursorNum);
 
-            // Drop to original slot
+            // If drop to original slot
             if (dragEventInfo.OriginalSlotNum == dragEventInfo.SlotUnderCursorNum && dragEventInfo.SourceItemsCollection == _itemsCollection)
             {
                 draggedItemInstance.RemoveFlag(ItemFlags.IsDragging);
                 return;
             }
 
-            dragEventInfo.SourceItemsCollection.Remove(dragEventInfo.OriginalSlotNum); // назначили пустой ItemInstance на прошлый слот
+            dragEventInfo.SourceItemsCollection.Remove(dragEventInfo.OriginalSlotNum);
 
             draggedItemInstance.RemoveFlag(ItemFlags.IsDragging);
 
             return;
+        }
+
+        public void SetItemInstance(ItemInstance itemInstance, int slotNum = -1)
+        {
+            if (slotNum == -1)
+            {
+                _itemsCollection.Add(itemInstance, itemInstance.Count);
+            }
+            else
+            {
+                _itemsCollection.AddAt(itemInstance, slotNum, itemInstance.Count);
+            }
         }
     }
 }

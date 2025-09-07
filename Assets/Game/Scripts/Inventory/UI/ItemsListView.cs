@@ -26,18 +26,23 @@ namespace InventorySystem
                 {
                     if (i >= transform.childCount) return;
 
-                    var child = transform.GetChild(i);
-                    var itemIconGO = child.Find("Item");
-                    var image = itemIconGO.GetComponent<Image>();
-                    image.enabled = false;
+                    var itemSlot = transform.GetChild(i).GetComponentInChildren<ItemSlot>();
+                    itemSlot.ItemImage.enabled = false;
+                    itemSlot.CountBG.enabled = false;
+                    itemSlot.CountText.enabled = false;
                 }
                 else
                 {
                     Sprite sprite = itemInstance.ItemDefinition.Sprite;
 
-                    var icon = transform.GetChild(i).GetComponentInChildren<ItemSlot>().ItemImage;
-                    icon.sprite = sprite;
-                    icon.enabled = true;
+                    var itemSlot = transform.GetChild(i).GetComponentInChildren<ItemSlot>();
+                    itemSlot.ItemImage.sprite = sprite;
+
+                    itemSlot.ItemImage.enabled = true;
+                    itemSlot.CountBG.enabled = true;
+                    itemSlot.CountText.enabled = true;
+
+                    itemSlot.CountText.text = itemInstance.Count.ToString();
                 }
 
                 //Debug.Log($"ֿנוהלוע ג סכמעו {i} טללוע פכאד {_collection.GetDraggingFlag(i)}");

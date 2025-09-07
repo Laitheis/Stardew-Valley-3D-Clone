@@ -82,15 +82,16 @@ public class UIDragController : MonoBehaviour
 
         if (draggable == null) 
             return;
-
-        _isDragging = true;
-
+        
         _slotUnderCursorNum = draggable.GetHierarchyIndex();
         _objectUnderCursor = clickedObject;
-
         _sourceItemsCollection = clickedObject.transform.GetComponentInParent<ItemsCollection>();
-
         _originalSlotNum = _slotUnderCursorNum;
+
+        if (_sourceItemsCollection[_originalSlotNum].ItemDefinition == null)
+            return;
+
+        _isDragging = true;
 
         OnStartDrag?.Invoke(new() { DraggedRect = _draggedRect, ObjectUnderCursor = _objectUnderCursor, SlotUnderCursorNum = _slotUnderCursorNum, SourceItemsCollection = _sourceItemsCollection, draggableComponent = draggable });
 
@@ -162,17 +163,10 @@ public class UIDragController : MonoBehaviour
         _draggedRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _draggedImageHeight);
     }
 
-    //private void DisposeDragging(bool success)
-    //{
-
-    //    _isDragging = false;
-    //}
-
-    //private void TriggerDragEvent()
-    //{
-    //    Vector2 cursorPosition = Input.mousePosition;
-    //    //EventBus.Publish(nameof(DragEventInfo), new DragEventInfo());
-    //}
+    public Transform GetDraggedRect()
+    {
+        return _draggedRect.transform;
+    }
 }
 
 

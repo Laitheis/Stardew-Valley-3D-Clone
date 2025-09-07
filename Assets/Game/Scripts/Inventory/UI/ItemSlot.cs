@@ -12,6 +12,8 @@ namespace InventorySystem
 
         public Image ItemImage;
         public Image ItemBG;
+        public TMPro.TextMeshProUGUI CountText;
+        public Image CountBG;
 
         public ItemInstance ItemInstance => ItemsCollection[NumInContainer];
         public int NumInContainer => transform.parent.GetSiblingIndex();

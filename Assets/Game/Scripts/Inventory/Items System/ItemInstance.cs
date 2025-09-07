@@ -6,8 +6,8 @@ public class ItemInstance
 {
     [SerializeField] private ItemDefinition _itemDefinition;
 
-    [SerializeField] private string _id;
-    [SerializeField] private int _count;
+    [SerializeField] private string _guid;
+    [SerializeField] [Min(0)] private int _count = 1;
     [SerializeField] private ItemFlags _itemFlags;
 
     public ChangeableProperties Properties;
@@ -23,23 +23,23 @@ public class ItemInstance
 
     public string Name => string.IsNullOrEmpty(Properties.CustomName) ? _itemDefinition.Name : Properties.CustomName;
     public int Price => Properties.CustomPrice != 0 ? Properties.CustomPrice : _itemDefinition.Price;
-    public string Id => _id;
+    public string Guid => _guid;
     public int Count => _count;
     public ItemFlags ItemFlags => _itemFlags;
 
-    public ItemInstance(ItemDefinition definition, int count = 0)
+    public ItemInstance(ItemDefinition definition, int count = 1)
     {
         _itemDefinition = definition;
         Properties = new ChangeableProperties();
         Properties.CustomName = definition.Name;
         Properties.CustomPrice = definition.Price;
-        _id = Guid.NewGuid().ToString();
-        _count = Mathf.Clamp(count, 0, definition.MaxCountInStack);
+        _guid = System.Guid.NewGuid().ToString();
+        _count = Mathf.Clamp(count, 1, definition.MaxCountInStack);
     }
 
     public ItemInstance()
     {
-        _id = Guid.NewGuid().ToString();
+        _guid = System.Guid.NewGuid().ToString();
     }
 
     public bool Rename(string newName)
@@ -51,12 +51,16 @@ public class ItemInstance
         }
         return false;
     }
-    public bool AddCount(int amount, out int overflow)
-    {
-        overflow = 0;
 
-        if (!_itemDefinition.IsStackable || amount <= 0)
-            return false;
+    public void Add(int amount, out int overflow)
+    {
+        if (amount <= 0)
+        {
+            overflow = 0;
+            return;
+        }
+
+        overflow = 0;
 
         int newCount = _count + amount;
         if (newCount > _itemDefinition.MaxCountInStack)
@@ -68,8 +72,6 @@ public class ItemInstance
         {
             _count = newCount;
         }
-
-        return true;
     }
 
     public bool RemoveCount(int amount, out int underflow)

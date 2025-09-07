@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace InventorySystem
@@ -24,7 +24,7 @@ namespace InventorySystem
 
         public void AddEmpty() => _itemInstances.Add(new ItemInstance());
 
-        public void AddRange(int count)
+        public void AddRangeEmpty(int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -32,149 +32,142 @@ namespace InventorySystem
             }
         }
 
-        public void Add(ItemInstance itemInstance)
+        public bool AddAt(ItemInstance itemInstance, int slotNum, int count = 1)
         {
-            AddWithResult(itemInstance);
+            return AddWithResult(itemInstance, slotNum, count);
         }
-        public bool AddWithResult(ItemInstance itemInstance)
+
+        public bool Add(ItemInstance itemInstance, int count = 1)
         {
-            int item = -1;
-            for (int i = 0; i < _itemInstances.Count; i++)
+            return AddWithResult(itemInstance, -1, count);
+        }
+
+        public bool AddWithResult(ItemInstance itemInstance, int slotNum = -1, int count = 1)
+        {
+            int i = 0;
+
+            int owerflow;
+            while (count > 0)
             {
-                if (_itemInstances[i].ItemDefinition == null)
+                owerflow = AddWithOwerflow(itemInstance, slotNum, count);
+
+                if (owerflow == -1)
                 {
-                    item = i;
+                    return false;
+                }
+
+                count = owerflow;
+
+                i++;
+                if (i == 10000)
+                {
+                    Debug.Log("Endless loop");
                     break;
                 }
             }
 
-            if (item != -1)
+            return true;
+        }
+
+        private int AddWithOwerflow(ItemInstance itemInstance, int slotNum = -1, int count = 1)
+        {
+            int overflow;
+            bool toEmptySlot;
+
+            int validSlot = FindValidSlot(itemInstance, out toEmptySlot);
+
+            if(validSlot == -1)
             {
-                _itemInstances[item].ItemDefinition = itemInstance.ItemDefinition;
-                return true;
+                return -1;
+            }
+
+            if(slotNum != -1)
+            {
+                if (IsSlotEmpty(slotNum))
+                    toEmptySlot = true;
+                else
+                    toEmptySlot = false;
+
+                validSlot = slotNum;
+            }
+
+            if (toEmptySlot)
+            {
+                _itemInstances[validSlot] = new ItemInstance(itemInstance.ItemDefinition, 1);
+                _itemInstances[validSlot].Add(count - 1, out overflow);
+                return overflow;
             }
             else
             {
-                return false;
+                _itemInstances[validSlot].Add(count, out overflow);
+                return overflow;
             }
-        } 
-        //TryAdd(itemInstance);
+        }
 
-        //private void TryAdd(ItemInstance itemInstance)
-        //{
-        //    if(itemInstance.ItemDefinition == null)
-        //    {
+        private int FindValidSlot(ItemInstance itemInstance, out bool toEmptySlot)
+        {
+            int validSlot = -1;
 
-        //    }
+            if (itemInstance.ItemDefinition.MaxCountInStack > 1)
+            {
+                validSlot = FindFirstSlotWithSameItemDef(itemInstance.ItemDefinition);
+                toEmptySlot = false;
+            }
 
-        //    TryAdd(itemInstance.ItemDefinition, itemInstance.Count);
-        //}
+            if (validSlot == -1)
+                validSlot = FindFirstEmptySlot();
 
-        //public bool TryAdd(ItemDefinition item, int count)
-        //{
-        //    int num = GetFree(item);
-        //    if (num == -1)
-        //        return false;
+            if (validSlot == -1)
+            {
+                toEmptySlot = true;
+                return -1;
+            }
 
-        //    _itemInstances[num] = new ItemInstance(item, count);
+            toEmptySlot = true;
+            return validSlot;
+        }
 
-        //    onChange?.Invoke();
-        //    return true;
-        //}
+        private int FindFirstEmptySlot()
+        {
+            for (int i = 0; i < _itemInstances.Count; i++)
+            {
+                if (_itemInstances[i].ItemDefinition == null)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
 
-        //public bool SetItemAt(ItemInstance entry, int index)
-        //{
-        //    if (_itemInstances[index].ItemDefinition != null)
-        //        return false;
+        private int FindFirstSlotWithSameItemDef(ItemDefinition itemDefinition)
+        {
+            for (int i = 0; i < _itemInstances.Count; i++)
+            {
+                if ((_itemInstances[i].ItemDefinition == itemDefinition) && (_itemInstances[i].Count < _itemInstances[i].ItemDefinition.MaxCountInStack))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
 
-        //    _itemInstances[index] = entry;
-        //    return true;
-        //}
-
-        //public void Remove(ItemDefinition item)
-        //{
-        //    int entryToRemove = Array.IndexOf(_itemInstances, Array.Find(_itemInstances, e => e.ItemDefinition == item));
-        //    _itemInstances[entryToRemove] = null;
-
-        //    ResetFlags(entryToRemove);
-        //    onChange?.Invoke();
-        //}
-
+        private bool IsSlotEmpty(int slotNum)
+        {
+            if (_itemInstances[slotNum].ItemDefinition == null)
+                return true;
+            else
+                return false;
+        }
+        
         public void Remove(int itemIndex)
         {
             _itemInstances[itemIndex] = new ItemInstance();
 
             onChange?.Invoke();
         }
-
-        //public bool Remove(ItemInstance ItemInstance)
-        //{
-        //    Remove(Array.IndexOf(_itemInstances, ItemInstance));
-        //    return true;
-        //}
-
-        //public bool Reduce(int itemIndex, int reduceAmount)
-        //{
-        //    ItemInstance e = _itemInstances[itemIndex];
-        //    int newQuantity = reduceAmount >= e.Count ? 0 : e.Count - reduceAmount;
-
-        //    _itemInstances[itemIndex].SetCount(newQuantity);
-        //    onChange?.Invoke();
-        //    if (RemoveWhenQuantityZero && newQuantity == 0)
-        //    {
-        //        Remove(e);
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-        //public ItemInstance GetItemAt(int index)
-        //{
-        //    if (index >= _itemInstances.Length)
-        //        return null;
-        //    return _itemInstances[index];
-        //}
-
-        //public ItemInstance Find(ItemDefinition i) =>
-        //    Array.Find(_itemInstances, e => e.ItemDefinition == i);
-
-        //public int FindIndex(ItemDefinition i) =>
-        //    Array.IndexOf(_itemInstances, Array.Find(_itemInstances, e => e.ItemDefinition == i));
-
+       
         public int FindIndex(ItemInstance itemInstance) =>
             _itemInstances.IndexOf(itemInstance);
-
-        //public int GetFirstValidSlot(ItemDefinition i, int quantity)
-        //{
-        //    ItemInstance finded = Array.Find(_itemInstances, i => i.ItemDefinition == null);
-
-        //    if (finded == null)
-        //        return -1;
-        //    else
-        //        return Array.IndexOf(_itemInstances, finded);
-        //}
-
-        //public IEnumerator<ItemInstance> GetEnumerator() =>
-        //    new ItemCollectionEnumerator(_itemInstances);
-
-        //public void Clear()
-        //{
-        //    Array.Clear(_itemInstances, 0, _itemInstances.Length);
-        //    Array.Clear(_isDragging, 0, _isDragging.Length);
-        //    Array.Clear(_isReloading, 0, _isReloading.Length);
-
-        //    onChange?.Invoke();
-        //}
-
-        //public bool Contains(ItemInstance e) =>
-        //    _itemInstances.Contains(e);
-
-        //public void CopyTo(ItemInstance[] c, int index) =>
-        //    c = _itemInstances;
-
-        //public bool IsReadOnly => false;
-
-        //IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public ItemInstance this[int index]
         {
@@ -188,25 +181,6 @@ namespace InventorySystem
                 }
             }
         }
-
-        //int GetFree(ItemDefinition item)
-        //{
-        //    for (int i = 0; i < _itemInstances.Count; i++)
-        //    {
-        //        if (_itemInstances[i].ItemDefinition == null)
-        //            return i;
-        //    }
-        //    return -1;
-        //}
-
-        //public void ResetAllFlags()
-        //{
-        //    for (int i = 0; i < _itemInstances.Count; i++)
-        //    {
-        //        _isDragging[i] = false;
-        //        _isReloading[i] = false;
-        //    }
-        //}
 
         public void Clear()
         {
@@ -241,6 +215,11 @@ namespace InventorySystem
         internal void RemoveRange(int count)
         {
             _itemInstances.RemoveRange(_itemInstances.Count - count, count);
+        }
+
+        void ICollection<ItemInstance>.Add(ItemInstance item)
+        {
+            throw new NotImplementedException();
         }
     }
 

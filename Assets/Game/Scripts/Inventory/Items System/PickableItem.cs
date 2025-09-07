@@ -21,7 +21,9 @@ public class PickableItem : MonoBehaviour
     }
     void OnPlayerCollide()
     {
-        GameObject.FindWithTag("PlayerInv").GetComponent<ItemsCollection>().AddWithResult(_item);
+        //HACK
+        //Вызывать метод в InvHandler
+        GameObject.FindWithTag("PlayerInv").GetComponent<InventoryHandler>().SetItemInstance(_item);
         Destroy(gameObject);
     }
 }
