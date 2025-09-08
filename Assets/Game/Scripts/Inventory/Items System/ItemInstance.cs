@@ -7,7 +7,7 @@ public class ItemInstance
     [SerializeField] private ItemDefinition _itemDefinition;
 
     [SerializeField] private string _guid;
-    [SerializeField] [Min(0)] private int _count = 1;
+    [SerializeField] [Min(0)] private int _count = 0;
     [SerializeField] private ItemFlags _itemFlags;
 
     public ChangeableProperties Properties;

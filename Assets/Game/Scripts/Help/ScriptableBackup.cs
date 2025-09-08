@@ -23,7 +23,7 @@ public static class ScriptableBackup
             string fileName = Path.GetFileName(path);
             string dest = Path.Combine(backupDir, fileName);
 
-            File.Copy(path, dest, true);
+            File.Copy(path, dest + " - Backup", true);
             Debug.Log($"[Backup] {path} → {dest}");
             count++;
         }

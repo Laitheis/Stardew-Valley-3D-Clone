@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -12,9 +13,6 @@ namespace InventorySystem
         [Header("Properties")]
         [Min(0)][SerializeField] private int _inventoryCapacity;
 
-        //HACK
-        public InventoryFiller InventoryFiller;
-
         private UIDragController _dragHandler;
 
         private GameObject _itemSlotPrefab;
@@ -25,8 +23,9 @@ namespace InventorySystem
         public void Constructor([Inject(Id = "ItemSlot")] GameObject itemSlotPrefab)
         {
             _itemSlotPrefab = itemSlotPrefab;
-        }
 
+
+        }
         private void Start()
         {
             _dragHandler = UIDragController.Instance;
@@ -36,9 +35,6 @@ namespace InventorySystem
 
             SetRightCollectionCount();
             SetRightSlotsCount();
-
-            //HACK
-            InventoryFiller.Fill();
 
             _dragHandler = UIDragController.Instance;
 
@@ -63,7 +59,7 @@ namespace InventorySystem
                 _itemsCollection.RemoveRange(diff);
             }
         }
-
+        
         private void SetRightSlotsCount()
         {
             int slotsCount = transform.Cast<Transform>()
@@ -89,6 +85,8 @@ namespace InventorySystem
 
             itemInstance.AddFlag(ItemFlags.IsDragging);
 
+            _dragHandler.IsDragging = true;
+
             _dragHandler.SetDraggedSprite(itemInstance.ItemDefinition.Sprite);
             _dragHandler.SetDraggedItem(itemInstance);
 
@@ -102,11 +100,6 @@ namespace InventorySystem
 
             ItemInstance draggedItemInstance = dragEventInfo.ItemInstance;
 
-            ItemInstance landedItemInstance = _itemsCollection[dragEventInfo.SlotUnderCursorNum];
-
-            //_itemsCollection[dragEventInfo.SlotUnderCursorNum] = draggedItemInstance;
-            SetItemInstance(draggedItemInstance, dragEventInfo.SlotUnderCursorNum);
-
             // If drop to original slot
             if (dragEventInfo.OriginalSlotNum == dragEventInfo.SlotUnderCursorNum && dragEventInfo.SourceItemsCollection == _itemsCollection)
             {
@@ -114,23 +107,67 @@ namespace InventorySystem
                 return;
             }
 
-            dragEventInfo.SourceItemsCollection.Remove(dragEventInfo.OriginalSlotNum);
-
-            draggedItemInstance.RemoveFlag(ItemFlags.IsDragging);
+            SetDraggedItem(dragEventInfo.SourceItemsCollection, dragEventInfo.OriginalSlotNum, dragEventInfo.SlotUnderCursorNum);
 
             return;
         }
 
-        public void SetItemInstance(ItemInstance itemInstance, int slotNum = -1)
+        public void SetDraggedItem(ItemsCollection sourceDraggedCollection, int sourceNum, int slotNum = -1)
         {
             if (slotNum == -1)
             {
-                _itemsCollection.Add(itemInstance, itemInstance.Count);
+                // TODO: Implement insertion into the first available free slot
+                return;
+            }
+
+            ItemInstance dragged = sourceDraggedCollection[sourceNum];
+            ItemInstance itemAtSlot = _itemsCollection[slotNum];
+
+            // If slot is empty — move the item directly
+            if (itemAtSlot.ItemDefinition == null)
+            {
+                sourceDraggedCollection.Remove(sourceNum);
+                _itemsCollection.AddAt(dragged, slotNum);
+                dragged.RemoveFlag(ItemFlags.IsDragging);
+                return;
+            }
+
+            // If item types differ — swap items
+            if (itemAtSlot.ItemDefinition != dragged.ItemDefinition)
+            {
+                sourceDraggedCollection.Remove(sourceNum);
+                ContinueDragging(itemAtSlot);
+                _itemsCollection.AddAt(dragged, slotNum);
+                dragged.RemoveFlag(ItemFlags.IsDragging);
+                return;
+            }
+
+            // Try to merge stacks
+            int freeSpace = itemAtSlot.ItemDefinition.MaxCountInStack - itemAtSlot.Count;
+            int remainingCount = dragged.Count - freeSpace;
+
+            if (remainingCount == 0)
+            {
+                // Full merge possible
+                itemAtSlot.SetCount(itemAtSlot.Count + dragged.Count);
+                sourceDraggedCollection.Remove(sourceNum);
             }
             else
             {
-                _itemsCollection.AddAt(itemInstance, slotNum, itemInstance.Count);
+                // Partial merge, continue dragging leftovers
+                itemAtSlot.SetCount(itemAtSlot.ItemDefinition.MaxCountInStack);
+                dragged.SetCount(remainingCount);
+                ContinueDragging(dragged);
             }
+        }
+
+        void ContinueDragging(ItemInstance itemInstance)
+        {
+            _dragHandler.IsDragging = true;
+
+            _dragHandler.SetDraggedSprite(itemInstance.ItemDefinition.Sprite);
+            _dragHandler.SetDraggedItem(itemInstance);
+            _dragHandler.GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = itemInstance.Count.ToString();
         }
     }
 }

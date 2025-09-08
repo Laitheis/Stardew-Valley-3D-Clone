@@ -50,7 +50,7 @@ public class DropItemToWorld : Zenject.IInitializable
 
             itemGO.GetComponent<Rigidbody>().AddForce(Vector3.up * 10f, ForceMode.Impulse);
 
-            var itemInstance = itemGO.GetComponent<ItemInstanceHolder>();
+            var itemInstance = itemGO.GetComponent<PickableItem>();
 
             itemInstance.Item = item;
         }

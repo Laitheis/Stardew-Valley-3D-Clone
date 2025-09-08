@@ -18,5 +18,14 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
         Container.BindInstance(DraggedImagePrefab).WithId("DraggedImagePrefab").AsSingle();
         Container.BindInstance(ItemDatabase).AsSingle().NonLazy();
         Container.BindInstance(ItemSlotPrefab).WithId("ItemSlot");
+
+        //HACK
+        InstallPlayerParam();
+    }
+
+    public void InstallPlayerParam()
+    {
+        //HACK
+        Container.BindInstance(3).WithId("PickupDistance");
     }
 }

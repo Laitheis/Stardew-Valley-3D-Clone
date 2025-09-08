@@ -152,8 +152,6 @@ public class UIDragController : MonoBehaviour
 
     public void SetDraggedSprite(Sprite sprite)
     {
-        _isDragging = true;
-
         Image image = Instantiate(_draggedImagePrefab, _canvasRoot);
 
         _draggedRect = image.rectTransform;

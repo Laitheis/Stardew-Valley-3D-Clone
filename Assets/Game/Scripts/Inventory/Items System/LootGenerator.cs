@@ -37,10 +37,10 @@ public class LootGenerator
         {
             ItemInstance droppedItem = new ItemInstance(itemDropChance.Item);
 
-            int roll2 = UnityEngine.Random.Range(itemDropChance.MinCount, itemDropChance.MaxCount);
+            int roll2 = UnityEngine.Random.Range(itemDropChance.MinCount, itemDropChance.MaxCount + 1);
             if (roll2 == 0) return null;
 
-            droppedItem.Add(roll2, out int overflow);
+            droppedItem.SetCount(roll2);
 
             Debug.Log($"Generated item: {itemDropChance.Item.name} in quantity {roll2} (chance {itemDropChance.Chance}%)");
             

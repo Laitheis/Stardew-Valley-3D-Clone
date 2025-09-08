@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 namespace InventorySystem
@@ -31,14 +30,20 @@ namespace InventorySystem
                 AddEmpty();
             }
         }
-
-        public bool AddAt(ItemInstance itemInstance, int slotNum, int count = 1)
+        public class Result
         {
+            public int added;
+            public ItemInstance item;
+        }
+        public bool AddAt(ItemInstance itemInstance, int slotNum)
+        {
+            int count = itemInstance.Count;
             return AddWithResult(itemInstance, slotNum, count);
         }
 
-        public bool Add(ItemInstance itemInstance, int count = 1)
+        public bool Add(ItemInstance itemInstance)
         {
+            int count = itemInstance.Count;
             return AddWithResult(itemInstance, -1, count);
         }
 
@@ -76,12 +81,12 @@ namespace InventorySystem
 
             int validSlot = FindValidSlot(itemInstance, out toEmptySlot);
 
-            if(validSlot == -1)
+            if (validSlot == -1)
             {
                 return -1;
             }
 
-            if(slotNum != -1)
+            if (slotNum != -1)
             {
                 if (IsSlotEmpty(slotNum))
                     toEmptySlot = true;
@@ -91,7 +96,7 @@ namespace InventorySystem
                 validSlot = slotNum;
             }
 
-            if (toEmptySlot)
+            if (toEmptySlot || itemInstance.ItemDefinition != _itemInstances[validSlot].ItemDefinition)
             {
                 _itemInstances[validSlot] = new ItemInstance(itemInstance.ItemDefinition, 1);
                 _itemInstances[validSlot].Add(count - 1, out overflow);
@@ -112,10 +117,12 @@ namespace InventorySystem
             {
                 validSlot = FindFirstSlotWithSameItemDef(itemInstance.ItemDefinition);
                 toEmptySlot = false;
+
+                if (validSlot != -1)
+                    return validSlot;
             }
 
-            if (validSlot == -1)
-                validSlot = FindFirstEmptySlot();
+            validSlot = FindFirstEmptySlot();
 
             if (validSlot == -1)
             {
@@ -158,14 +165,14 @@ namespace InventorySystem
             else
                 return false;
         }
-        
+
         public void Remove(int itemIndex)
         {
             _itemInstances[itemIndex] = new ItemInstance();
-
+            _itemInstances[itemIndex].SetCount(0);
             onChange?.Invoke();
         }
-       
+
         public int FindIndex(ItemInstance itemInstance) =>
             _itemInstances.IndexOf(itemInstance);
 
@@ -194,7 +201,8 @@ namespace InventorySystem
 
         public bool Remove(ItemInstance item)
         {
-            throw new NotImplementedException();
+            _itemInstances.Remove(item);
+            return true;
         }
 
         public IEnumerator<ItemInstance> GetEnumerator()
@@ -221,6 +229,7 @@ namespace InventorySystem
         {
             throw new NotImplementedException();
         }
+
     }
 
     public class ItemCollectionEnumerator : IEnumerator<ItemInstance>
