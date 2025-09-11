@@ -5,6 +5,7 @@ using UnityEngine;
 public class ItemDefinition : ScriptableObject
 {
     [SerializeField] private string _name;
+    [SerializeField] private ItemType _type;
     [SerializeField] private bool _isRenameable;
     [SerializeField] [Min(1)] private int _maxCountInStack;
     [SerializeField] private int _price;
@@ -19,6 +20,7 @@ public class ItemDefinition : ScriptableObject
     public string Description => _description;
     public GameObject Prefab => _prefab;
     public Sprite Sprite => _sprite;
+    public ItemType Type => _type;
 
     //
 
@@ -28,3 +30,8 @@ public class ItemDefinition : ScriptableObject
     }
 }
 
+public enum ItemType
+{
+    Tool,
+    Material,
+}

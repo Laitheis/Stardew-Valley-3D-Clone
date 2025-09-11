@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Inventory.UI;
+using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 

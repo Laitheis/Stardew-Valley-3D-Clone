@@ -16,7 +16,7 @@ namespace InventorySystem
         public Image CountBG;
 
         public ItemInstance ItemInstance => ItemsCollection[NumInContainer];
-        public int NumInContainer => transform.parent.GetSiblingIndex();
+        public int NumInContainer => transform.GetSiblingIndex();
 
         public void OnStartDrag() {  }
 

@@ -15,12 +15,15 @@ namespace InventorySystem
 
         private GameObject _itemSlotPrefab;
 
+        private DiContainer _container;
+
         public ItemsCollection Collection { get => _itemsCollection; set => _itemsCollection = value; }
 
         [Inject]
-        public void Constructor([Inject(Id = "ItemSlot")] GameObject itemSlotPrefab)
+        public void Constructor([Inject(Id = "ItemSlot")] GameObject itemSlotPrefab, DiContainer container)
         {
             _itemSlotPrefab = itemSlotPrefab;
+            _container = container;
         }
 
         private void Start()
@@ -65,7 +68,7 @@ namespace InventorySystem
                 int diff = _inventoryCapacity - slotsCount;
                 for (int i = 0; i < diff; i++)
                 {
-                    var newItemSlot = Instantiate(_itemSlotPrefab, transform);
+                    var newItemSlot = _container.InstantiatePrefab(_itemSlotPrefab, transform);
                 }
             }
         }

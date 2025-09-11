@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using Inventory.UI;
+using UnityEngine;
 using Zenject;
 
 public class GameInstaller : MonoInstaller
 {
     public Canvas MainCanvas;
+    public ItemTooltipView TooltipView;
 
     public override void InstallBindings()
     {
@@ -13,9 +15,11 @@ public class GameInstaller : MonoInstaller
         Container.Bind<LootTable>().FromScriptableObjectResource("Loot Table").AsSingle();
 
         Container.BindInstance(MainCanvas).AsSingle();
+        Container.BindInstance(TooltipView).AsSingle();
 
         SignalBusInstaller.Install(Container);
 
         Container.DeclareSignal<ItemDropSignal>();
+
     }
 }
