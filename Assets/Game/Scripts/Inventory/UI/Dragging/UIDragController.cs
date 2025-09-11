@@ -31,10 +31,15 @@ public class UIDragController : MonoBehaviour
     private ItemInstance _itemInstance;
 
     private bool _isDragging;
+    private bool _isCountinueDragging;
+
+    private int _mouseButton;
 
     internal static UIDragController Instance;
 
     public bool IsDragging { get => _isDragging; set => _isDragging = value; }
+    public int OriginalSlotNum { get => _originalSlotNum; set => _originalSlotNum = value; }
+    public bool IsCountinueDragging { get => _isCountinueDragging; set => _isCountinueDragging = value; }
 
     private void Awake()
     {
@@ -60,8 +65,10 @@ public class UIDragController : MonoBehaviour
 
     private void HandleInput()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
+            _mouseButton = Input.GetMouseButtonDown(0) ? 0 : 1;
+
             if (_isDragging)
             {
                 TryLandDraggedObject();
@@ -76,62 +83,63 @@ public class UIDragController : MonoBehaviour
     private void TryStartDragging()
     {
         IUIDraggable draggable = null;
-
         UiDetectUtil.TryGetUIElementUnderCursor(out GameObject clickedObject);
         clickedObject?.transform.parent.TryGetComponent(out draggable);
+        if (draggable == null) return;
 
-        if (draggable == null) 
-            return;
-        
         _slotUnderCursorNum = draggable.GetHierarchyIndex();
         _objectUnderCursor = clickedObject;
         _sourceItemsCollection = clickedObject.transform.GetComponentInParent<ItemsCollection>();
-        _originalSlotNum = _slotUnderCursorNum;
+        OriginalSlotNum = _slotUnderCursorNum;
 
-        if (_sourceItemsCollection[_originalSlotNum].ItemDefinition == null)
-            return;
+        var item = _sourceItemsCollection[OriginalSlotNum];
+        if (item.ItemDefinition == null) return;
 
         _isDragging = true;
-
-        OnStartDrag?.Invoke(new() { DraggedRect = _draggedRect, ObjectUnderCursor = _objectUnderCursor, SlotUnderCursorNum = _slotUnderCursorNum, SourceItemsCollection = _sourceItemsCollection, draggableComponent = draggable });
-
+        OnStartDrag?.Invoke(new()
+        {
+            ItemInstance = item,
+            DraggedRect = _draggedRect,
+            ObjectUnderCursor = _objectUnderCursor,
+            SlotUnderCursorNum = _slotUnderCursorNum,
+            SourceItemsCollection = _sourceItemsCollection,
+            draggableComponent = draggable
+        });
     }
 
     private void TryLandDraggedObject()
     {
         IDragLandable landable = null;
-
         UiDetectUtil.TryGetUIElementUnderCursor(out GameObject targetObject);
         targetObject?.transform.parent.TryGetComponent(out landable);
 
-        //HACK
-        if(landable == null)
+        //HACK drop to world
+        if (landable == null)
         {
-            Instantiate(_itemInstance.ItemDefinition.Prefab, new Vector3(0,0,0), Quaternion.identity);
-
-            _sourceItemsCollection.Remove(_originalSlotNum);
-
+            Instantiate(_itemInstance.ItemDefinition.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
             _isDragging = false;
-
-            if (_destroyImageObjectOnEnd)
-            {
-                Destroy(_draggedRect.gameObject);
-            }
-
+            if (_destroyImageObjectOnEnd && _draggedRect != null) Destroy(_draggedRect.gameObject);
             return;
         }
 
         _slotUnderCursorNum = landable.GetHierarchyIndex();
         _isDragging = false;
+        if (_destroyImageObjectOnEnd && _draggedRect != null) Destroy(_draggedRect.gameObject);
 
-        if (_destroyImageObjectOnEnd)
+        OnEndDrag?.Invoke(new()
         {
-            Destroy(_draggedRect.gameObject);
-        }
-
-        OnEndDrag?.Invoke(new() { DraggedRect = _draggedRect, ItemInstance = _itemInstance, ObjectUnderCursor = targetObject, SlotUnderCursorNum = _slotUnderCursorNum, SourceItemsCollection = _sourceItemsCollection, OriginalSlotNum = _originalSlotNum, landableComponent = (IDragLandable)landable });
-
+            DraggedRect = _draggedRect,
+            ItemInstance = _itemInstance,
+            ObjectUnderCursor = targetObject,
+            SlotUnderCursorNum = _slotUnderCursorNum,
+            SourceItemsCollection = _sourceItemsCollection,
+            OriginalSlotNum = OriginalSlotNum,
+            landableComponent = landable
+        });
     }
+
+    public int GetMouseButton() => _mouseButton;
+    public bool IsShiftHeld() => Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
     private void DragUpdate()
     {

@@ -22,7 +22,7 @@ namespace InventorySystem
             {
                 ItemInstance itemInstance = _collection[i];
 
-                if(itemInstance == null || itemInstance.ItemDefinition == null || itemInstance.HasFlag(ItemFlags.IsDragging))
+                if(itemInstance == null || itemInstance.ItemDefinition == null)
                 {
                     if (i >= transform.childCount) return;
 

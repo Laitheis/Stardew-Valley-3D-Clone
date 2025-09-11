@@ -16,11 +16,6 @@ namespace InventorySystem
         public bool IsReadOnly => throw new NotImplementedException();
 
         // ==== Collection logic ====
-        //public bool CanAdd(ItemDefinition item, int quantity, int slot)
-        //{
-        //    return _itemInstances[slot].ItemDefinition == null;
-        //}
-
         public void AddEmpty() => _itemInstances.Add(new ItemInstance());
 
         public void AddRangeEmpty(int count)
@@ -30,14 +25,27 @@ namespace InventorySystem
                 AddEmpty();
             }
         }
-        public class Result
+
+        /// <summary>
+        /// Ignores ItemInstance.Count
+        /// </summary>
+        public void AddRange(ItemInstance itemInstance, int count)
         {
-            public int added;
-            public ItemInstance item;
+            itemInstance.SetCount(1);
+            for (int i = 0; i < count; i++)
+            {
+                Add(itemInstance);
+            }
         }
+
         public bool AddAt(ItemInstance itemInstance, int slotNum)
         {
             int count = itemInstance.Count;
+            return AddWithResult(itemInstance, slotNum, count);
+        }
+
+        public bool AddAtWithCount(ItemInstance itemInstance, int slotNum, int count)
+        {
             return AddWithResult(itemInstance, slotNum, count);
         }
 
@@ -54,9 +62,9 @@ namespace InventorySystem
             int owerflow;
             while (count > 0)
             {
-                owerflow = AddWithOwerflow(itemInstance, slotNum, count);
+                owerflow = AddWithOverflow(itemInstance, slotNum, count);
 
-                if (owerflow == -1)
+                if (owerflow == -1) // If valid slot not found
                 {
                     return false;
                 }
@@ -64,7 +72,7 @@ namespace InventorySystem
                 count = owerflow;
 
                 i++;
-                if (i == 10000)
+                if (i == 100000)
                 {
                     Debug.Log("Endless loop");
                     break;
@@ -74,7 +82,7 @@ namespace InventorySystem
             return true;
         }
 
-        private int AddWithOwerflow(ItemInstance itemInstance, int slotNum = -1, int count = 1)
+        public int AddWithOverflow(ItemInstance itemInstance, int slotNum = -1, int count = 1)
         {
             int overflow;
             bool toEmptySlot;
@@ -189,6 +197,22 @@ namespace InventorySystem
             }
         }
 
+        internal void RemoveRange(int count)
+        {
+            _itemInstances.RemoveRange(_itemInstances.Count - count, count);
+        }
+
+        public bool Remove(ItemInstance item)
+        {
+            Remove(_itemInstances.IndexOf(item));
+            return true;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public void Clear()
         {
             throw new NotImplementedException();
@@ -199,30 +223,15 @@ namespace InventorySystem
             throw new NotImplementedException();
         }
 
-        public bool Remove(ItemInstance item)
-        {
-            _itemInstances.Remove(item);
-            return true;
-        }
-
         public IEnumerator<ItemInstance> GetEnumerator()
         {
             throw new NotImplementedException();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
 
         public bool Contains(ItemInstance item)
         {
             throw new NotImplementedException();
-        }
-
-        internal void RemoveRange(int count)
-        {
-            _itemInstances.RemoveRange(_itemInstances.Count - count, count);
         }
 
         void ICollection<ItemInstance>.Add(ItemInstance item)
@@ -230,38 +239,5 @@ namespace InventorySystem
             throw new NotImplementedException();
         }
 
-    }
-
-    public class ItemCollectionEnumerator : IEnumerator<ItemInstance>
-    {
-        private ItemInstance[] _items;
-        private int _position = -1;
-
-        public ItemCollectionEnumerator(ItemInstance[] items)
-        {
-            _items = items;
-        }
-
-        public ItemInstance Current
-        {
-            get
-            {
-                if (_position < 0 || _position >= _items.Length)
-                    throw new InvalidOperationException();
-                return _items[_position];
-            }
-        }
-
-        object IEnumerator.Current => Current;
-
-        public bool MoveNext()
-        {
-            _position++;
-            return _position < _items.Length;
-        }
-
-        public void Reset() => _position = -1;
-
-        public void Dispose() { }
     }
 }

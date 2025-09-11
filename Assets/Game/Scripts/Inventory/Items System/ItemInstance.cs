@@ -152,5 +152,5 @@ public class ItemInstance
 public enum ItemFlags
 {
     None = 0,
-    IsDragging = 1 << 0
+    //IsDragging = 1 << 0
 }

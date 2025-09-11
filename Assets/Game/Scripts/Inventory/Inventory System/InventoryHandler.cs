@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 
 namespace InventorySystem
@@ -13,7 +11,7 @@ namespace InventorySystem
         [Header("Properties")]
         [Min(0)][SerializeField] private int _inventoryCapacity;
 
-        private UIDragController _dragHandler;
+        private UIDragController _dragController;
 
         private GameObject _itemSlotPrefab;
 
@@ -23,20 +21,17 @@ namespace InventorySystem
         public void Constructor([Inject(Id = "ItemSlot")] GameObject itemSlotPrefab)
         {
             _itemSlotPrefab = itemSlotPrefab;
-
-
         }
+
         private void Start()
         {
-            _dragHandler = UIDragController.Instance;
+            _dragController = UIDragController.Instance;
 
-            _dragHandler.OnStartDrag += OnDragStarted;
-            _dragHandler.OnEndDrag += OnDragEnd;
+            _dragController.OnStartDrag += OnDragStarted;
+            _dragController.OnEndDrag += OnDragEnd;
 
             SetRightCollectionCount();
             SetRightSlotsCount();
-
-            _dragHandler = UIDragController.Instance;
 
             for (int i = 0; i < _itemsCollection.Count; i++)
             {
@@ -59,7 +54,7 @@ namespace InventorySystem
                 _itemsCollection.RemoveRange(diff);
             }
         }
-        
+
         private void SetRightSlotsCount()
         {
             int slotsCount = transform.Cast<Transform>()
@@ -81,16 +76,58 @@ namespace InventorySystem
             if (dragEventInfo.ObjectUnderCursor.transform.GetComponentInParent<InventoryHandler>() != this)
                 return;
 
-            ItemInstance itemInstance = _itemsCollection[dragEventInfo.SlotUnderCursorNum];
+            ItemInstance origItemInst = dragEventInfo.ItemInstance;
+            ItemInstance draggedItemInst = null;
 
-            itemInstance.AddFlag(ItemFlags.IsDragging);
+            // Shift — fast dragging
+            if (_dragController.IsShiftHeld())
+            {
+                var allInventories = FindObjectsOfType<InventoryHandler>()
+                    .Where(inv => inv != this)
+                    .ToList();
 
-            _dragHandler.IsDragging = true;
+                foreach (var inv in allInventories)
+                {
+                    int overflow = inv.Collection.AddWithOverflow(dragEventInfo.ItemInstance, -1, dragEventInfo.ItemInstance.Count);
 
-            _dragHandler.SetDraggedSprite(itemInstance.ItemDefinition.Sprite);
-            _dragHandler.SetDraggedItem(itemInstance);
+                    if (overflow == -1) continue;
 
-            _dragHandler.GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = itemInstance.Count.ToString();
+                    if (overflow == 0) dragEventInfo.SourceItemsCollection.Remove(dragEventInfo.ItemInstance);
+
+                    if (overflow > 0)
+                    {
+                        dragEventInfo.ItemInstance.SetCount(overflow);
+                        _dragController.IsDragging = false;
+                        return;
+                    }
+                }
+                _dragController.IsDragging = false;
+                return;
+            }
+
+            // Right-click - take half
+            if (_dragController.GetMouseButton() == 1)
+            {
+                int takeCount = origItemInst.ItemDefinition.MaxCountInStack == 1 ? 1 : Mathf.FloorToInt(origItemInst.Count / 2f);
+                if (takeCount < 1) takeCount = 1;
+
+                ItemInstance splitInstance = new ItemInstance(origItemInst.ItemDefinition, takeCount);
+                origItemInst.RemoveCount(takeCount, out _);
+                if (origItemInst.Count == 0) dragEventInfo.SourceItemsCollection.Remove(origItemInst);
+                draggedItemInst = splitInstance;
+            }
+            else
+            {
+                draggedItemInst = origItemInst;
+                dragEventInfo.SourceItemsCollection.Remove(origItemInst);
+            }
+
+            _dragController.IsDragging = true;
+
+            _dragController.SetDraggedSprite(draggedItemInst.ItemDefinition.Sprite);
+            _dragController.SetDraggedItem(draggedItemInst);
+
+            _dragController.GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = draggedItemInst.Count.ToString();
         }
 
         protected virtual void OnDragEnd(DragEventInfo dragEventInfo)
@@ -100,74 +137,61 @@ namespace InventorySystem
 
             ItemInstance draggedItemInstance = dragEventInfo.ItemInstance;
 
-            // If drop to original slot
-            if (dragEventInfo.OriginalSlotNum == dragEventInfo.SlotUnderCursorNum && dragEventInfo.SourceItemsCollection == _itemsCollection)
-            {
-                draggedItemInstance.RemoveFlag(ItemFlags.IsDragging);
-                return;
-            }
-
-            SetDraggedItem(dragEventInfo.SourceItemsCollection, dragEventInfo.OriginalSlotNum, dragEventInfo.SlotUnderCursorNum);
-
-            return;
+            SetDraggedItem(draggedItemInstance, dragEventInfo.SourceItemsCollection, dragEventInfo.SlotUnderCursorNum);
         }
 
-        public void SetDraggedItem(ItemsCollection sourceDraggedCollection, int sourceNum, int slotNum = -1)
+        public void SetDraggedItem(ItemInstance sourceItem, ItemsCollection sourceDraggedCollection, int slotNum = -1)
         {
-            if (slotNum == -1)
+            var targetItem = _itemsCollection[slotNum];
+
+            // Swap items
+            if (targetItem.ItemDefinition != null && targetItem.ItemDefinition != sourceItem.ItemDefinition)
             {
-                // TODO: Implement insertion into the first available free slot
+                _dragController.OriginalSlotNum = slotNum;
+
+                _itemsCollection.Remove(targetItem);
+                _itemsCollection.AddAt(sourceItem, slotNum);
+
+                ContinueDragging(targetItem);
                 return;
             }
 
-            ItemInstance dragged = sourceDraggedCollection[sourceNum];
-            ItemInstance itemAtSlot = _itemsCollection[slotNum];
-
-            // If slot is empty — move the item directly
-            if (itemAtSlot.ItemDefinition == null)
+            // RMB — lay out one by one
+            if (_dragController.GetMouseButton() == 1)
             {
-                sourceDraggedCollection.Remove(sourceNum);
-                _itemsCollection.AddAt(dragged, slotNum);
-                dragged.RemoveFlag(ItemFlags.IsDragging);
+                if (sourceItem.Count > 1)
+                {
+                    sourceItem.SetCount(sourceItem.Count - 1);
+                    _itemsCollection.AddAtWithCount(sourceItem, slotNum, 1);
+                    ContinueDragging(sourceItem);
+                }
+                else // Count == 1
+                {
+                    _itemsCollection.AddAt(sourceItem, slotNum);
+                }
                 return;
             }
 
-            // If item types differ — swap items
-            if (itemAtSlot.ItemDefinition != dragged.ItemDefinition)
-            {
-                sourceDraggedCollection.Remove(sourceNum);
-                ContinueDragging(itemAtSlot);
-                _itemsCollection.AddAt(dragged, slotNum);
-                dragged.RemoveFlag(ItemFlags.IsDragging);
-                return;
-            }
+            // Attempt to merge stacks
+            int overflow = _itemsCollection.AddWithOverflow(sourceItem, slotNum, sourceItem.Count);
 
-            // Try to merge stacks
-            int freeSpace = itemAtSlot.ItemDefinition.MaxCountInStack - itemAtSlot.Count;
-            int remainingCount = dragged.Count - freeSpace;
+            if (overflow <= 0) return;
 
-            if (remainingCount == 0)
-            {
-                // Full merge possible
-                itemAtSlot.SetCount(itemAtSlot.Count + dragged.Count);
-                sourceDraggedCollection.Remove(sourceNum);
-            }
-            else
-            {
-                // Partial merge, continue dragging leftovers
-                itemAtSlot.SetCount(itemAtSlot.ItemDefinition.MaxCountInStack);
-                dragged.SetCount(remainingCount);
-                ContinueDragging(dragged);
-            }
+            // There is some left - continue to drag
+            sourceItem.SetCount(overflow);
+            _dragController.OriginalSlotNum = slotNum;
+            ContinueDragging(sourceItem);
         }
+
 
         void ContinueDragging(ItemInstance itemInstance)
         {
-            _dragHandler.IsDragging = true;
+            _dragController.IsCountinueDragging = true;
+            _dragController.IsDragging = true;
 
-            _dragHandler.SetDraggedSprite(itemInstance.ItemDefinition.Sprite);
-            _dragHandler.SetDraggedItem(itemInstance);
-            _dragHandler.GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = itemInstance.Count.ToString();
+            _dragController.SetDraggedSprite(itemInstance.ItemDefinition.Sprite);
+            _dragController.SetDraggedItem(itemInstance);
+            _dragController.GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = itemInstance.Count.ToString();
         }
     }
 }
