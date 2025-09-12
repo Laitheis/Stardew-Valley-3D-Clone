@@ -6,6 +6,7 @@ public class GameInstaller : MonoInstaller
 {
     public Canvas MainCanvas;
     public ItemTooltipView TooltipView;
+    public GameObject Player;
 
     public override void InstallBindings()
     {
@@ -16,10 +17,13 @@ public class GameInstaller : MonoInstaller
 
         Container.BindInstance(MainCanvas).AsSingle();
         Container.BindInstance(TooltipView).AsSingle();
+        Container.BindInstance(Player).WithId("Player");
+
+        Container.Bind<ItemDropUtil>().AsSingle().NonLazy();
 
         SignalBusInstaller.Install(Container);
 
-        Container.DeclareSignal<ItemDropSignal>();
+        Container.DeclareSignal<ItemDropEvent>();
 
     }
 }

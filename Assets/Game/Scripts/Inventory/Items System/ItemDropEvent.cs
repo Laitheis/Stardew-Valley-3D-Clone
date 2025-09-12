@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-public class ItemDropSignal
+public class ItemDropEvent
 {
     public Vector3 Position;
 
     public ItemInstance Item;
 
-    public ItemDropSignal(Vector3 position, ItemInstance item)
+    public ItemDropEvent(Vector3 position, ItemInstance item)
     {
         Position = position;
         Item = item;

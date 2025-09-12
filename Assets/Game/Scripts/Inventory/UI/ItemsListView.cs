@@ -44,36 +44,7 @@ namespace InventorySystem
 
                     itemSlot.CountText.text = itemInstance.Count.ToString();
                 }
-
-                //Debug.Log($"ֿנוהלוע ג סכמעו {i} טללוע פכאד {_collection.GetDraggingFlag(i)}");
             }
         }
-        //int FirstValidSlot(ItemDefinition item, int quantity)
-        //{
-        //    return _collection.GetFirstValidSlot(item, quantity);
-        //}
-        //bool AbleToAddItem(ItemDefinition item, int slotNum)
-        //{
-        //    return _collection.CanAdd(item, 1, slotNum);
-        //}
-        //void OnItemSlotClicked(ItemSlotEvent e)
-        //{
-
-        //}
-        //public void SetItemCollection(ItemsCollection c)
-        //{
-        //    Collection = c;
-        //}
-        //public void Display(bool v)
-        //{
-        //    for (int i = 0; i < _container.childCount; i++)
-        //    {
-        //        if (i >= Collection.Count)
-        //        {
-        //            break;
-        //        }
-        //        _container.GetChild(i).GetComponent<ItemSlot>().Set(Collection.GetItemAt(i).ItemDefinition.Sprite);
-        //    }
-        //}
     }
 }

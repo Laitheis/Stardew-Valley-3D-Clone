@@ -11,15 +11,20 @@ namespace Inventory.UI
 {
     public class ItemTooltipView : MonoBehaviour
     {
+        [SerializeField] UIElementFitter _fitter;
         [SerializeField] private TooltipHolder _tooltip;
 
-        public void ShowTooltip(ItemInstance itemInstance)
+        public void ShowTooltip(ItemInstance itemInstance, RectTransform slotRect)
         {
+            if (itemInstance.ItemDefinition == null) return;
+
             _tooltip.gameObject.SetActive(true);
 
             _tooltip.Name.text = itemInstance.ItemDefinition.Name;
             _tooltip.Type.text = itemInstance.ItemDefinition.Type.ToString();
             _tooltip.Description.text = itemInstance.ItemDefinition.Description;
+
+            _fitter.ShowAt(slotRect);
         }
         public void CloseTooltip()
         {

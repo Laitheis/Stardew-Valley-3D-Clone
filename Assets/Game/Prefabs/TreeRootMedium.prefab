@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 4012660889639906525}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0.62, y: 4.89, z: -0.2}
+  m_LocalPosition: {x: 0.25520325, y: 0.03, z: -0.08286667}
   m_LocalScale: {x: 1.5617737, y: 1.5617737, z: 1.5617737}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -104,8 +104,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0000001, y: 1.2921672, z: 5.174063}
-  m_Center: {x: 0.00000007632943, y: -0.35392088, z: -0.024940489}
+  m_Size: {x: 1.0000001, y: 1.2921672, z: 2.0695262}
+  m_Center: {x: 0.00000007632943, y: -0.35391995, z: 1.5273162}
 --- !u!1 &6584448964188445350
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 3811421660948770671}
   - component: {fileID: 6163672344679795006}
   m_Layer: 3
-  m_Name: TreeRoot
+  m_Name: TreeRootMedium
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -240,8 +240,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 36.16, y: 1.936, z: 24.57}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7722825151840655596}
   - {fileID: 1962310755598365903}

@@ -29,13 +29,17 @@ namespace InventorySystem
         /// <summary>
         /// Ignores ItemInstance.Count
         /// </summary>
-        public void AddRange(ItemInstance itemInstance, int count)
+        public int AddRange(ItemInstance itemInstance, int count)
         {
+            int counter = 0;
             itemInstance.SetCount(1);
             for (int i = 0; i < count; i++)
             {
-                Add(itemInstance);
+                var result = Add(itemInstance);
+                if (!result) break;
+                counter++;
             }
+            return count - counter;
         }
 
         public bool AddAt(ItemInstance itemInstance, int slotNum)

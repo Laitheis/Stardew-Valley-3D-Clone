@@ -20,6 +20,7 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
 
     public StatContainter StatContainer => _statContainer;
 
+    bool _inited = false;
     [Inject]
     public void Construct(LootGenerator lootGenerator, [Inject(Id = "SmokeEffect")] GameObject smokeEffect)
     {
@@ -27,13 +28,23 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
         _smokeEffect = smokeEffect;
 
         _animator = GetComponent<Animator>();
+    }
+    void Start()
+    {
+        _animator = GetComponent<Animator>();
 
         InitializeStats();
         InitializeLoot();
-    }
 
+        _inited = true;
+    }
     public virtual void InitializeStats()
     {
+        if (_inited)
+        {
+            return;
+        }
+
         _statContainer = new StatContainter();
 
         var durability = _statContainer.Add(StatTypes.Durability, 100);
@@ -43,6 +54,11 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
 
     public virtual void InitializeLoot()
     {
+        if (_inited)
+        {
+            return;
+        }
+
         _pendingLoot = _lootGenerator.GenerateLoot("Oak", 0);
     }
 
@@ -68,7 +84,7 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
 
         foreach (var item in _pendingLoot)
         {
-            _signalBus.Fire(new ItemDropSignal(transform.position, item));
+            _signalBus.Fire(new ItemDropEvent(transform.position, item));
         }
     }
 

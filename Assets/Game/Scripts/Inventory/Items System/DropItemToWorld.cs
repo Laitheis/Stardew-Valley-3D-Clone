@@ -11,20 +11,21 @@ public class DropItemToWorld : Zenject.IInitializable
 
     private Vector3 _defaultSpawnOffset = new Vector3(1, 1, 1);
 
-    public DropItemToWorld(DiContainer container, [Inject(Id = "WorldItem")]GameObject itemPrefab)
+    public DropItemToWorld(DiContainer container)
     {
         _container = container;
-        _itemPrefab = itemPrefab;
     }
 
     public void Initialize()
     {
-        _signalBus.Subscribe<ItemDropSignal>(OnItemDrop);
+        _signalBus.Subscribe<ItemDropEvent>(OnItemDrop);
     }
 
-    private void OnItemDrop(ItemDropSignal signal)
+    private void OnItemDrop(ItemDropEvent signal)
     {
         ItemDefinition itemDefinition = signal.Item.ItemDefinition;
+
+        _itemPrefab = itemDefinition.Prefab;
 
         List<ItemInstance> itemInstances = new List<ItemInstance>();
         for (int i = 0; i < signal.Item.Count; i++)
@@ -55,7 +56,7 @@ public class DropItemToWorld : Zenject.IInitializable
             itemInstance.Item = item;
         }
 
-        Debug.Log($"Loot named {signal.Item} drops at position {signal.Position} with quantity {signal.Item.Count}");
+        Debug.Log($"Loot named {signal.Item.Name} drops at position {signal.Position} with quantity {signal.Item.Count}");
     }
 }
 

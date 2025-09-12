@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 using static UnityEditor.PlayerSettings;
+using static UnityEditor.Progress;
 
 
 public class UIDragController : MonoBehaviour
@@ -35,6 +36,9 @@ public class UIDragController : MonoBehaviour
 
     private int _mouseButton;
 
+    private GameObject _player;
+    [Inject] private SignalBus _signalBus;
+
     internal static UIDragController Instance;
 
     public bool IsDragging { get => _isDragging; set => _isDragging = value; }
@@ -47,9 +51,10 @@ public class UIDragController : MonoBehaviour
     }
 
     [Inject]
-    private void Constructor([Inject(Id = "DraggedImagePrefab")] Image draggedImagePrefab, Canvas mainCanvas)
+    private void Constructor([Inject(Id = "DraggedImagePrefab")] Image draggedImagePrefab, [Inject(Id = "Player")] GameObject player, Canvas mainCanvas)
     {
         _draggedImagePrefab = draggedImagePrefab;
+        _player = player;
         _canvasRoot = mainCanvas.transform;
     }
 
@@ -113,12 +118,21 @@ public class UIDragController : MonoBehaviour
         UiDetectUtil.TryGetUIElementUnderCursor(out GameObject targetObject);
         targetObject?.transform.parent.TryGetComponent(out landable);
 
-        //HACK drop to world
         if (landable == null)
         {
-            Instantiate(_itemInstance.ItemDefinition.Prefab, new Vector3(0, 0, 0), Quaternion.identity);
-            _isDragging = false;
-            if (_destroyImageObjectOnEnd && _draggedRect != null) Destroy(_draggedRect.gameObject);
+            if (_mouseButton == 0 || _itemInstance.Count == 1)
+            {
+                _signalBus.Fire(new ItemDropEvent(_player.transform.position, _itemInstance));
+                _isDragging = false;
+                if (_destroyImageObjectOnEnd && _draggedRect != null) 
+                    Destroy(_draggedRect.gameObject);
+            }
+            else if (_mouseButton == 1 || _itemInstance.Count > 1)
+            {
+                _itemInstance.SetCount(_itemInstance.Count - 1);
+                var droppedItemInst = new ItemInstance(_itemInstance.ItemDefinition, 1);
+                _signalBus.Fire(new ItemDropEvent(_player.transform.position, droppedItemInst));
+            }
             return;
         }
 
@@ -147,6 +161,7 @@ public class UIDragController : MonoBehaviour
         if (_draggedRect != null)
         {
             _draggedRect.position = cursorPosition;
+            SetDispDraggedCount();
         }
 
         OnDrag?.Invoke(null);
@@ -172,6 +187,11 @@ public class UIDragController : MonoBehaviour
     public Transform GetDraggedRect()
     {
         return _draggedRect.transform;
+    }
+
+    public void SetDispDraggedCount()
+    {
+        GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = _itemInstance.Count.ToString();
     }
 }
 

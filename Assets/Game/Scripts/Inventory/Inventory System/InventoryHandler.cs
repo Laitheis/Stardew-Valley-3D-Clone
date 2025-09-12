@@ -129,8 +129,6 @@ namespace InventorySystem
 
             _dragController.SetDraggedSprite(draggedItemInst.ItemDefinition.Sprite);
             _dragController.SetDraggedItem(draggedItemInst);
-
-            _dragController.GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = draggedItemInst.Count.ToString();
         }
 
         protected virtual void OnDragEnd(DragEventInfo dragEventInfo)
@@ -194,7 +192,6 @@ namespace InventorySystem
 
             _dragController.SetDraggedSprite(itemInstance.ItemDefinition.Sprite);
             _dragController.SetDraggedItem(itemInstance);
-            _dragController.GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = itemInstance.Count.ToString();
         }
     }
 }

@@ -1,6 +1,4 @@
 using InventorySystem;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -10,7 +8,11 @@ public class PickableItem : MonoBehaviour
     [SerializeField] private float _pickupDistance;
     [SerializeField] private ItemInstance _item;
 
+    private bool _isPickable;
+    private float _unpickableTimer = 2f;
+
     public ItemInstance Item { get => _item; set => _item = value; }
+    public bool IsPickable { get => _isPickable; set => _isPickable = value; }
 
     private void Start()
     {
@@ -29,11 +31,23 @@ public class PickableItem : MonoBehaviour
         {
             OnPlayerCollide();
         }
+
+        if (_unpickableTimer > 0)
+        {
+            _unpickableTimer -= Time.deltaTime;
+        }
+        else _isPickable = true;
     }
 
     void OnPlayerCollide()
     {
-        GameObject.FindWithTag("PlayerInv").GetComponent<InventoryHandler>().Collection.Add(Item);
-        Destroy(gameObject);
+        if (!_isPickable) return;
+
+        var playerCollection = GameObject.FindWithTag("PlayerInv").GetComponent<InventoryHandler>().Collection;
+        if (playerCollection.Add(Item))
+        {
+            Destroy(gameObject);
+        }
+
     }
 }

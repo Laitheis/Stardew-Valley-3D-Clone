@@ -34,7 +34,7 @@ public class ItemInstance
         Properties.CustomName = definition.Name;
         Properties.CustomPrice = definition.Price;
         _guid = System.Guid.NewGuid().ToString();
-        _count = Mathf.Clamp(count, 1, definition.MaxCountInStack);
+        _count = count; //Mathf.Clamp(count, 1, definition.MaxCountInStack);
     }
 
     public ItemInstance()
