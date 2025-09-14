@@ -1,4 +1,5 @@
 ﻿using Inventory.UI;
+using InventorySystem;
 using UnityEngine;
 using Zenject;
 
@@ -7,6 +8,8 @@ public class GameInstaller : MonoInstaller
     public Canvas MainCanvas;
     public ItemTooltipView TooltipView;
     public GameObject Player;
+    public InventoryHandler PlayerInv;
+    public SelectedSlotHandler SelSlotHandler;
 
     public override void InstallBindings()
     {
@@ -18,6 +21,8 @@ public class GameInstaller : MonoInstaller
         Container.BindInstance(MainCanvas).AsSingle();
         Container.BindInstance(TooltipView).AsSingle();
         Container.BindInstance(Player).WithId("Player");
+        Container.BindInstance(PlayerInv).WithId("PlayerInv");
+        Container.BindInstance(SelSlotHandler).AsSingle();
 
         Container.Bind<ItemDropUtil>().AsSingle().NonLazy();
 

@@ -1,11 +1,13 @@
-﻿using UnityEngine;
+﻿using InventorySystem;
+using UnityEngine;
+using Zenject;
 
 // Контроллер действий игрока (инструменты). Не трогаем перемещение/камеру.
 // Требует: на игроке/камера есть Camera.main; курсор свободный — используем Raycast.
 public class PlayerToolController : MonoBehaviour
 {
-    [SerializeField] Grid _grid;
-    public enum Tool { None, Hoe, Plant, Water, Harvest, Fertilize }
+    [SerializeField] private Grid _grid;
+    [SerializeField] private Animator _toolAnimator;
 
     public Tool activeTool = Tool.None;
 
@@ -18,7 +20,11 @@ public class PlayerToolController : MonoBehaviour
 
     private Camera mainCam;
 
-    [SerializeField] GameObject _hintArrow;
+    [SerializeField] private GameObject _hintArrow;
+
+    [Inject] private SelectedSlotHandler _selectedSlotHandler; 
+    [Inject(Id ="PlayerInv")] private InventoryHandler _playerInv; 
+
     private void Start()
     {
         mainCam = Camera.main;
@@ -26,14 +32,15 @@ public class PlayerToolController : MonoBehaviour
 
     private void Update()
     {
-        HandleHint();
+        HandleHintVisual();
         HandleToolSwitchInput();
         if (Input.GetMouseButtonDown(0))
         {
             TryUseTool();
         }
     }
-    void HandleHint()
+
+    void HandleHintVisual()
     {
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, maxRayDistance, groundLayer))
@@ -43,14 +50,17 @@ public class PlayerToolController : MonoBehaviour
             _hintArrow.transform.position = gridPos;
         }
     }
+
     private void HandleToolSwitchInput()
     {
-        // Простейший переключатель (настраивай)
-        if (Input.GetKeyDown(KeyCode.Alpha1)) activeTool = Tool.Hoe;
-        if (Input.GetKeyDown(KeyCode.Alpha2)) activeTool = Tool.Plant;
-        if (Input.GetKeyDown(KeyCode.Alpha3)) activeTool = Tool.Water;
-        if (Input.GetKeyDown(KeyCode.Alpha4)) activeTool = Tool.Harvest;
-        if (Input.GetKeyDown(KeyCode.Alpha5)) activeTool = Tool.Fertilize;
+        var collection = _playerInv.Collection;
+        if ((collection[_selectedSlotHandler.SelectedSlotNum].ItemDefinition is ToolDefinition tool) == false)
+        {
+            activeTool = Tool.None;
+            return;
+        }
+
+        activeTool = tool.ToolType;
     }
 
     private void TryUseTool()
@@ -65,17 +75,13 @@ public class PlayerToolController : MonoBehaviour
                 case Tool.Hoe:
                     UseHoe(tile);
                     break;
-                case Tool.Plant:
-                    UsePlant(tile);
-                    break;
                 case Tool.Water:
-                    UseWater(tile);
                     break;
                 case Tool.Harvest:
-                    UseHarvest(tile);
                     break;
-                case Tool.Fertilize:
-                    UseFertilize(tile);
+                case Tool.Axe:
+                    break;
+                case Tool.Pickaxe:
                     break;
             }
         }
@@ -83,18 +89,20 @@ public class PlayerToolController : MonoBehaviour
 
     private void UseHoe(Vector3 tile)
     {
-        // Вскопать: помечаем тайл как tilled и можно анимировать
-        CropManager.Instance.TillTile(tile);
-        // TODO: spawn small visual (в Inspector можно добавить prefab)
+        CropManager.Instance.PlowTile(tile);
+
+        _toolAnimator.SetTrigger("Hoe");
     }
 
     private void UsePlant(Vector3 tile)
     {
         if (selectedSeedModel == null) { Debug.Log("No seed selected"); return; }
         bool ok = CropManager.Instance.PlantSeed(tile, selectedSeedModel);
-        if (!ok) Debug.Log("Can't plant here");
-        else Debug.Log("Planted " + selectedSeedModel.displayName + " at " + tile);
-        // TODO: отнимать семена из инвентаря
+        if (!ok) { Debug.Log("Can't plant here"); return; }
+        else
+        {
+            // TODO: отнимать семена из инвентаря
+        }
     }
 
     private void UseWater(Vector3 tile)

@@ -4,18 +4,19 @@ using Zenject;
 
 namespace InventorySystem
 {
+    [RequireComponent(typeof(ItemsCollection))]
     public class InventoryHandler : MonoBehaviour
     {
         [SerializeField] private ItemsCollection _itemsCollection;
-
-        [Header("Properties")]
-        [Min(0)][SerializeField] private int _inventoryCapacity;
 
         private UIDragController _dragController;
 
         private GameObject _itemSlotPrefab;
 
-        private DiContainer _container;
+        private DiContainer _dIcontainer;
+
+        [Header("Properties")]
+        [Min(0)][SerializeField] private int _inventoryCapacity;
 
         public ItemsCollection Collection { get => _itemsCollection; set => _itemsCollection = value; }
 
@@ -23,7 +24,7 @@ namespace InventorySystem
         public void Constructor([Inject(Id = "ItemSlot")] GameObject itemSlotPrefab, DiContainer container)
         {
             _itemSlotPrefab = itemSlotPrefab;
-            _container = container;
+            _dIcontainer = container;
         }
 
         private void Start()
@@ -68,7 +69,7 @@ namespace InventorySystem
                 int diff = _inventoryCapacity - slotsCount;
                 for (int i = 0; i < diff; i++)
                 {
-                    var newItemSlot = _container.InstantiatePrefab(_itemSlotPrefab, transform);
+                    var newItemSlot = _dIcontainer.InstantiatePrefab(_itemSlotPrefab, transform);
                 }
             }
         }
@@ -183,7 +184,6 @@ namespace InventorySystem
             _dragController.OriginalSlotNum = slotNum;
             ContinueDragging(sourceItem);
         }
-
 
         void ContinueDragging(ItemInstance itemInstance)
         {

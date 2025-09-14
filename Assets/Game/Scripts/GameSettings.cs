@@ -11,6 +11,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public Image DraggedImagePrefab;
     public ItemDatabase ItemDatabase;
     public GameObject ItemSlotPrefab;
+    public GameObject SoilPrefab;
 
     public override void InstallBindings()
     {
@@ -19,6 +20,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
         Container.BindInstance(DraggedImagePrefab).WithId("DraggedImagePrefab").AsSingle();
         Container.BindInstance(ItemDatabase).AsSingle().NonLazy();
         Container.BindInstance(ItemSlotPrefab).WithId("ItemSlot");
+        Container.BindInstance(SoilPrefab).WithId("Soil");
 
         //HACK
         InstallPlayerParam();

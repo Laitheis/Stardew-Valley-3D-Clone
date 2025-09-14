@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System;
+using Zenject;
 
 public class CropManager : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class CropManager : MonoBehaviour
 
     // Настройка для сохранения
     [SerializeField] private string saveFileName = "cropsave.json";
+
+    [Inject(Id = ("Soil"))] private GameObject _soilPrefab; 
 
     private void Awake()
     {
@@ -42,10 +45,15 @@ public class CropManager : MonoBehaviour
         return tilledTiles.Contains(tile);
     }
 
-    public void TillTile(Vector3 tile)
+    public void PlowTile(Vector3 tile)
     {
-        tilledTiles.Add(tile);
-        Debug.Log($"Tile {tile} tilled");
+        if (tileToState.ContainsKey(tile)) { Debug.Log($"[CropManager] Can't plow {tile}: already occupied"); return; }
+
+        Instance.tilledTiles.Add(tile);
+
+        var soil = Instantiate(_soilPrefab, tile, Quaternion.identity);
+        
+        Debug.Log($"Tile {tile} plowed");
     }
 
     public void UntillTile(Vector3 tile)
@@ -79,7 +87,7 @@ public class CropManager : MonoBehaviour
         SpawnVisualFor(tile, model, state);
 
         OnCropPlanted?.Invoke(tile, model, state);
-        Debug.Log($"[CropManager] Planted {model.cropId} at {tile}");
+        Debug.Log($"[CropManager] Planted {model.displayName} at {tile}");
         return true;
     }
 
@@ -233,8 +241,9 @@ public class CropManager : MonoBehaviour
         int stageIndex = Mathf.Clamp(state.currentStage, 0, model.stagePrefabs.Length - 1);
         GameObject pref = model.stagePrefabs.Length > 0 ? model.stagePrefabs[stageIndex] : null;
         if (pref == null) return;
-        state.visualInstance = Instantiate(pref, tile + model.offset, Quaternion.identity, this.transform);
-        // настраиваем позиционирование (Y по модели)
+
+        Quaternion rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
+        state.visualInstance = Instantiate(pref, tile + model.offset, rotation, this.transform);
     }
 
     private void UpdateVisualFor(Vector3 tile, CropModel model, CropState state)

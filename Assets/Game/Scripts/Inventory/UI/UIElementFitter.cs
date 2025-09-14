@@ -9,25 +9,20 @@ public class UIElementFitter : MonoBehaviour
     [SerializeField] private Canvas _canvas;
 
     public Vector2 offset;
-    /// <summary>
-    /// Показать элемент рядом с указанным UI элементом.
-    /// </summary>
+
     public void ShowAt(RectTransform target)
     {
         LayoutRebuilder.ForceRebuildLayoutImmediate(_movableElement);
 
         _targetElement = target;
 
-        // Установить позицию
         Vector3[] worldCorners = new Vector3[4];
         target.GetWorldCorners(worldCorners);
 
-        // Центр target
         Vector3 targetCenter = (worldCorners[0] + worldCorners[2]) / 2f;
 
         _movableElement.transform.position = target.position + (Vector3)offset;
 
-        // Проверка на выход за границы
         ClampToCanvas();
     }
 
@@ -39,19 +34,15 @@ public class UIElementFitter : MonoBehaviour
 
         Vector3 shift = Vector3.zero;
 
-        // Проверка вниз
         if (elementCorners[0].y < canvasRect.position.y - canvasRect.rect.height / 2f)
             shift.y += (canvasRect.position.y - canvasRect.rect.height / 2f) - elementCorners[0].y;
 
-        // Проверка влево
         if (elementCorners[0].x < canvasRect.position.x - canvasRect.rect.width / 2f)
             shift.x += (canvasRect.position.x - canvasRect.rect.width / 2f) - elementCorners[0].x;
 
-        // Проверка вверх
         if (elementCorners[1].y > canvasRect.position.y + canvasRect.rect.height / 2f)
             shift.y -= elementCorners[1].y - (canvasRect.position.y + canvasRect.rect.height / 2f);
 
-        // Проверка вправо
         if (elementCorners[2].x > canvasRect.position.x + canvasRect.rect.width / 2f)
             shift.x -= elementCorners[2].x - (canvasRect.position.x + canvasRect.rect.width / 2f);
 
