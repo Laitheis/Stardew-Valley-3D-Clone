@@ -40,11 +40,6 @@ public class CropManager : MonoBehaviour
         return new Vector3(x, 0f, z);
     }
 
-    public bool IsTilled(Vector3 tile)
-    {
-        return tilledTiles.Contains(tile);
-    }
-
     public void PlowTile(Vector3 tile)
     {
         if (tileToState.ContainsKey(tile)) { Debug.Log($"[CropManager] Can't plow {tile}: already occupied"); return; }
@@ -52,11 +47,17 @@ public class CropManager : MonoBehaviour
         Instance.tilledTiles.Add(tile);
 
         var soil = Instantiate(_soilPrefab, tile, Quaternion.identity);
+        soil.GetComponent<Animator>().SetTrigger("Plow");
         
         Debug.Log($"Tile {tile} plowed");
     }
 
-    public void UntillTile(Vector3 tile)
+    public bool IsPlowed(Vector3 tile)
+    {
+        return tilledTiles.Contains(tile);
+    }
+
+    public void UnplowTile(Vector3 tile)
     {
         tilledTiles.Remove(tile);
     }
@@ -64,7 +65,7 @@ public class CropManager : MonoBehaviour
     // Посадка: model может быть выбран из inventory, seed и т.д.
     public bool PlantSeed(Vector3 tile, CropModel model)
     {
-        if (!IsTilled(tile)) { Debug.Log($"[CropManager] Can't plant {model.cropId} at {tile}: tile not tilled"); return false; }
+        if (!IsPlowed(tile)) { Debug.Log($"[CropManager] Can't plant {model.cropId} at {tile}: tile not tilled"); return false; }
         if (tileToState.ContainsKey(tile)) { Debug.Log($"[CropManager] Can't plant {model.cropId} at {tile}: already occupied"); return false; }
 
         CropState state = new CropState()
@@ -103,6 +104,13 @@ public class CropManager : MonoBehaviour
         {
             Debug.Log($"[CropManager] Tried watering {tile}, but no crop here");
         }
+    }
+
+    public bool IsWatered(Vector3 tile)
+    {
+        if (tileToState.ContainsKey(tile) && tileToState[tile].wateredToday)
+            return true;
+        return false;
     }
 
     // Сбор урожая (возвращает true если успешен)

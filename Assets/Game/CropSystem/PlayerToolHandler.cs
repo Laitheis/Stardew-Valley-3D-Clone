@@ -1,10 +1,11 @@
 ﻿using InventorySystem;
+using UnityEditor.EditorTools;
 using UnityEngine;
 using Zenject;
 
 // Контроллер действий игрока (инструменты). Не трогаем перемещение/камеру.
 // Требует: на игроке/камера есть Camera.main; курсор свободный — используем Raycast.
-public class PlayerToolController : MonoBehaviour
+public class PlayerToolHandler : MonoBehaviour
 {
     [SerializeField] private Grid _grid;
     [SerializeField] private Animator _toolAnimator;
@@ -20,14 +21,19 @@ public class PlayerToolController : MonoBehaviour
 
     private Camera mainCam;
 
-    [SerializeField] private GameObject _hintArrow;
+    [Inject] private SelectedSlotHandler _selectedSlotHandler;
+    [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
+    [Inject(Id = "Available")] private GameObject _available;
+    [Inject(Id = "Unavailable")] private GameObject _unavailable;
 
-    [Inject] private SelectedSlotHandler _selectedSlotHandler; 
-    [Inject(Id ="PlayerInv")] private InventoryHandler _playerInv; 
 
     private void Start()
     {
         mainCam = Camera.main;
+        _available = Instantiate(_available);
+        _unavailable = Instantiate(_unavailable);
+        _available.SetActive(false);
+        _unavailable.SetActive(false);
     }
 
     private void Update()
@@ -47,7 +53,43 @@ public class PlayerToolController : MonoBehaviour
         {
             Vector3 gridPos = CropManager.TilePosFromWorld(hit.point);
 
-            _hintArrow.transform.position = gridPos;
+            if (activeTool == Tool.Hoe)
+            {
+                if (CropManager.Instance.IsPlowed(gridPos))
+                {
+                    _available.SetActive(false);
+                    _unavailable.SetActive(true);
+                    _unavailable.transform.position = gridPos;
+                }
+                else
+                {
+                    _unavailable.SetActive(false);
+                    _available.SetActive(true);
+                    _available.transform.position = gridPos;
+                }
+            }
+
+            if (activeTool == Tool.Water)
+            {
+                if (CropManager.Instance.IsWatered(gridPos))
+                {
+                    _available.SetActive(false);
+                    _unavailable.SetActive(true);
+                    _unavailable.transform.position = gridPos;
+                }
+                else
+                {
+                    _unavailable.SetActive(false);
+                    _available.SetActive(true);
+                    _available.transform.position = gridPos;
+                }
+            }
+        }
+
+        if (activeTool != Tool.Water && activeTool != Tool.Hoe)
+        {
+            _available.SetActive(false);
+            _unavailable.SetActive(false);
         }
     }
 
@@ -76,6 +118,7 @@ public class PlayerToolController : MonoBehaviour
                     UseHoe(tile);
                     break;
                 case Tool.Water:
+                    UseWater(tile);
                     break;
                 case Tool.Harvest:
                     break;
@@ -108,7 +151,6 @@ public class PlayerToolController : MonoBehaviour
     private void UseWater(Vector3 tile)
     {
         CropManager.Instance.WaterTile(tile);
-        // воспроизводим анимацию полива у игрока — вне этого контроллера
     }
 
     private void UseHarvest(Vector3 tile)
