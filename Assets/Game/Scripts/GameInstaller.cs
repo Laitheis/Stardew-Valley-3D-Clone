@@ -10,6 +10,7 @@ public class GameInstaller : MonoInstaller
     public GameObject Player;
     public InventoryHandler PlayerInv;
     public SelectedSlotHandler SelSlotHandler;
+    public HintVisualizer HintVisualizer;
 
     public override void InstallBindings()
     {
@@ -23,6 +24,7 @@ public class GameInstaller : MonoInstaller
         Container.BindInstance(Player).WithId("Player");
         Container.BindInstance(PlayerInv).WithId("PlayerInv");
         Container.BindInstance(SelSlotHandler).AsSingle();
+        Container.BindInstance(HintVisualizer).AsSingle();
 
         Container.Bind<ItemDropUtil>().AsSingle().NonLazy();
 

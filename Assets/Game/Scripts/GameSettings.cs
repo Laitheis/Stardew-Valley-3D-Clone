@@ -12,8 +12,8 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public ItemDatabase ItemDatabase;
     public GameObject ItemSlotPrefab;
     public GameObject SoilPrefab;
+    public GameObject SoilWetPrefab;
     public GameObject AvailableTilePrefab;
-    public GameObject UnavailableTilePrefab;
 
     public override void InstallBindings()
     {
@@ -23,8 +23,8 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
         Container.BindInstance(ItemDatabase).AsSingle().NonLazy();
         Container.BindInstance(ItemSlotPrefab).WithId("ItemSlot");
         Container.BindInstance(SoilPrefab).WithId("Soil");
+        Container.BindInstance(SoilWetPrefab).WithId("SoilWet");
         Container.BindInstance(AvailableTilePrefab).WithId("Available");
-        Container.BindInstance(UnavailableTilePrefab).WithId("Unavailable");
 
         //HACK
         InstallPlayerParam();

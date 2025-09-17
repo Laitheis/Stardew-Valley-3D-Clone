@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b897d6fd8348e504d836f0479b89a23a, type: 3}
-  m_Name: Wooden Log
+  m_Name: Wooden log
   m_EditorClassIdentifier: 
+  isTool: 0
   _name: Wooden Log
-  _type: 2
+  type: 1
   _isRenameable: 0
   _maxCountInStack: 3
   _price: 25

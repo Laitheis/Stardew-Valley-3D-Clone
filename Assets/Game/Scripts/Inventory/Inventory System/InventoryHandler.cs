@@ -193,5 +193,9 @@ namespace InventorySystem
             _dragController.SetDraggedSprite(itemInstance.ItemDefinition.Sprite);
             _dragController.SetDraggedItem(itemInstance);
         }
+        public ItemInstance this[int index]
+        {
+            get => Collection[index];
+        }
     }
 }

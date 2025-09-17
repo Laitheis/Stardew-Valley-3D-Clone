@@ -56,7 +56,7 @@ public class DropItemToWorld : Zenject.IInitializable
             itemInstance.Item = item;
         }
 
-        Debug.Log($"Loot named {signal.Item.Name} drops at position {signal.Position} with quantity {signal.Item.Count}");
+        //Debug.Log($"Loot named {signal.Item.Name} drops at position {signal.Position} with quantity {signal.Item.Count}");
     }
 }
 

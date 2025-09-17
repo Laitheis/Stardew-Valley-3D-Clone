@@ -3,8 +3,10 @@
 [CreateAssetMenu(fileName = "New Item", menuName = "Collections/Item")]
 public class ItemDefinition : ScriptableObject
 {
+    public bool isTool;
+
     [SerializeField] private string _name;
-    [SerializeField] protected ItemType _type = ItemType.Material;
+    public ItemType type = ItemType.None;
     [SerializeField] private bool _isRenameable;
     [SerializeField][Min(1)] private int _maxCountInStack;
     [SerializeField] private int _price;
@@ -19,16 +21,6 @@ public class ItemDefinition : ScriptableObject
     public string Description => _description;
     public GameObject Prefab => _prefab;
     public Sprite Sprite => _sprite;
-    public virtual ItemType Type => _type;
-
-    //
-
-    public virtual void UseItem()
-    {
-
-    }
 }
 
-public enum ItemType { None, Tool, Material }
-
-public enum Tool { None, Hoe, Water, Harvest, Axe, Pickaxe }
+public enum ItemType { None, Regular, Hoe, WaterCan, Scythe, Axe, Pickaxe, Seed, Material, Crop }

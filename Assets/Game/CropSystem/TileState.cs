@@ -2,8 +2,10 @@
 using System;
 
 [Serializable]
-public class CropState
+public class TileState
 {
+    public CropModel crop;
+
     public string defCropId;          // link to CropModel.cropId (for saving)
     public Vector3 tilePos;           // tile world position (use integers)
     public int currentStage = 0;      // индекс стадии
@@ -16,5 +18,6 @@ public class CropState
     public int quality = 0;           // 0-normal,1-silver,2-gold
     public int dryDays = 0;           // дни без полива (если нужно)
     // ссылка на визуальный объект в сцене (не сериализуется)
-    [NonSerialized] public GameObject visualInstance;
+    [NonSerialized] public GameObject cropVisualInstance;
+    [NonSerialized] public GameObject soilVisualInstance;
 }

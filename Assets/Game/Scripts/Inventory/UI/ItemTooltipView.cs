@@ -21,7 +21,7 @@ namespace Inventory.UI
             _tooltip.gameObject.SetActive(true);
 
             _tooltip.Name.text = itemInstance.ItemDefinition.Name;
-            _tooltip.Type.text = itemInstance.ItemDefinition.Type.ToString();
+            _tooltip.Type.text = itemInstance.ItemDefinition.type.ToString();
             _tooltip.Description.text = itemInstance.ItemDefinition.Description;
 
             _fitter.ShowAt(slotRect);

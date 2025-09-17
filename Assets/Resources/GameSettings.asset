@@ -23,6 +23,8 @@ MonoBehaviour:
     type: 3}
   SoilPrefab: {fileID: 3428209508248169748, guid: 41fceadb5d5205e488d571702f0bdc4c,
     type: 3}
+  SoilWetPrefab: {fileID: 1742689760996678726, guid: ad9c0c96ad482a74cba8307ec53c5d9e,
+    type: 3}
   AvailableTilePrefab: {fileID: 4446413790835789880, guid: f4f57d6f3a64c6e4392b90337a3ebf64,
     type: 3}
   UnavailableTilePrefab: {fileID: 726384434201744428, guid: 00917957f44983f48a1508476fde489c,

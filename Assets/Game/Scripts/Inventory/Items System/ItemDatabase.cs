@@ -4,7 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Item Data base", menuName = "Databases/ItemDatabase")]
 public class ItemDatabase : ScriptableObject
 {
-    [SerializeField] private List<ItemDefinition> _itemDefinitions = new List<ItemDefinition>();
+    [SerializeField] public List<ItemDefinition> _itemDefinitions = new List<ItemDefinition>();
+    [SerializeField] public List<CropModel> _cropModels = new List<CropModel>();
 
     [ContextMenu("Load All Items From Resources")]
     public void LoadAllFromResources()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace InventorySystem
@@ -16,6 +17,8 @@ namespace InventorySystem
         public bool IsReadOnly => throw new NotImplementedException();
 
         // ==== Collection logic ====
+
+        
         public void AddEmpty() => _itemInstances.Add(new ItemInstance());
 
         public void AddRangeEmpty(int count)

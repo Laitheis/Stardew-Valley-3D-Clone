@@ -97,6 +97,11 @@ public class ItemInstance
 
     public bool SetCount(int newCount)
     {
+        if (newCount <= 0)
+        {
+            ItemDefinition = null;
+        }
+
         if (!(newCount > 0 && newCount <= _itemDefinition.MaxCountInStack))
             return false;
 
@@ -138,12 +143,6 @@ public class ItemInstance
     public void ClearFlags()
     {
         _itemFlags = ItemFlags.None;
-    }
-
-    // Use Item
-    public void UseItem()
-    {
-        _itemDefinition.UseItem();
     }
 }
 

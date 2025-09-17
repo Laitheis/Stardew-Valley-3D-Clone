@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5e3405583925a941a8c3aa30bd87fbf, type: 3}
+  m_Name: Curly kale
+  m_EditorClassIdentifier: 
+  isTool: 0
+  _name: Curly Kale
+  type: 9
+  _isRenameable: 0
+  _maxCountInStack: 3
+  _price: 30
+  _description: "\u041A\u0430\u043F\u0443\u0441\u0442\u0430, \u0441\u0432\u0435\u0436\u0430\u044F
+    \u0438 \u0445\u0440\u0443\u0441\u0442\u044F\u0449\u0430\u044F"
+  _sprite: {fileID: 21300000, guid: c133461a8269aa9479731f0475371f88, type: 3}
+  _prefab: {fileID: 6376372425519703063, guid: f9fc3558dc2fe4f41bb6c7526ca4c2ce, type: 3}
+  cropModel: {fileID: 11400000, guid: dbffdc1b6ca5a284fbf5608db4853996, type: 2}
