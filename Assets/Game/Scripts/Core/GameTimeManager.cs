@@ -3,6 +3,10 @@ using System;
 
 public class GameTimeManager : MonoBehaviour
 {
+    public event Action OnMinutePassed;
+    public event Action OnHourPassed;
+    public event Action OnDayPassed;
+
     [Header("Config")]
     public float realSecondsPerGameMinute = 1f; // сколько секунд IRL занимает минута в игре
     public int dayStartHour = 6;                // начало дня
@@ -25,13 +29,13 @@ public class GameTimeManager : MonoBehaviour
 
     public static GameTimeManager Instance;
 
-    public event Action OnMinutePassed;
-    public event Action OnHourPassed;
-    public event Action OnDayPassed;
-
     private void Awake()
     {
-        if (Instance != null) Destroy(gameObject);
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Curly kale
   m_EditorClassIdentifier: 
   isTool: 0
-  _name: Curly Kale
+  _name: Cabbage
   type: 9
   _isRenameable: 0
   _maxCountInStack: 3

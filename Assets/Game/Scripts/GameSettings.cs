@@ -14,17 +14,21 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public GameObject SoilPrefab;
     public GameObject SoilWetPrefab;
     public GameObject AvailableTilePrefab;
+    public LootTable LootTable;
+    public TradersTable TradersTable;
 
     public override void InstallBindings()
     {
         Container.BindInstance(WorldItemPrefab).WithId("WorldItem");
         Container.BindInstance(SmokeExplosionEffect).WithId("SmokeEffect");
-        Container.BindInstance(DraggedImagePrefab).WithId("DraggedImagePrefab").AsSingle();
+        Container.BindInstance(DraggedImagePrefab).WithId("DraggedImagePrefab");
         Container.BindInstance(ItemDatabase).AsSingle().NonLazy();
         Container.BindInstance(ItemSlotPrefab).WithId("ItemSlot");
         Container.BindInstance(SoilPrefab).WithId("Soil");
         Container.BindInstance(SoilWetPrefab).WithId("SoilWet");
         Container.BindInstance(AvailableTilePrefab).WithId("Available");
+        Container.BindInstance(LootTable).AsSingle();
+        Container.BindInstance(TradersTable).AsSingle();
 
         //HACK
         InstallPlayerParam();

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff54c002c7522af498be4da721d8c730, type: 3}
+  m_Name: Traders Table
+  m_EditorClassIdentifier: 
+  _traders:
+  - Name: Eris
+    Icon: {fileID: 21300000, guid: ad3d85967aacc064dae1d8ee195897b4, type: 3}
+    TraderWelcomeText: Hi! Nice to meet you! Take a look at my goods, don't be shy.
+    Items:
+    - ItemDefinition: {fileID: 11400000, guid: 92b25cd815cc2bb4081c039bb6b2fbf8, type: 2}
+      Price: 10
+      seasons: 
+    - ItemDefinition: {fileID: 11400000, guid: 4bf136181f632414ea8d14010229ce70, type: 2}
+      Price: 10
+      seasons: 00000000
+    - ItemDefinition: {fileID: 11400000, guid: 9b6b52c1f90289a4da7b1175804badb8, type: 2}
+      Price: 10
+      seasons: 
+    - ItemDefinition: {fileID: 11400000, guid: 9b6b52c1f90289a4da7b1175804badb8, type: 2}
+      Price: 10
+      seasons: 
+    - ItemDefinition: {fileID: 11400000, guid: 9b6b52c1f90289a4da7b1175804badb8, type: 2}
+      Price: 10
+      seasons: 
+    - ItemDefinition: {fileID: 11400000, guid: 9b6b52c1f90289a4da7b1175804badb8, type: 2}
+      Price: 10
+      seasons: 

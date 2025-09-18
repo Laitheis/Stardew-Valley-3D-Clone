@@ -15,6 +15,7 @@ namespace InventorySystem
             get => _selectedSlotNum;
             set => _selectedSlotNum = Mathf.Clamp(value, 0, _inventory.Collection.Count - 1);
         }
+        public RectTransform SelectionFrame { get => _selectionFrame; set => _selectionFrame = value; }
 
         private void Update()
         {
@@ -29,7 +30,7 @@ namespace InventorySystem
                 SelectedSlotNum++;
             }
 
-            _selectionFrame.position = _inventory.transform.GetChild(_selectedSlotNum).transform.position;
+            SelectionFrame.position = _inventory.transform.GetChild(_selectedSlotNum).transform.position;
         }
     }
 }

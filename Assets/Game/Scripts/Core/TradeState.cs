@@ -1,21 +1,34 @@
-﻿using System.Collections;
+﻿using InventorySystem;
+using System.Collections;
 using UnityEngine;
+using Zenject;
 
 namespace Core
 {
     public class TradeState : MonoBehaviour
     {
-        
-        // Use this for initialization
-        void Start()
+        [Inject] private TradingHandler _tradingHandler;
+        [Inject] private HintVisualizer _hintVisualizer;
+        [Inject] private PlayerToolHandler _toolHandler;
+        [Inject] private SelectedSlotHandler _slotHandler;
+        [Inject(Id = "Dimming")] private GameObject _dimmingScreen;
+        [Inject] private PlayerController _playerController; 
+
+        public void EnterState()
         {
+            GameTimeManager.Instance.pauseTime = true;
+            _tradingHandler.OpenTrade();
 
-        }
+            _toolHandler.enabled = false;
 
-        // Update is called once per frame
-        void Update()
-        {
+            _slotHandler.SelectionFrame.gameObject.SetActive(false);
 
+            _playerController.enabled = false;
+
+            _dimmingScreen.SetActive(true);
+
+            _hintVisualizer.Hide();
+            _hintVisualizer.gameObject.SetActive(false);
         }
     }
 }
