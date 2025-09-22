@@ -28,7 +28,6 @@ public class TraderModel
     public class Item
     {
         public ItemDefinition ItemDefinition;
-        public int Price;
         public Season[] seasons;
     }
 

@@ -12,7 +12,7 @@ namespace Inventory.UI
     public class ItemTooltipView : MonoBehaviour
     {
         [SerializeField] UIElementFitter _fitter;
-        [SerializeField] private TooltipHolder _tooltip;
+        [SerializeField] private TooltipRefs _tooltip;
 
         public void ShowTooltip(ItemInstance itemInstance, RectTransform slotRect)
         {

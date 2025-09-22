@@ -5,7 +5,7 @@ using Zenject;
 public class TradeTrigger : MonoBehaviour
 {
     [SerializeField] private string _traderName;
-    [Inject] private TradingHandler _tradingHandler;
+    [Inject] private TraderHandler _tradingHandler;
 
     private void OnMouseDown()
     {

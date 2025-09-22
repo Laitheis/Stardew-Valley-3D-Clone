@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4639b515bc791c5408e1440a56da4385, type: 3}
+  m_Script: {fileID: 11500000, guid: be00e2ba3ece99f4686223350f712de4, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
   WorldItemPrefab: {fileID: 6376372425519703063, guid: f9fc3558dc2fe4f41bb6c7526ca4c2ce,
@@ -29,3 +29,5 @@ MonoBehaviour:
     type: 3}
   LootTable: {fileID: 11400000, guid: ffb2286382048904ba7525088edfef20, type: 2}
   TradersTable: {fileID: 11400000, guid: 068191a00d187bf4e8760274817ee34b, type: 2}
+  FloatingText: {fileID: 7979911190661116291, guid: d6cfa46978039244887759e4395ee308,
+    type: 3}

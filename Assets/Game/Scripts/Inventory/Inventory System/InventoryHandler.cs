@@ -9,7 +9,7 @@ namespace InventorySystem
     {
         [SerializeField] private ItemsCollection _itemsCollection;
 
-        private UIDragController _dragController;
+        [Inject] UIDragController _dragController;
 
         private GameObject _itemSlotPrefab;
 
@@ -29,8 +29,6 @@ namespace InventorySystem
 
         private void Start()
         {
-            _dragController = UIDragController.Instance;
-
             _dragController.OnStartDrag += OnDragStarted;
             _dragController.OnEndDrag += OnDragEnd;
 
@@ -140,6 +138,9 @@ namespace InventorySystem
             ItemInstance draggedItemInstance = dragEventInfo.ItemInstance;
 
             SetDraggedItem(draggedItemInstance, dragEventInfo.SourceItemsCollection, dragEventInfo.SlotUnderCursorNum);
+
+            if (!_dragController.IsCountinueDragging)
+                _dragController.ItemInstance = null;
         }
 
         public void SetDraggedItem(ItemInstance sourceItem, ItemsCollection sourceDraggedCollection, int slotNum = -1)
@@ -177,9 +178,13 @@ namespace InventorySystem
             // Attempt to merge stacks
             int overflow = _itemsCollection.AddWithOverflow(sourceItem, slotNum, sourceItem.Count);
 
-            if (overflow <= 0) return;
-
-            // There is some left - continue to drag
+            // Some left - continue drag
+            if (overflow == 0) return;
+            if (overflow < 0)
+            {
+                ContinueDragging(sourceItem);
+                return;
+            }
             sourceItem.SetCount(overflow);
             _dragController.OriginalSlotNum = slotNum;
             ContinueDragging(sourceItem);

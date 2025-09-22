@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Inventory.UI
 {
-    public class TooltipHolder : MonoBehaviour
+    public class TooltipRefs : MonoBehaviour
     {
         public TMPro.TextMeshProUGUI Name;
         public TMPro.TextMeshProUGUI Type;

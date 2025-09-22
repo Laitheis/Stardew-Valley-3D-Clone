@@ -15,13 +15,13 @@ public class UIDragController : MonoBehaviour
     public event Action<DragEventInfo> OnStartDrag;
     public event Action<DragEventInfo> OnEndDrag;
 
+    [SerializeField] Camera _camera;
+
     private Image _draggedImagePrefab;
 
     private float _draggedImageHeight = 100;
     private float _draggedImageWidth = 100;
     private Transform _canvasRoot;
-
-    private bool _destroyImageObjectOnEnd = true;
 
     // DragEvent Data
     private int _slotUnderCursorNum;
@@ -33,22 +33,18 @@ public class UIDragController : MonoBehaviour
 
     private bool _isDragging;
     private bool _isCountinueDragging;
+    private bool _isMouseOverTraderPanel;
 
     private int _mouseButton;
 
     private GameObject _player;
     [Inject] private SignalBus _signalBus;
 
-    internal static UIDragController Instance;
-
     public bool IsDragging { get => _isDragging; set => _isDragging = value; }
     public int OriginalSlotNum { get => _originalSlotNum; set => _originalSlotNum = value; }
     public bool IsCountinueDragging { get => _isCountinueDragging; set => _isCountinueDragging = value; }
-
-    private void Awake()
-    {
-        Instance = this;
-    }
+    public ItemInstance ItemInstance { get => _itemInstance; set => _itemInstance = value; }
+    public bool IsMouseOverTraderPanel { get => _isMouseOverTraderPanel; set => _isMouseOverTraderPanel = value; }
 
     [Inject]
     private void Constructor([Inject(Id = "DraggedImagePrefab")] Image draggedImagePrefab, [Inject(Id = "Player")] GameObject player, Canvas mainCanvas)
@@ -120,30 +116,35 @@ public class UIDragController : MonoBehaviour
 
         if (landable == null)
         {
-            if (_mouseButton == 0 || _itemInstance.Count == 1)
+            if (_isMouseOverTraderPanel) return;
+
+            if (_mouseButton == 0 || ItemInstance.Count == 1)
             {
-                _signalBus.Fire(new ItemDropEvent(_player.transform.position, _itemInstance));
+                _signalBus.Fire(new ItemDropEvent(_player.transform.position, ItemInstance));
                 _isDragging = false;
-                if (_destroyImageObjectOnEnd && _draggedRect != null) 
+                if (_draggedRect != null) 
                     Destroy(_draggedRect.gameObject);
             }
-            else if (_mouseButton == 1 || _itemInstance.Count > 1)
+            else if (_mouseButton == 1 || ItemInstance.Count > 1)
             {
-                _itemInstance.SetCount(_itemInstance.Count - 1);
-                var droppedItemInst = new ItemInstance(_itemInstance.ItemDefinition, 1);
+                ItemInstance.SetCount(ItemInstance.Count - 1);
+                var droppedItemInst = new ItemInstance(ItemInstance.ItemDefinition, 1);
                 _signalBus.Fire(new ItemDropEvent(_player.transform.position, droppedItemInst));
             }
+            _itemInstance = null;
+
             return;
         }
 
         _slotUnderCursorNum = landable.GetHierarchyIndex();
         _isDragging = false;
-        if (_destroyImageObjectOnEnd && _draggedRect != null) Destroy(_draggedRect.gameObject);
+
+        Destroy(_draggedRect.gameObject);
 
         OnEndDrag?.Invoke(new()
         {
             DraggedRect = _draggedRect,
-            ItemInstance = _itemInstance,
+            ItemInstance = ItemInstance,
             ObjectUnderCursor = targetObject,
             SlotUnderCursorNum = _slotUnderCursorNum,
             SourceItemsCollection = _sourceItemsCollection,
@@ -157,10 +158,11 @@ public class UIDragController : MonoBehaviour
 
     private void DragUpdate()
     {
-        Vector2 cursorPosition = Input.mousePosition;
+        Vector3 pos = _camera.ScreenToWorldPoint(Input.mousePosition);
         if (_draggedRect != null)
         {
-            _draggedRect.position = cursorPosition;
+            _draggedRect.transform.position = pos;
+            _draggedRect.transform.localPosition = new(_draggedRect.transform.localPosition.x, _draggedRect.transform.localPosition.y, 0);
             SetDispDraggedCount();
         }
 
@@ -170,7 +172,7 @@ public class UIDragController : MonoBehaviour
     public void SetDraggedItem(ItemInstance itemInstance)
     {
         _isDragging = true;
-        _itemInstance = itemInstance;
+        ItemInstance = itemInstance;
     }
 
     public void SetDraggedSprite(Sprite sprite)
@@ -191,10 +193,19 @@ public class UIDragController : MonoBehaviour
 
     public void SetDispDraggedCount()
     {
-        GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = _itemInstance.Count.ToString();
+        GetDraggedRect().Find("CountText").GetComponent<TMPro.TextMeshProUGUI>().text = ItemInstance.Count.ToString();
+    }
+
+    public void SetMouseEnterTraderPanelFlag()
+    {
+        _isMouseOverTraderPanel = true;
+    }
+
+    public void SetMouseExitTraderPanelFlag()
+    {
+        _isMouseOverTraderPanel = false;
     }
 }
-
 
 public class DragEventInfo
 {

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1df5ba2a0e7131046896eb4646fde9d8, type: 3}
-  m_Name: Curly kale
+  m_Name: Cabbage
   m_EditorClassIdentifier: 
   cropId: 0
-  displayName: Curly cale
+  displayName: Cabbage
   seasons: 00000000
   daysPerStage: 01000000020000000200000001000000
   regrows: 0

@@ -7,7 +7,7 @@ namespace Core
 {
     public class TradeState : MonoBehaviour
     {
-        [Inject] private TradingHandler _tradingHandler;
+        [Inject] private TraderHandler _tradingHandler;
         [Inject] private HintVisualizer _hintVisualizer;
         [Inject] private PlayerToolHandler _toolHandler;
         [Inject] private SelectedSlotHandler _slotHandler;

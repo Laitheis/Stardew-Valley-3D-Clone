@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using static UnityEngine.Rendering.DebugUI;
 
-public class TradingHandler : MonoBehaviour
+public class TraderHandler : MonoBehaviour
 {
     [SerializeField] private RectTransform _tradeWindow;
     [SerializeField] private RectTransform _displayedItemsContainer;
@@ -16,6 +15,9 @@ public class TradingHandler : MonoBehaviour
 
     [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
     [Inject] private TradersTable _tradersTable;
+    [Inject] private CurrencyManager _currencyManager;
+    [Inject] private SignalBus _signalBus;
+    [Inject] private UIDragController _dragController;
 
     private string _currentTrader;
 
@@ -42,7 +44,7 @@ public class TradingHandler : MonoBehaviour
         List<TraderModel.Item> availableItems = new List<TraderModel.Item>();
         foreach (var item in table.Items)
         {
-            if(item.seasons.Length == 0)
+            if (item.seasons.Length == 0)
             {
                 availableItems.Add(item);
                 continue;
@@ -60,12 +62,54 @@ public class TradingHandler : MonoBehaviour
         foreach (var item in availableItems)
         {
             GameObject displayedItem = Instantiate(_displayedItemPrefab, _displayedItemsContainer);
-            DisplayedTraderItemHolder refHolder = displayedItem.GetComponent<DisplayedTraderItemHolder>();
+            DisplayedTraderItemRefs refHolder = displayedItem.GetComponent<DisplayedTraderItemRefs>();
             refHolder.Name.text = item.ItemDefinition.Name;
             refHolder.Icon.sprite = item.ItemDefinition.Sprite;
             refHolder.Price.text = item.ItemDefinition.Price.ToString();
+
+            SetupPurchaseButton(displayedItem, item);
         }
 
+    }
+    void SetupPurchaseButton(GameObject go, TraderModel.Item item)
+    {
+        PurchaseButton btn = go.GetComponent<PurchaseButton>();
+        btn.name = item.ItemDefinition.Name;
+        btn.price = item.ItemDefinition.Price;
+    }
+
+    public bool TryPurchase(string itemId, CurrencyType currency, int pricePerPiece, int quantity, object seller = null)
+    {
+        if (_dragController.ItemInstance != null && _dragController.ItemInstance.IsFull())
+        {
+            //TODO floating notification
+            return false;
+        }
+
+        int overallPrice = pricePerPiece * quantity;
+        int before = _currencyManager.currencies[currency];
+
+        bool success = _currencyManager.TryDeduct(currency, overallPrice, false);
+        int after = _currencyManager.currencies[currency];
+
+        var e = new CurrencyEventArgs
+        {
+            type = currency,
+            current = after,
+            purchaseSuccess = success,
+            purchasedItem = itemId,
+            purchasedCount = quantity,
+            change = success ? before - after : 0
+        };
+
+        _signalBus.Fire(e);
+
+        return success;
+    }
+
+    public void Sell()
+    {
+        //TODO
     }
 }
 

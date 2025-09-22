@@ -89,6 +89,10 @@ namespace InventorySystem
             return true;
         }
 
+        /// <summary>
+        /// If overflow -1 - valid slot not found
+        /// </summary>
+        /// <returns></returns>
         public int AddWithOverflow(ItemInstance itemInstance, int slotNum = -1, int count = 1)
         {
             int overflow;

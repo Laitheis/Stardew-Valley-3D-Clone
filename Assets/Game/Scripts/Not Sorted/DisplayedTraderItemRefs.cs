@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 
 
-public class DisplayedTraderItemHolder : MonoBehaviour
+public class DisplayedTraderItemRefs : MonoBehaviour
 {
     public TMPro.TextMeshProUGUI Name;
     public Image Icon;

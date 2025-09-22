@@ -14,7 +14,9 @@ public class GameInstaller : MonoInstaller
     public PlayerToolHandler PlayerToolHandler;
     public GameObject DimmingScreen;
     public PlayerController PlayerController;
-    public TradingHandler TradingHandler;
+    public TraderHandler TraderHandler;
+    public CurrencyManager CurrencyManager;
+    public UIDragController UIDragController;
 
     public override void InstallBindings()
     {
@@ -22,21 +24,24 @@ public class GameInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<LootGenerator>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<ItemDropUtil>().AsSingle().NonLazy();
 
-        Container.BindInstance(MainCanvas).AsSingle();
-        Container.BindInstance(TooltipView).AsSingle();
+        Container.BindInstance(MainCanvas);
+        Container.BindInstance(TooltipView);
         Container.BindInstance(Player).WithId("Player");
-        Container.BindInstance(PlayerInv).WithId("PlayerInv").AsSingle();
-        Container.BindInstance(PlayerController).AsSingle();
-        Container.BindInstance(SelSlotHandler).AsSingle();
-        Container.BindInstance(HintVisualizer).AsSingle();
-        Container.BindInstance(PlayerToolHandler).AsSingle();
+        Container.BindInstance(PlayerInv).WithId("PlayerInv");
+        Container.BindInstance(PlayerController);
+        Container.BindInstance(SelSlotHandler);
+        Container.BindInstance(HintVisualizer);
+        Container.BindInstance(PlayerToolHandler);
         Container.BindInstance(DimmingScreen).WithId("Dimming");
-        Container.BindInstance(TradingHandler);
+        Container.BindInstance(TraderHandler);
+        Container.BindInstance(CurrencyManager);
+        Container.BindInstance(UIDragController);
 
 
         SignalBusInstaller.Install(Container);
 
         Container.DeclareSignal<ItemDropEvent>();
+        Container.DeclareSignal<CurrencyEventArgs>();
 
     }
 }

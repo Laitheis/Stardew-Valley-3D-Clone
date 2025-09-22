@@ -16,6 +16,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public GameObject AvailableTilePrefab;
     public LootTable LootTable;
     public TradersTable TradersTable;
+    public GameObject FloatingText;
 
     public override void InstallBindings()
     {
@@ -29,6 +30,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
         Container.BindInstance(AvailableTilePrefab).WithId("Available");
         Container.BindInstance(LootTable).AsSingle();
         Container.BindInstance(TradersTable).AsSingle();
+        Container.BindInstance(FloatingText).WithId("FloatingText");
 
         //HACK
         InstallPlayerParam();

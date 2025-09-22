@@ -2,34 +2,36 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Zenject;
 
 public class PurchaseButton : MonoBehaviour
 {
-    public UnityEvent onPurchaseSuccess;
+    [HideInInspector] public new string name;
+    [HideInInspector] public int itemQuantity = 1;
+    [HideInInspector] public int price;
+    [HideInInspector] public CurrencyType currency = CurrencyType.Gold;
 
-    public string itemId;
-    public int itemQuantity = 1;
-    public int price;
-    public CurrencyType currency;
-
-    [SerializeField] TMP_Text _priceText;
+    [Inject] private TraderHandler _traderHandler;
 
     private void Start()
     {
-        Button button = GetComponent<Button>();
-        button.onClick.AddListener(AttemptPurchase);
+        var sceneContext = FindObjectOfType<SceneContext>();
+        sceneContext.Container.Inject(this);
 
-        if (_priceText != null)
-        {
-            _priceText.text = price.ToString();
-        }
+        Button button = GetComponent<Button>();
+        button.onClick.AddListener(Try);
     }
 
-    public void AttemptPurchase()
+    public void Try()
     {
-        if (CurrencyManager.Instance.TryPurchase(itemId, currency, price, itemQuantity))
+        _traderHandler.TryPurchase(name, currency, price, itemQuantity);
+    }
+
+    private void OnValidate()
+    {
+        if (itemQuantity < 1)
         {
-            onPurchaseSuccess.Invoke();
+            itemQuantity = 1;
         }
     }
 }
