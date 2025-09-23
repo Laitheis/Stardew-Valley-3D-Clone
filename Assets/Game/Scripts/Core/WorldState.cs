@@ -1,13 +1,28 @@
-﻿using System;
+﻿using InventorySystem;
+using System;
 using System.Collections;
 using UnityEngine;
+using Zenject;
 
 namespace Core
 {
-    public class WorldState : MonoBehaviour
+    public class WorldState : GameStateBase
     {
-        public void EnterState()
+        public override void EnterState()
         {
+            GameTimeManager.Instance.pauseTime = false;
+            _toolHandler.enabled = true;
+
+            _slotHandler.SelectionFrame.gameObject.SetActive(true);
+
+            _playerController.enabled = true;
+            
+            _hintVisualizer.gameObject.SetActive(true);
+        }
+
+        public override void ExitState()
+        {
+
         }
     }
 }

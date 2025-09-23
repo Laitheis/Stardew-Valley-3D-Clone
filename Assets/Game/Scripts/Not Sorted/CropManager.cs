@@ -75,21 +75,9 @@ public class CropManager : MonoBehaviour
         if (!IsPlowed(crdsInt)) { Debug.Log($"[CropManager] Can't plant {model.cropId} at {crdsInt}: tile not plowed"); return false; }
         if (tileToState.ContainsKey(crdsInt) && tileToState[crdsInt].crop != null) { Debug.Log($"[CropManager] Can't plant {model.cropId} at {crdsInt}: already occupied"); return false; }
 
-        TileState state = new TileState()
-        {
-            crop = model,
-
-            defCropId = model.cropId,
-            tilePos = tile,
-            currentStage = 0,
-            daysInStage = 0,
-            wateredToday = false,
-            wateredStreak = 0,
-            daysSincePlanted = 0,
-            isReadyToHarvest = false,
-            isWithered = false,
-            quality = 0
-        };
+        TileState state = tileToState[tile];
+        state.crop = model;
+        state.defCropId = model.cropId;
 
         tileToState[crdsInt] = state;
 
@@ -126,12 +114,13 @@ public class CropManager : MonoBehaviour
         return false;
     }
 
-    // Сбор урожая (возвращает true если успешен)
+    // Harvest (return true if succsess)
     public bool HarvestTile(Vector3 tile, out int quantity, out int quality)
     {
         Vector3Int crdsInt = Vector3Int.CeilToInt(tile);
 
-        quantity = 0; quality = 0;
+        quantity = 0; 
+        quality = 0;
         if (!tileToState.TryGetValue(crdsInt, out TileState state)) { Debug.Log($"[CropManager] Nothing to harvest at {crdsInt}"); return false; }
         //if (state.isWithered) { Debug.Log($"[CropManager] Crop at {crdsInt} is withered, can't harvest"); return false; }
         if (!state.isReadyToHarvest) { Debug.Log($"[CropManager] Crop at {crdsInt} not ready"); return false; }
@@ -145,7 +134,7 @@ public class CropManager : MonoBehaviour
         OnCropHarvested?.Invoke(crdsInt, state, quantity, quality);
 
         ItemDefinition itemDef = GetItemByModel(state.crop);
-        _signalBus.Fire(new ItemDropEvent(tile, new ItemInstance(itemDef, 1)));
+        _signalBus.Fire(new ItemDropEvent(tile, new ItemInstance(itemDef, 1), false));
 
         if (model.regrows)
         {
@@ -376,8 +365,6 @@ public class CropManager : MonoBehaviour
     public void TryHarvestByHand(Vector3Int tile)
     {
         HarvestTile(tile, out int q, out int q2);
-
-        
     }
     //public void LoadFromDisk()
     //{

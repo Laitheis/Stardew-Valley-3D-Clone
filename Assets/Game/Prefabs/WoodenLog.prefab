@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4454275978848722390}
   - component: {fileID: 6002050765960019089}
   - component: {fileID: 2205557991118626392}
-  - component: {fileID: 2844823561450977635}
   - component: {fileID: 805126707775963067}
   - component: {fileID: 3788483823459406295}
   m_Layer: 3
@@ -114,26 +113,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2844823561450977635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6376372425519703063}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71b559b7a765b5340bdb139c4959b8d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _item:
-    _itemDefinition: {fileID: 0}
-    _id: 
-    _count: 0
-    _itemFlags: 0
-    Properties:
-      CustomName: 
-      CustomPrice: 0
 --- !u!65 &805126707775963067
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -167,10 +146,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8895c6e6cd97345b45cf8bbd4ec493, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _collisionDistance: 1.49
+  _pickupDistance: 0
   _item:
     _itemDefinition: {fileID: 11400000, guid: 56b853d6fed194147a2645b73c44b436, type: 2}
-    _id: 4ed8a663-74d0-4a9c-9d5e-7d98512da36a
+    _guid: 5c047cd6-4f5f-41cf-b243-6e5d2aee72ac
     _count: 1
     _itemFlags: 0
     Properties:

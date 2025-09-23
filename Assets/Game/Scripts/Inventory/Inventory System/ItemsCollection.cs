@@ -10,16 +10,16 @@ namespace InventorySystem
     {
         public Action onChange;
 
-        [SerializeField] private List<ItemInstance> _itemInstances;
+        [SerializeField] private List<ItemInstance> _collection;
 
-        public int Count => _itemInstances.Count;
+        public int Count => _collection.Count;
         public bool RemoveWhenQuantityZero { get; set; } = true;
         public bool IsReadOnly => throw new NotImplementedException();
 
         // ==== Collection logic ====
 
         
-        public void AddEmpty() => _itemInstances.Add(new ItemInstance());
+        public void AddEmpty() => _collection.Add(new ItemInstance());
 
         public void AddRangeEmpty(int count)
         {
@@ -115,15 +115,15 @@ namespace InventorySystem
                 validSlot = slotNum;
             }
 
-            if (toEmptySlot || itemInstance.ItemDefinition != _itemInstances[validSlot].ItemDefinition)
+            if (toEmptySlot || itemInstance.ItemDefinition != _collection[validSlot].ItemDefinition)
             {
-                _itemInstances[validSlot] = new ItemInstance(itemInstance.ItemDefinition, 1);
-                _itemInstances[validSlot].Add(count - 1, out overflow);
+                _collection[validSlot] = new ItemInstance(itemInstance.ItemDefinition, 1);
+                _collection[validSlot].Add(count - 1, out overflow);
                 return overflow;
             }
             else
             {
-                _itemInstances[validSlot].Add(count, out overflow);
+                _collection[validSlot].Add(count, out overflow);
                 return overflow;
             }
         }
@@ -155,9 +155,9 @@ namespace InventorySystem
 
         private int FindFirstEmptySlot()
         {
-            for (int i = 0; i < _itemInstances.Count; i++)
+            for (int i = 0; i < _collection.Count; i++)
             {
-                if (_itemInstances[i].ItemDefinition == null)
+                if (_collection[i].ItemDefinition == null)
                 {
                     return i;
                 }
@@ -167,9 +167,9 @@ namespace InventorySystem
 
         private int FindFirstSlotWithSameItemDef(ItemDefinition itemDefinition)
         {
-            for (int i = 0; i < _itemInstances.Count; i++)
+            for (int i = 0; i < _collection.Count; i++)
             {
-                if ((_itemInstances[i].ItemDefinition == itemDefinition) && (_itemInstances[i].Count < _itemInstances[i].ItemDefinition.MaxCountInStack))
+                if ((_collection[i].ItemDefinition == itemDefinition) && (_collection[i].Count < _collection[i].ItemDefinition.MaxCountInStack))
                 {
                     return i;
                 }
@@ -179,7 +179,7 @@ namespace InventorySystem
 
         private bool IsSlotEmpty(int slotNum)
         {
-            if (_itemInstances[slotNum].ItemDefinition == null)
+            if (_collection[slotNum].ItemDefinition == null)
                 return true;
             else
                 return false;
@@ -187,22 +187,22 @@ namespace InventorySystem
 
         public void Remove(int itemIndex)
         {
-            _itemInstances[itemIndex] = new ItemInstance();
-            _itemInstances[itemIndex].SetCount(0);
+            _collection[itemIndex] = new ItemInstance();
+            _collection[itemIndex].SetCount(0);
             onChange?.Invoke();
         }
 
         public int FindIndex(ItemInstance itemInstance) =>
-            _itemInstances.IndexOf(itemInstance);
+            _collection.IndexOf(itemInstance);
 
         public ItemInstance this[int index]
         {
-            get => _itemInstances[index];
+            get => _collection[index];
             set
             {
-                if (index < _itemInstances.Count)
+                if (index < _collection.Count)
                 {
-                    _itemInstances[index] = value;
+                    _collection[index] = value;
                     onChange?.Invoke();
                 }
             }
@@ -210,12 +210,12 @@ namespace InventorySystem
 
         internal void RemoveRange(int count)
         {
-            _itemInstances.RemoveRange(_itemInstances.Count - count, count);
+            _collection.RemoveRange(_collection.Count - count, count);
         }
 
         public bool Remove(ItemInstance item)
         {
-            Remove(_itemInstances.IndexOf(item));
+            Remove(_collection.IndexOf(item));
             return true;
         }
 
@@ -248,6 +248,17 @@ namespace InventorySystem
         void ICollection<ItemInstance>.Add(ItemInstance item)
         {
             throw new NotImplementedException();
+        }
+
+        private void OnValidate()
+        {
+            foreach (var item in _collection)
+            {
+                if(item.ItemDefinition != null && item.Count <= 0)
+                {
+                    item.SetCount(1);
+                }
+            }
         }
 
     }

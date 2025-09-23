@@ -21,6 +21,8 @@ public class TraderHandler : MonoBehaviour
 
     private string _currentTrader;
 
+    public RectTransform TradeWindow { get => _tradeWindow; set => _tradeWindow = value; }
+
     public void SetCurrentTrader(string traderName)
     {
         _currentTrader = traderName;
@@ -31,8 +33,6 @@ public class TraderHandler : MonoBehaviour
 
     public void OpenTrade()
     {
-        _tradeWindow.gameObject.SetActive(true);
-
         if (_currentTrader != null)
             FillTradeList();
     }
@@ -62,7 +62,7 @@ public class TraderHandler : MonoBehaviour
         foreach (var item in availableItems)
         {
             GameObject displayedItem = Instantiate(_displayedItemPrefab, _displayedItemsContainer);
-            DisplayedTraderItemRefs refHolder = displayedItem.GetComponent<DisplayedTraderItemRefs>();
+            TraderItemRefs refHolder = displayedItem.GetComponent<TraderItemRefs>();
             refHolder.Name.text = item.ItemDefinition.Name;
             refHolder.Icon.sprite = item.ItemDefinition.Sprite;
             refHolder.Price.text = item.ItemDefinition.Price.ToString();
@@ -99,7 +99,7 @@ public class TraderHandler : MonoBehaviour
             purchaseSuccess = success,
             purchasedItem = itemId,
             purchasedCount = quantity,
-            change = success ? before - after : 0
+            change = success ? after - before : 0
         };
 
         _signalBus.Fire(e);
@@ -107,9 +107,28 @@ public class TraderHandler : MonoBehaviour
         return success;
     }
 
-    public void Sell()
+    public void Sell(ItemInstance itemInstance)
     {
-        //TODO
+        int added = itemInstance.Price * itemInstance.Count;
+        _currencyManager.currencies[CurrencyType.Gold] += added;
+
+        var e = new CurrencyEventArgs
+        {
+            type = CurrencyType.Gold,
+            current = _currencyManager.currencies[CurrencyType.Gold],
+            purchaseSuccess = false,
+            change = added
+        };
+
+        _signalBus.Fire(e);
+    }
+
+    public void Close()
+    {
+        for (int i = _displayedItemsContainer.childCount - 1; i >= 0; i--)
+        {
+            Destroy(_displayedItemsContainer.GetChild(i).gameObject);
+        }
     }
 }
 

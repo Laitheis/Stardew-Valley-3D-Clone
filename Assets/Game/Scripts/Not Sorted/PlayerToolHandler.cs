@@ -1,13 +1,8 @@
 ﻿using InventorySystem;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Burst.CompilerServices;
-using UnityEditor;
 using UnityEngine;
 using Zenject;
-using static UnityEditor.Progress;
 
 // Контроллер действий игрока (инструменты). Не трогаем перемещение/камеру.
 // Требует: на игроке/камера есть Camera.main; курсор свободный — используем Raycast.
@@ -21,7 +16,7 @@ public class PlayerToolHandler : MonoBehaviour
     }
     [SerializeField] List<HandItemEntry> _itemEntries;
     [SerializeField] private List<HandItemEntry> handItemEntries;
-    
+
     [SerializeField] private Grid _grid;
     [SerializeField] private Animator _toolAnimator;
 
@@ -90,7 +85,7 @@ public class PlayerToolHandler : MonoBehaviour
             handItem = _playerInv[_selectedSlotHandler.SelectedSlotNum].ItemDefinition.type;
         else return;
 
-            DisableOtherInstruments(handItem);
+        DisableOtherInstruments(handItem);
 
         HandItemEntry toActivate = handItemEntries.Find(e => e.type == handItem);
 
@@ -117,7 +112,7 @@ public class PlayerToolHandler : MonoBehaviour
 
         if (collection[_selectedSlotHandler.SelectedSlotNum].ItemDefinition != null)
         {
-        activeTool = collection[_selectedSlotHandler.SelectedSlotNum].ItemDefinition.type;
+            activeTool = collection[_selectedSlotHandler.SelectedSlotNum].ItemDefinition.type;
 
         }
         else
@@ -216,21 +211,23 @@ public class PlayerToolHandler : MonoBehaviour
         Debug.Log("Fertilized " + tile);
         // TODO: отнять удобрение из инвентаря
     }
+
     private void UseSeed()
     {
         SeedDefinition seed = _playerInv[_selectedSlotHandler.SelectedSlotNum].ItemDefinition as SeedDefinition;
         if (seed != null)
         {
-            _playerInv[_selectedSlotHandler.SelectedSlotNum].SetCount(_playerInv[_selectedSlotHandler.SelectedSlotNum].Count-1);
+            _playerInv[_selectedSlotHandler.SelectedSlotNum].SetCount(_playerInv[_selectedSlotHandler.SelectedSlotNum].Count - 1);
 
             CropManager.Instance.PlantSeed(_currPtrTile, seed.cropModel);
         }
     }
+
     private void UseHand(Vector3 tile)
     {
-
         CropManager.Instance.TryHarvestByHand(_currPtrTile);
     }
+
     ItemType ToolSelected()
     {
         if (_playerInv[_selectedSlotHandler.SelectedSlotNum].ItemDefinition == null)
@@ -323,5 +320,5 @@ public class PlayerToolHandler : MonoBehaviour
             _hintVisual.ShowUnavailable(_currPtrTile);
         }
     }
-    
+
 }

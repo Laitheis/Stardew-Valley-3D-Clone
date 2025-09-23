@@ -5,19 +5,13 @@ using Zenject;
 
 namespace Core
 {
-    public class TradeState : MonoBehaviour
+    public class TradeState : GameStateBase
     {
-        [Inject] private TraderHandler _tradingHandler;
-        [Inject] private HintVisualizer _hintVisualizer;
-        [Inject] private PlayerToolHandler _toolHandler;
-        [Inject] private SelectedSlotHandler _slotHandler;
-        [Inject(Id = "Dimming")] private GameObject _dimmingScreen;
-        [Inject] private PlayerController _playerController; 
-
-        public void EnterState()
+        public override void EnterState()
         {
             GameTimeManager.Instance.pauseTime = true;
             _tradingHandler.OpenTrade();
+            _tradingHandler.TradeWindow.gameObject.SetActive(true);
 
             _toolHandler.enabled = false;
 
@@ -29,6 +23,16 @@ namespace Core
 
             _hintVisualizer.Hide();
             _hintVisualizer.gameObject.SetActive(false);
+        }
+
+        public override void ExitState()
+        {
+            _tradingHandler.TradeWindow.gameObject.SetActive(false);
+            _tradingHandler.Close();
+
+            _dimmingScreen.SetActive(false);
+
+            _dragController.IsMouseOverTraderPanel = false;
         }
     }
 }

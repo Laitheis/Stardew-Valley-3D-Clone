@@ -25,6 +25,6 @@ public class ItemDropUtil
 
         var overflowItem = new ItemInstance(item.ItemDefinition, overflow);
 
-        _signalBus.Fire(new ItemDropEvent(_player.transform.position, overflowItem));
+        _signalBus.Fire(new ItemDropEvent(_player.transform.position, overflowItem, true));
     }
 }

@@ -22,10 +22,9 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
 
     bool _inited = false;
     [Inject]
-    public void Construct(LootGenerator lootGenerator, [Inject(Id = "SmokeEffect")] GameObject smokeEffect)
+    public void Construct(LootGenerator lootGenerator)
     {
         _lootGenerator = lootGenerator;
-        _smokeEffect = smokeEffect;
 
         _animator = GetComponent<Animator>();
     }
@@ -76,18 +75,6 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
         HarvestAndCleanup();
     }
 
-    public virtual void Harvest()
-    {
-        var durability = _statContainer.GetStat(StatTypes.Durability);
-
-        if (_pendingLoot == null) return;
-
-        foreach (var item in _pendingLoot)
-        {
-            _signalBus.Fire(new ItemDropEvent(transform.position, item));
-        }
-    }
-
     public virtual void TakeDamage(int amount)
     {
         if (_isFalling) return;
@@ -134,8 +121,20 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
     private void HarvestAndCleanup()
     {
         Harvest();
-        Instantiate(_smokeEffect, transform.position, Quaternion.identity);
+        //Instantiate(_smokeEffect, transform.position, Quaternion.identity);
         Destroy(gameObject);
+    }
+
+    public virtual void Harvest()
+    {
+        var durability = _statContainer.GetStat(StatTypes.Durability);
+
+        if (_pendingLoot == null) return;
+
+        foreach (var item in _pendingLoot)
+        {
+            _signalBus.Fire(new ItemDropEvent(transform.position, item, false));
+        }
     }
 
     private void SetupTrunkPhysics(Rigidbody rigidbody)

@@ -8,7 +8,6 @@ using Zenject;
 using static UnityEditor.PlayerSettings;
 using static UnityEditor.Progress;
 
-
 public class UIDragController : MonoBehaviour
 {
     public event Action<DragEventInfo> OnDrag;
@@ -62,6 +61,14 @@ public class UIDragController : MonoBehaviour
         {
             DragUpdate();
         }
+
+        ClearItemInstance();
+    }
+
+    private void ClearItemInstance()
+    {
+        if (!IsDragging)
+            _itemInstance = null;
     }
 
     private void HandleInput()
@@ -120,18 +127,17 @@ public class UIDragController : MonoBehaviour
 
             if (_mouseButton == 0 || ItemInstance.Count == 1)
             {
-                _signalBus.Fire(new ItemDropEvent(_player.transform.position, ItemInstance));
+                _signalBus.Fire(new ItemDropEvent(_player.transform.position, ItemInstance, true));
                 _isDragging = false;
                 if (_draggedRect != null) 
-                    Destroy(_draggedRect.gameObject);
+                    ClearDraggedRect();
             }
             else if (_mouseButton == 1 || ItemInstance.Count > 1)
             {
                 ItemInstance.SetCount(ItemInstance.Count - 1);
                 var droppedItemInst = new ItemInstance(ItemInstance.ItemDefinition, 1);
-                _signalBus.Fire(new ItemDropEvent(_player.transform.position, droppedItemInst));
+                _signalBus.Fire(new ItemDropEvent(_player.transform.position, droppedItemInst, true));
             }
-            _itemInstance = null;
 
             return;
         }
@@ -139,7 +145,7 @@ public class UIDragController : MonoBehaviour
         _slotUnderCursorNum = landable.GetHierarchyIndex();
         _isDragging = false;
 
-        Destroy(_draggedRect.gameObject);
+        ClearDraggedRect();
 
         OnEndDrag?.Invoke(new()
         {
@@ -189,6 +195,11 @@ public class UIDragController : MonoBehaviour
     public Transform GetDraggedRect()
     {
         return _draggedRect.transform;
+    }
+
+    public void ClearDraggedRect()
+    {
+        Destroy(_draggedRect.gameObject);
     }
 
     public void SetDispDraggedCount()

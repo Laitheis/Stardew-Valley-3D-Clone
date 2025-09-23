@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5e3405583925a941a8c3aa30bd87fbf, type: 3}
-  m_Name: Curly kale
+  m_Name: Cabbage
   m_EditorClassIdentifier: 
   isTool: 0
   _name: Cabbage

@@ -18,6 +18,8 @@ public class GameInstaller : MonoInstaller
     public CurrencyManager CurrencyManager;
     public UIDragController UIDragController;
 
+
+
     public override void InstallBindings()
     {
         Container.BindInterfacesAndSelfTo<DropItemToWorld>().AsSingle().NonLazy();

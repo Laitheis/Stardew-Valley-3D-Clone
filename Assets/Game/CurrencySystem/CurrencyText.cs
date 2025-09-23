@@ -26,7 +26,9 @@ public class CurrencyText : MonoBehaviour
 
         if (e.change == 0) return;
 
-        PopupTextSpawner.Instance.SpawnPopupText((-e.change).ToString(), transform.position);
+        string text = e.change < 0 ? e.change.ToString() : "+" + e.change.ToString();
+
+        PopupTextSpawner.Instance.SpawnPopupText(text, transform.position);
     }
 
 }

@@ -1,5 +1,4 @@
-﻿using Inventory.UI;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
@@ -17,6 +16,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public LootTable LootTable;
     public TradersTable TradersTable;
     public GameObject FloatingText;
+
 
     public override void InstallBindings()
     {

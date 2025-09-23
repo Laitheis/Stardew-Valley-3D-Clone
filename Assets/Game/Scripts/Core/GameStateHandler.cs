@@ -62,10 +62,12 @@ namespace Core
             switch (state)
             {
                 case GameState.World:
+                    _worldState.ExitState();
                     break;
                 case GameState.Pause:
                     break;
                 case GameState.Trade:
+                    _tradeState.ExitState();
                     break;
                 case GameState.Mine:
                     break;
@@ -86,7 +88,7 @@ namespace Core
             EnterState(_currentState);
         }
 
-        public void LifeCycle()
+        private void LifeCycle()
         {
             switch (_currentState)
             {
@@ -105,6 +107,16 @@ namespace Core
                 default:
                     break;
             }
+        }
+
+        public void ToWorldSate()
+        {
+            ChangeState(GameState.World);
+        }
+
+        public void ToTradeSate()
+        {
+            ChangeState(GameState.Trade);
         }
     }
 }

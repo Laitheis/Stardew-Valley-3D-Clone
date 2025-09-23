@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cabbage seed
   m_EditorClassIdentifier: 
   isTool: 0
-  _name: Cabbage
+  _name: Cabbage seed
   type: 7
   _isRenameable: 0
   _maxCountInStack: 10

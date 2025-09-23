@@ -138,9 +138,6 @@ namespace InventorySystem
             ItemInstance draggedItemInstance = dragEventInfo.ItemInstance;
 
             SetDraggedItem(draggedItemInstance, dragEventInfo.SourceItemsCollection, dragEventInfo.SlotUnderCursorNum);
-
-            if (!_dragController.IsCountinueDragging)
-                _dragController.ItemInstance = null;
         }
 
         public void SetDraggedItem(ItemInstance sourceItem, ItemsCollection sourceDraggedCollection, int slotNum = -1)

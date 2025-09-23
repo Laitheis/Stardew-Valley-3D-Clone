@@ -5,6 +5,7 @@ using Zenject;
 public class DropItemToWorld : Zenject.IInitializable
 {
     [Inject] private SignalBus _signalBus;
+    [Inject(Id = "SmokeEffect")] private GameObject _smokeEffect;
 
     private DiContainer _container;
     private GameObject _itemPrefab;
@@ -27,7 +28,7 @@ public class DropItemToWorld : Zenject.IInitializable
 
         _itemPrefab = itemDefinition.Prefab;
 
-        List<ItemInstance> itemInstances = new List<ItemInstance>();
+        List<ItemInstance> singleItemInstances = new List<ItemInstance>();
         for (int i = 0; i < signal.Item.Count; i++)
         {
             ItemInstance _itemInstance = new ItemInstance(itemDefinition);
@@ -35,11 +36,11 @@ public class DropItemToWorld : Zenject.IInitializable
             _itemInstance.Properties = signal.Item.Properties;
             _itemInstance.SetCount(1);
 
-            itemInstances.Add(_itemInstance);
+            singleItemInstances.Add(_itemInstance);
         }
 
         Vector3 _spawnOffset = _defaultSpawnOffset;
-        foreach (var item in itemInstances)
+        foreach (var item in singleItemInstances)
         {
             var itemGO = _container.InstantiatePrefab(
                 _itemPrefab,
@@ -49,13 +50,25 @@ public class DropItemToWorld : Zenject.IInitializable
 
             _spawnOffset += new Vector3(0, 1, 0);
 
-            itemGO.GetComponent<Rigidbody>().AddForce(Vector3.up * 10f, ForceMode.Impulse);
+            Vector3 direction;
+            if (!signal.IsDroppedFromPlayer)
+            {
+                direction = new Vector3(Random.Range(-1f, 1f), 1, Random.Range(-1f, 1f));
+            }
+            else
+            {
+                direction = Vector3.up;
+            }
+
+            itemGO.GetComponent<Rigidbody>().AddForce(direction * 5f, ForceMode.Impulse);
 
             var itemInstance = itemGO.GetComponent<PickableItem>();
 
             itemInstance.Item = item;
         }
 
+        if (!signal.IsDroppedFromPlayer)
+            _container.InstantiatePrefab(_smokeEffect, signal.Position, Quaternion.identity, null);
         //Debug.Log($"Loot named {signal.Item.Name} drops at position {signal.Position} with quantity {signal.Item.Count}");
     }
 }

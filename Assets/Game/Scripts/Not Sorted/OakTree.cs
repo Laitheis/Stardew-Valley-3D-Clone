@@ -11,5 +11,6 @@
     {
         _pendingLoot = _lootGenerator.GenerateLoot("Oak", 0);
     }
+
 }
 

@@ -17,7 +17,7 @@ MonoBehaviour:
   type: 5
   _isRenameable: 0
   _maxCountInStack: 1
-  _price: 50
+  _price: 2
   _description: Just axe.
   _sprite: {fileID: 21300000, guid: 5fc1313208f12304199551dc2c1fa1c5, type: 3}
   _prefab: {fileID: 6376372425519703063, guid: f9fc3558dc2fe4f41bb6c7526ca4c2ce, type: 3}
