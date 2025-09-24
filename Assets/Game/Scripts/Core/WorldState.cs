@@ -10,6 +10,7 @@ namespace Core
     {
         public override void EnterState()
         {
+            Time.timeScale = 1;
             GameTimeManager.Instance.pauseTime = false;
             _toolHandler.enabled = true;
 

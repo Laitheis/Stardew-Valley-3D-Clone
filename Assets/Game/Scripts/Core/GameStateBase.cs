@@ -13,6 +13,7 @@ namespace Core
         [Inject(Id = "Dimming")] protected GameObject _dimmingScreen;
         [Inject] protected PlayerController _playerController;
         [Inject] protected UIDragController _dragController;
+        [Inject(Id = "PlayerInv")] protected InventoryHandler _playerInv;
 
         public abstract void EnterState();
         public abstract void ExitState();

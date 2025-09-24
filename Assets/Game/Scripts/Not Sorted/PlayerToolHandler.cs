@@ -217,9 +217,10 @@ public class PlayerToolHandler : MonoBehaviour
         SeedDefinition seed = _playerInv[_selectedSlotHandler.SelectedSlotNum].ItemDefinition as SeedDefinition;
         if (seed != null)
         {
-            _playerInv[_selectedSlotHandler.SelectedSlotNum].SetCount(_playerInv[_selectedSlotHandler.SelectedSlotNum].Count - 1);
-
-            CropManager.Instance.PlantSeed(_currPtrTile, seed.cropModel);
+            if (CropManager.Instance.PlantSeed(_currPtrTile, seed.cropModel))
+            {
+                _playerInv[_selectedSlotHandler.SelectedSlotNum].SetCount(_playerInv[_selectedSlotHandler.SelectedSlotNum].Count - 1);
+            }
         }
     }
 

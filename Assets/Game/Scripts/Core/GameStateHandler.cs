@@ -1,18 +1,24 @@
 ﻿using System;
 using UnityEngine;
+using Zenject;
 
 namespace Core
 {
     public class GameStateHandler : MonoBehaviour
     {
-        public enum GameState { World, Pause, Trade, Mine, Dialogue, Cutscene }
+        [Inject] SignalBus _sb;
+
+        public enum GameState { World, Menu, Trade, Mine, Dialogue, Cutscene }
 
         [SerializeField] private TradeState _tradeState;
         [SerializeField] private WorldState _worldState;
+        [SerializeField] private MenuState _menuState;
 
-        private GameState _currentState;
+        private GameStateBase _currentState;
 
         public static GameStateHandler Instance;
+
+        public GameStateBase CurrentState { get => _currentState; set => _currentState = value; }
 
         private void Awake()
         {
@@ -23,28 +29,25 @@ namespace Core
             }
             Instance = this;
         }
+
         private void Start()
         {
-            _currentState = GameState.World;
-            EnterState(_currentState);
+            SetState(GameState.World);
         }
-
-        private void Update()
+        
+        public void SetState(GameState stateNum)
         {
-            LifeCycle();
-        }
-
-        private void EnterState(GameState state)
-        {
-            switch (state)
+            GameStateBase newState = null;
+            switch (stateNum)
             {
                 case GameState.World:
-                    _worldState.EnterState();
+                    newState = _worldState;
                     break;
-                case GameState.Pause:
+                case GameState.Menu:
+                    newState = _menuState;
                     break;
                 case GameState.Trade:
-                    _tradeState.EnterState();
+                    newState = _tradeState;
                     break;
                 case GameState.Mine:
                     break;
@@ -52,71 +55,25 @@ namespace Core
                     break;
                 case GameState.Cutscene:
                     break;
-                default:
-                    break;
             }
-        }
 
-        private void ExitState(GameState state)
-        {
-            switch (state)
-            {
-                case GameState.World:
-                    _worldState.ExitState();
-                    break;
-                case GameState.Pause:
-                    break;
-                case GameState.Trade:
-                    _tradeState.ExitState();
-                    break;
-                case GameState.Mine:
-                    break;
-                case GameState.Dialogue:
-                    break;
-                case GameState.Cutscene:
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public void ChangeState(GameState newState)
-        {
-            if (newState == _currentState) return;
-            ExitState(_currentState);
+            _currentState?.ExitState();
             _currentState = newState;
-            EnterState(_currentState);
+            _currentState.EnterState();
         }
 
-        private void LifeCycle()
+        public void ToState(GameState stateNum)
         {
-            switch (_currentState)
+            SetState(GameState.World);
+        }
+
+        public void ToState(string stateName)
+        {
+            if (Enum.TryParse(typeof(GameState), stateName, true, out object state))
             {
-                case GameState.World:
-                    break;
-                case GameState.Pause:
-                    break;
-                case GameState.Trade:
-                    break;
-                case GameState.Mine:
-                    break;
-                case GameState.Dialogue:
-                    break;
-                case GameState.Cutscene:
-                    break;
-                default:
-                    break;
+                GameState stateType = (GameState)state;
+                SetState(stateType);
             }
-        }
-
-        public void ToWorldSate()
-        {
-            ChangeState(GameState.World);
-        }
-
-        public void ToTradeSate()
-        {
-            ChangeState(GameState.Trade);
         }
     }
 }
