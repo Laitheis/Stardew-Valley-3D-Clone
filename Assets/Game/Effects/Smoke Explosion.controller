@@ -32,7 +32,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SmokeExplosion
+  m_Name: Smoke Explosion
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:

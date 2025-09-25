@@ -16,6 +16,8 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public LootTable LootTable;
     public TradersTable TradersTable;
     public GameObject FloatingText;
+    public Material OutlineGlowMat;
+    public GameObject StarParticles;
 
 
     public override void InstallBindings()
@@ -31,6 +33,8 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
         Container.BindInstance(LootTable).AsSingle();
         Container.BindInstance(TradersTable).AsSingle();
         Container.BindInstance(FloatingText).WithId("FloatingText");
+        Container.BindInstance(OutlineGlowMat).WithId("OutlineGlow");
+        Container.BindInstance(StarParticles).WithId("StarParticles");
 
         //HACK
         InstallPlayerParam();

@@ -191,19 +191,19 @@ public class PlayerToolHandler : MonoBehaviour
         _waterParticles.Play();
     }
 
-    private void UseHarvest(Vector3 tile)
-    {
-        bool success = CropManager.Instance.HarvestTile(tile, out int quantity, out int quality);
-        if (success)
-        {
-            Debug.Log($"Harvested {quantity} (quality {quality}) at {tile}");
-            // TODO: добавить в инвентарь
-        }
-        else
-        {
-            Debug.Log("Nothing to harvest");
-        }
-    }
+    //private void UseHarvest(Vector3Int tile)
+    //{
+    //    bool success = CropManager.Instance.HarvestTile(tile, out int quantity, out int quality);
+    //    if (success)
+    //    {
+    //        Debug.Log($"Harvested {quantity} (quality {quality}) at {tile}");
+    //        // TODO: добавить в инвентарь
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("Nothing to harvest");
+    //    }
+    //}
 
     private void UseFertilize(Vector3 tile)
     {
@@ -307,7 +307,7 @@ public class PlayerToolHandler : MonoBehaviour
     }
     void SeedHint()
     {
-        if (CheckRadius(_currPtrTile) == false)
+        if (CheckRadius(_currPtrTile) == false || CropManager.Instance.CheckCropOnTile(_currPtrTile))
         {
             _hintVisual.ShowUnavailable(_currPtrTile);
             return;

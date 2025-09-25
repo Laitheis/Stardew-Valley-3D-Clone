@@ -10,6 +10,7 @@ TagManager:
   - InventorySlot
   - Wall
   - PlayerInv
+  - Selectable
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - Ground
   - OverlayPhysicsUI
   - 
-  - 
+  - Outline
   - 
   - 
   - 

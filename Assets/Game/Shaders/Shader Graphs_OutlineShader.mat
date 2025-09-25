@@ -7,23 +7,29 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_SelectedTile
-  m_Shader: {fileID: -6465566751694194690, guid: d3ff0a93275bce9498f86b12ebae44ab,
+  m_Name: Shader Graphs_OutlineShader
+  m_Shader: {fileID: -6465566751694194690, guid: 8f1c3431e575c5d4a83ae59c52cf7774,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
+  m_InvalidKeywords:
+  - _RECEIVE_SHADOWS_OFF
+  - _SURFACE_TYPE_TRANSPARENT
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2985
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: a8d21f27f31cd0a41bd1514420e30e2a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -38,20 +44,28 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BottomHeight: -1
-    - _DebugMode: 0
-    - _Power: 1.8
-    - _PreviewMode: 0
-    - _QueueControl: 0
-    - _QueueOffset: 0
-    - _SimpleVariant: 1
-    - _Speed: 0.4
-    - _TopHeight: 1
-    - _WaveSpeed: 0.1
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _BlendModePreserveSpecular: 1
+    - _CastShadows: 0
+    - _Cull: 2
+    - _DstBlend: 10
+    - _Fade_Distance: 1.35
+    - _QueueControl: 1
+    - _QueueOffset: -15
+    - _ReceiveShadows: 0
+    - _SrcBlend: 5
+    - _Surface: 1
+    - _Thickness: 0.24
+    - _WorkflowMode: 1
+    - _ZTest: 4
+    - _ZWrite: 0
+    - _ZWriteControl: 0
     m_Colors:
-    - _Color: {r: 0.6603774, g: 0.15886435, b: 0.15886435, a: 1}
+    - _Color: {r: 4.000001, g: 2.895536, b: 0, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &6319454460467013990
+--- !u!114 &677595149807322353
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

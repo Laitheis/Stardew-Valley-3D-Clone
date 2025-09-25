@@ -31,3 +31,6 @@ MonoBehaviour:
   TradersTable: {fileID: 11400000, guid: 068191a00d187bf4e8760274817ee34b, type: 2}
   FloatingText: {fileID: 7979911190661116291, guid: d6cfa46978039244887759e4395ee308,
     type: 3}
+  OutlineGlowMat: {fileID: 2100000, guid: f19d648d32866424b95af96f1264f0c5, type: 2}
+  StarParticles: {fileID: 3170510625548222706, guid: 1184273ea57cab744bca2beb0c0ea48d,
+    type: 3}
