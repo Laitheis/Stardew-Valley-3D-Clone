@@ -75,7 +75,7 @@ public class CropManager : MonoBehaviour
 
         TileState state = tileToState[tile];
         state.crop = model;
-        state.defCropId = model.cropId;
+        state.cropModelId = model.cropId;
 
         tileToState[crdsInt] = state;
 
@@ -97,7 +97,7 @@ public class CropManager : MonoBehaviour
             var soil = state.soilVisualInstance;
             Destroy(soil);
             state.soilVisualInstance = Instantiate(_soilWetPrefab, crdsInt, Quaternion.identity);
-            Debug.Log($"[CropManager] Watered {state.defCropId} at {crdsInt}");
+            Debug.Log($"[CropManager] Watered {state.cropModelId} at {crdsInt}");
         }
         else
         {
@@ -179,7 +179,7 @@ public class CropManager : MonoBehaviour
         // например, напрямую уменьшаем daysInStage (аккуратно с минимумом)
         state.daysInStage = Mathf.Max(0, state.daysInStage - 1);
         OnCropFertilized?.Invoke(crdsInt, state);
-        Debug.Log($"[CropManager] Fertilized {state.defCropId} at {crdsInt}");
+        Debug.Log($"[CropManager] Fertilized {state.cropModelId} at {crdsInt}");
     }
 
     // Внешне вызывается при конце дня (или при смене дня)
@@ -273,16 +273,17 @@ public class CropManager : MonoBehaviour
 
     private void SpawnVisualFor(Vector3Int tile, CropModel model, TileState state)
     {
-        RemoveCropVisual(state); // на всякий
+        RemoveCropVisual(state);
         int stageIndex = Mathf.Clamp(state.currentStage, 0, model.stagePrefabs.Length - 1);
         GameObject pref = model.stagePrefabs.Length > 0 ? model.stagePrefabs[stageIndex] : null;
         if (pref == null) return;
 
         Quaternion rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
-        state.cropVisualInstance = Instantiate(pref, tile + model.offset, rotation, this.transform);
+        state.cropVisualInstance = Instantiate(pref, tile + model.objectOffset, rotation, this.transform);
+        state.cropVisualInstance.AddComponent<TilePosHolder>().pos = tile;
     }
 
-    private void UpdateVisualFor(Vector3 tile, CropModel model, TileState state)
+    private void UpdateVisualFor(Vector3Int tile, CropModel model, TileState state)
     {
         if (state.isWithered)
         {
@@ -299,6 +300,7 @@ public class CropManager : MonoBehaviour
             : null;
         if (pref == null) return;
         state.cropVisualInstance = Instantiate(pref, tile, Quaternion.identity, this.transform);
+        state.cropVisualInstance.AddComponent<TilePosHolder>().pos = tile;
 
         if (state.currentStage == model.daysPerStage.Length - 1)
             Instantiate(_particles, state.cropVisualInstance.transform);
@@ -431,7 +433,7 @@ public class CropManager : MonoBehaviour
     //}
     ItemDefinition GetItemByModel(CropModel crop)
     {
-        return _itemDatabase._itemDefinitions.Find(i => ((SeedDefinition)i).cropModel == crop);
+        return _itemDatabase.itemDefinitions.Find(i => ((SeedDefinition)i).cropModel == crop);
     }
 
     public event Action<Vector3Int, TileState> OnCropPlanted;

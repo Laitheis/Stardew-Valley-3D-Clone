@@ -14,18 +14,16 @@ public class PlayerToolHandler : MonoBehaviour
         public ItemType type;
         public GameObject obj;
     }
-    [SerializeField] List<HandItemEntry> _itemEntries;
+    [SerializeField] private List<HandItemEntry> _itemEntries;
     [SerializeField] private List<HandItemEntry> handItemEntries;
-
     [SerializeField] private Grid _grid;
     [SerializeField] private Animator _toolAnimator;
-
-    [SerializeField] ParticleSystem _waterParticles;
+    [SerializeField] private ParticleSystem _waterParticles;
 
     public ItemType activeTool = ItemType.None;
 
     [Header("Planting")]
-    public CropModel selectedSeedModel; // выбранное семя в UI (drag'n'drop или inventory)
+    public CropModel selectedSeedModel; 
 
     [Header("Raycast")]
     public LayerMask groundLayer;
@@ -38,9 +36,9 @@ public class PlayerToolHandler : MonoBehaviour
     [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
     [Inject] private HintVisualizer _hintVisual;
 
-    RaycastHit _raycastHit;
-    Vector3Int _currPtrTile;
-    bool _hitGround;
+    private RaycastHit _raycastHit;
+    private Vector3Int _currPtrTile;
+    private bool _hitGround;
     private void Start()
     {
         mainCam = Camera.main;

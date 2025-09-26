@@ -19,7 +19,7 @@ public class BuyHandler : MonoBehaviour
         if (!e.purchaseSuccess)
             return;
 
-        ItemDefinition def = _database._itemDefinitions.Find(i => i.Name == e.purchasedItem);
+        ItemDefinition def = _database.itemDefinitions.Find(i => i.Name == e.purchasedItem);
         if (def == null)
             return;
 

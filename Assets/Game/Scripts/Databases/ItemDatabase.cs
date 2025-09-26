@@ -4,25 +4,26 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Item Data base", menuName = "Databases/ItemDatabase")]
 public class ItemDatabase : ScriptableObject
 {
-    [SerializeField] public List<ItemDefinition> _itemDefinitions = new List<ItemDefinition>();
-    [SerializeField] public List<CropModel> _cropModels = new List<CropModel>();
+    //TODO
+    [SerializeField] public List<ItemDefinition> itemDefinitions = new List<ItemDefinition>();
+    [SerializeField] public List<CropModel> cropModels = new List<CropModel>();
 
     [ContextMenu("Load All Items From Resources")]
     public void LoadAllFromResources()
     {
-        _itemDefinitions.Clear();
+        itemDefinitions.Clear();
         ItemDefinition[] loadedItems = Resources.LoadAll<ItemDefinition>("");
 
-        _itemDefinitions.AddRange(loadedItems);
-        Debug.Log($"[ItemDatabase] Загружено {_itemDefinitions.Count} предметов из Resources.");
+        itemDefinitions.AddRange(loadedItems);
+        Debug.Log($"[ItemDatabase] Загружено {itemDefinitions.Count} предметов из Resources.");
     }
 
     public bool AddItem(ItemDefinition item)
     {
-        if (item == null || _itemDefinitions.Contains(item))
+        if (item == null || itemDefinitions.Contains(item))
             return false;
 
-        _itemDefinitions.Add(item);
+        itemDefinitions.Add(item);
         return true;
     }
 
@@ -31,25 +32,25 @@ public class ItemDatabase : ScriptableObject
         if (item == null)
             return false;
 
-        return _itemDefinitions.Remove(item);
+        return itemDefinitions.Remove(item);
     }
 
     public ItemDefinition GetItemAt(int index)
     {
-        if (index < 0 || index >= _itemDefinitions.Count)
+        if (index < 0 || index >= itemDefinitions.Count)
             return null;
 
-        return _itemDefinitions[index];
+        return itemDefinitions[index];
     }
 
     public ItemDefinition GetItemByName(string name)
     {
-        return _itemDefinitions.Find(item => item.Name == name);
+        return itemDefinitions.Find(item => item.Name == name);
     }
 
-    public bool Contains(ItemDefinition item) => _itemDefinitions.Contains(item);
+    public bool Contains(ItemDefinition item) => itemDefinitions.Contains(item);
 
-    public IReadOnlyList<ItemDefinition> GetAllItems() => _itemDefinitions;
+    public IReadOnlyList<ItemDefinition> GetAllItems() => itemDefinitions;
 
-    public int Count => _itemDefinitions.Count;
+    public int Count => itemDefinitions.Count;
 }

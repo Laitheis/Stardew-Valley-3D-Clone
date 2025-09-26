@@ -34,3 +34,5 @@ MonoBehaviour:
   OutlineGlowMat: {fileID: 2100000, guid: f19d648d32866424b95af96f1264f0c5, type: 2}
   StarParticles: {fileID: 3170510625548222706, guid: 1184273ea57cab744bca2beb0c0ea48d,
     type: 3}
+  WorldTooltip: {fileID: 2730668312304119523, guid: 0544117fc2121374791c9a444a8dcb90,
+    type: 3}

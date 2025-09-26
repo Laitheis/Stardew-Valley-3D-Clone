@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cropId: 0
   displayName: Cabbage
+  sprite: {fileID: 21300000, guid: 553c9d7f6c265554c88bac049ce64491, type: 3}
   seasons: 00000000
   daysPerStage: 01000000020000000200000001000000
   regrows: 0
@@ -21,10 +22,10 @@ MonoBehaviour:
   withersIfNotInSeason: 1
   multiHarvest: 0
   stagePrefabs:
-  - {fileID: 7524844550248761109, guid: b001fae13f3f13e479072af4ca3555cf, type: 3}
-  - {fileID: 7696582021297932911, guid: d50b926fc28e9c141b66c722f39c008d, type: 3}
-  - {fileID: 4621833817279306533, guid: d3e7ca4e535300f4c813d850afed268f, type: 3}
-  - {fileID: 1962482294451230264, guid: 17e430a23f6bff744a84e787bbb85d25, type: 3}
+  - {fileID: 3039719231857714410, guid: 68a85885dbcef70419026e03a5815c4f, type: 3}
+  - {fileID: 3462429682102500012, guid: 303948f5036a7464c9accc8cbf03c57f, type: 3}
+  - {fileID: 5452047389013972711, guid: e9057e8a45617604db833cff953cd35e, type: 3}
+  - {fileID: 7364227148479361549, guid: 5de59d39568d28f4295697e11fd591ef, type: 3}
   witheredPrefab: {fileID: 7905987767275701217, guid: 04c0446e70e22d948aab6cbda23751bb,
     type: 3}
   worldPrefab: {fileID: 6376372425519703063, guid: f9fc3558dc2fe4f41bb6c7526ca4c2ce,
@@ -33,4 +34,4 @@ MonoBehaviour:
   baseGoldChance: 0.01
   waterStreakSilverMultiplier: 0.02
   waterStreakGoldMultiplier: 0.01
-  offset: {x: 0, y: 0, z: 0}
+  objectOffset: {x: 0, y: 0, z: 0}

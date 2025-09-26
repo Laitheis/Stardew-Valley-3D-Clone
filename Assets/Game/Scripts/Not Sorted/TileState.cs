@@ -6,7 +6,7 @@ public class TileState
 {
     public CropModel crop;
 
-    public string defCropId;          // link to CropModel.cropId (for saving)
+    public string cropModelId;          // link to CropModel.cropId (for saving)
     public Vector3 tilePos;           // tile world position (use integers)
     public int currentStage = 0;      // stage index
     public int daysInStage = 0;       // how many days has been in the current stage

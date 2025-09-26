@@ -6,6 +6,7 @@ public class CropModel : ScriptableObject
 {
     public string cropId;                   // уникальный id (для save/load)
     public string displayName;
+    public Sprite sprite;
     public Season[] seasons;                // допустимые сезоны (если пусто — все)
     public int[] daysPerStage;              // e.g. [1,3,2] (кол-во дней на стадии)
     public bool regrows = false;
@@ -22,7 +23,7 @@ public class CropModel : ScriptableObject
     public float waterStreakSilverMultiplier = 0.02f;
     public float waterStreakGoldMultiplier = 0.01f;
 
-    public Vector3 offset;
+    public Vector3 objectOffset;
 }
 
 public enum Season { Spring, Summer, Fall, Winter }

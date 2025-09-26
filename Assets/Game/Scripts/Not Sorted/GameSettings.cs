@@ -18,6 +18,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public GameObject FloatingText;
     public Material OutlineGlowMat;
     public GameObject StarParticles;
+    public GameObject WorldTooltip;
 
 
     public override void InstallBindings()
@@ -25,16 +26,17 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
         Container.BindInstance(WorldItemPrefab).WithId("WorldItem");
         Container.BindInstance(SmokeExplosionEffect).WithId("SmokeEffect");
         Container.BindInstance(DraggedImagePrefab).WithId("DraggedImagePrefab");
-        Container.BindInstance(ItemDatabase).AsSingle().NonLazy();
+        Container.BindInstance(ItemDatabase).NonLazy();
         Container.BindInstance(ItemSlotPrefab).WithId("ItemSlot");
         Container.BindInstance(SoilPrefab).WithId("Soil");
         Container.BindInstance(SoilWetPrefab).WithId("SoilWet");
         Container.BindInstance(AvailableTilePrefab).WithId("Available");
-        Container.BindInstance(LootTable).AsSingle();
-        Container.BindInstance(TradersTable).AsSingle();
+        Container.BindInstance(LootTable);
+        Container.BindInstance(TradersTable);
         Container.BindInstance(FloatingText).WithId("FloatingText");
         Container.BindInstance(OutlineGlowMat).WithId("OutlineGlow");
         Container.BindInstance(StarParticles).WithId("StarParticles");
+        Container.BindInstance(WorldTooltip).WithId("WorldTooltip");
 
         //HACK
         InstallPlayerParam();
