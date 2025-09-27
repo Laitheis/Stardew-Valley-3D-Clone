@@ -15,13 +15,11 @@ public class ItemInstance
     [System.Serializable]
     public class ChangeableProperties
     {
-        [SerializeField] public string CustomName;
         [SerializeField] public int CustomPrice;
     }
 
     public ItemDefinition ItemDefinition { get => _itemDefinition; set => _itemDefinition = value; }
 
-    public string Name => string.IsNullOrEmpty(Properties.CustomName) ? _itemDefinition.Name : Properties.CustomName;
     public int Price => Properties.CustomPrice != 0 ? Properties.CustomPrice : _itemDefinition.Price;
     public string Guid => _guid;
     public int Count => _count;
@@ -31,7 +29,6 @@ public class ItemInstance
     {
         _itemDefinition = definition;
         Properties = new ChangeableProperties();
-        Properties.CustomName = definition.Name;
         Properties.CustomPrice = definition.Price;
         _guid = System.Guid.NewGuid().ToString();
         _count = count; //Mathf.Clamp(count, 1, definition.MaxCountInStack);
@@ -40,16 +37,6 @@ public class ItemInstance
     public ItemInstance()
     {
         _guid = System.Guid.NewGuid().ToString();
-    }
-
-    public bool Rename(string newName)
-    {
-        if (_itemDefinition.IsRenameable && !string.IsNullOrEmpty(newName))
-        {
-            Properties.CustomName = newName;
-            return true;
-        }
-        return false;
     }
 
     public void Add(int amount, out int overflow)

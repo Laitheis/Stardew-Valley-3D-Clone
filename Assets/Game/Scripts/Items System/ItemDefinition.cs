@@ -7,7 +7,6 @@ public class ItemDefinition : ScriptableObject
 
     [SerializeField] private string _name;
     public ItemType type = ItemType.None;
-    [SerializeField] private bool _isRenameable;
     [SerializeField][Min(1)] private int _maxCountInStack;
     [SerializeField] private int _price;
     [SerializeField][TextArea] private string _description;
@@ -15,7 +14,6 @@ public class ItemDefinition : ScriptableObject
     [SerializeField] private GameObject _prefab;
 
     public string Name => _name;
-    public bool IsRenameable => _isRenameable;
     public int MaxCountInStack => _maxCountInStack;
     public int Price => _price;
     public string Description => _description;

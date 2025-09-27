@@ -6,7 +6,7 @@ public class PickableItem : MonoBehaviour
 {
     [Inject(Id = "Player")] private GameObject _player;
     private float _pickupDistance;
-    private ItemInstance _item;
+    [SerializeField] private ItemInstance _item;
 
     private bool _isPickable;
     private float _unpickableTimer = 2f;

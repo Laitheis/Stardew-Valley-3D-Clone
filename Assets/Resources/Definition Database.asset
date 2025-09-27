@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce44a37b9506eb247aa94f2bb0924ac3, type: 3}
+  m_Name: Definition Database
+  m_EditorClassIdentifier: 
+  itemDefinitions:
+  - {fileID: 11400000, guid: 92b25cd815cc2bb4081c039bb6b2fbf8, type: 2}
+  - {fileID: 11400000, guid: d29cb1d45b3ad4547a39878502bf5c7a, type: 2}
+  - {fileID: 11400000, guid: 4bf136181f632414ea8d14010229ce70, type: 2}
+  - {fileID: 11400000, guid: a21ab706d2f551b448bf8f583e742388, type: 2}
+  - {fileID: 11400000, guid: 66256f10b8b2a2a44a695102e42b5b6a, type: 2}
+  - {fileID: 11400000, guid: 9b6b52c1f90289a4da7b1175804badb8, type: 2}
+  - {fileID: 11400000, guid: 56b853d6fed194147a2645b73c44b436, type: 2}
+  cropModels:
+  - {fileID: 11400000, guid: dbffdc1b6ca5a284fbf5608db4853996, type: 2}

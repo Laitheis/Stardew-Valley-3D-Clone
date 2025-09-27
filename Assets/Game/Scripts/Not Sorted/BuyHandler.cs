@@ -3,7 +3,7 @@ using Zenject;
 
 public class BuyHandler : MonoBehaviour
 {
-    [Inject] ItemDatabase _database;
+    [Inject] DefinitionDatabase _database;
     [Inject] UIDragController _dragController;
     [Inject] SignalBus _signalBus;
 

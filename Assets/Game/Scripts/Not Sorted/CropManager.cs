@@ -20,7 +20,7 @@ public class CropManager : MonoBehaviour
 
     [Inject(Id = ("Soil"))] private GameObject _soilPrefab; 
     [Inject(Id = ("SoilWet"))] private GameObject _soilWetPrefab;
-    [Inject] private ItemDatabase _itemDatabase;
+    [Inject] private DefinitionDatabase _itemDatabase;
     [Inject(Id = "StarParticles")] GameObject _particles;
     [Inject] private SignalBus _signalBus;
 
@@ -433,7 +433,7 @@ public class CropManager : MonoBehaviour
     //}
     ItemDefinition GetItemByModel(CropModel crop)
     {
-        return _itemDatabase.itemDefinitions.Find(i => ((SeedDefinition)i).cropModel == crop);
+        return _itemDatabase.itemDefinitions.Find(i => i is CropDefinition c && c.cropModel == crop);
     }
 
     public event Action<Vector3Int, TileState> OnCropPlanted;
@@ -441,5 +441,4 @@ public class CropManager : MonoBehaviour
     public event Action<Vector3Int, TileState> OnCropGrown;
     public event Action<Vector3Int, TileState> OnCropFertilized;
     public event Action<Vector3Int, TileState, int, int> OnCropHarvested;
-
 }

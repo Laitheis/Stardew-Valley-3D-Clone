@@ -8,7 +8,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public GameObject WorldItemPrefab;
     public GameObject SmokeExplosionEffect;
     public Image DraggedImagePrefab;
-    public ItemDatabase ItemDatabase;
+    public DefinitionDatabase ItemDatabase;
     public GameObject ItemSlotPrefab;
     public GameObject SoilPrefab;
     public GameObject SoilWetPrefab;

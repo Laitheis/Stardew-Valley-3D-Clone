@@ -13,9 +13,11 @@ GameObject:
   - component: {fileID: 3661432386472078190}
   - component: {fileID: 2260363902224498454}
   - component: {fileID: 4315805301389335793}
+  - component: {fileID: -6983794975991876197}
+  - component: {fileID: 670624773350440306}
   m_Layer: 0
   m_Name: cabbage1
-  m_TagString: Selectable
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3462429682102500012}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.04511791, y: 0.04511791, z: 0.04511791}
   m_ConstrainProportionsScale: 1
@@ -63,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 42e924e0c76285d4985dfa8afd479b99, type: 2}
+  - {fileID: 2100000, guid: 3ddbdb3c1d2cdc54f8b078953e59082b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -119,3 +121,33 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 11.359864, y: 9.616252, z: 11.273583}
   m_Center: {x: 0.026223902, y: 4.8030257, z: -0.0061810026}
+--- !u!114 &-6983794975991876197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3462429682102500012}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 2.9960783, g: 1.9749205, b: 0, a: 1}
+  outlineWidth: 5
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
+--- !u!114 &670624773350440306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3462429682102500012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6c35991cb320d04780fa0054b52b60d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

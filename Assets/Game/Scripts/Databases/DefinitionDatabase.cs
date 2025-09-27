@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Item Data base", menuName = "Databases/ItemDatabase")]
-public class ItemDatabase : ScriptableObject
+public class DefinitionDatabase : ScriptableObject
 {
     //TODO
     [SerializeField] public List<ItemDefinition> itemDefinitions = new List<ItemDefinition>();
