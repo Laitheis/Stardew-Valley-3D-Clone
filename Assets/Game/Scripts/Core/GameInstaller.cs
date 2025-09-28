@@ -17,6 +17,7 @@ public class GameInstaller : MonoInstaller
     public TraderHandler TraderHandler;
     public CurrencyManager CurrencyManager;
     public UIDragController UIDragController;
+    public Camera UICamera;
 
 
 
@@ -38,6 +39,7 @@ public class GameInstaller : MonoInstaller
         Container.BindInstance(TraderHandler);
         Container.BindInstance(CurrencyManager);
         Container.BindInstance(UIDragController);
+        Container.BindInstance(UICamera);
 
 
         SignalBusInstaller.Install(Container);

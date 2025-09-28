@@ -6,18 +6,14 @@ using Zenject;
 
 public class SlotTooltipNotifier : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    private ItemTooltipView _tooltipView;
+    [Inject] private ItemTooltipView _tooltipView;
 
-    [Inject]
-    public void Constructor(ItemTooltipView tooltipView)
-    {
-        _tooltipView = tooltipView;
-    }
+    private Vector2 _offset = new Vector2(45, 45);
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         ItemInstance itemInstance = transform.parent.GetComponent<ItemSlot>().ItemInstance;
-        _tooltipView.ShowTooltip(itemInstance, transform.GetComponent<RectTransform>());
+        _tooltipView.ShowTooltip(itemInstance.ItemDefinition, transform.GetComponent<RectTransform>(), _offset, false);
     }
 
     public void OnPointerExit(PointerEventData eventData)

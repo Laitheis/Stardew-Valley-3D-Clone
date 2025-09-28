@@ -2765,12 +2765,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -4207,8 +4207,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4285953654
-  m_fontColor: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 1}
+    rgba: 4282598211
+  m_fontColor: {r: 0.26415092, g: 0.26415092, b: 0.26415092, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -9827,8 +9827,6 @@ GameObject:
   - component: {fileID: 1229181845}
   - component: {fileID: 1229181847}
   - component: {fileID: 1229181846}
-  - component: {fileID: 1229181848}
-  - component: {fileID: 1229181849}
   - component: {fileID: 1229181851}
   - component: {fileID: 1229181850}
   m_Layer: 5
@@ -9899,36 +9897,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1229181844}
   m_CullTransparentMesh: 1
---- !u!114 &1229181848
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1229181844}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f549714783657441a8a9bcbc9fc07cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Name: {fileID: 373044831}
-  Type: {fileID: 936600817}
-  Description: {fileID: 970431452}
---- !u!114 &1229181849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1229181844}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ad05fe1e62157d48856f7d455439d0c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _movableElement: {fileID: 1229181845}
-  _canvas: {fileID: 579197918}
-  offset: {x: 40, y: 40}
 --- !u!114 &1229181850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11323,6 +11291,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1911158849}
   - component: {fileID: 1911158848}
+  - component: {fileID: 1911158851}
+  - component: {fileID: 1911158850}
   m_Layer: 0
   m_Name: TooltipView
   m_TagString: Untagged
@@ -11342,8 +11312,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a51cedaec43e9e4ba91df07eff66e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fitter: {fileID: 1229181849}
-  _tooltip: {fileID: 1229181848}
+  _fitter: {fileID: 1911158850}
+  _tooltip: {fileID: 1911158851}
 --- !u!4 &1911158849
 Transform:
   m_ObjectHideFlags: 0
@@ -11359,6 +11329,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 542123464}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1911158850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911158847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ad05fe1e62157d48856f7d455439d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _movableElement: {fileID: 1229181845}
+  _canvas: {fileID: 579197918}
+--- !u!114 &1911158851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911158847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f549714783657441a8a9bcbc9fc07cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: {fileID: 373044831}
+  Type: {fileID: 936600817}
+  Description: {fileID: 970431452}
 --- !u!1 &1939870685
 GameObject:
   m_ObjectHideFlags: 0
@@ -11915,6 +11914,7 @@ MonoBehaviour:
   TraderHandler: {fileID: 744362557}
   CurrencyManager: {fileID: 1367322057}
   UIDragController: {fileID: 335679032}
+  UICamera: {fileID: 1848389037}
 --- !u!1 &2113980393
 GameObject:
   m_ObjectHideFlags: 0
@@ -11944,7 +11944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c86e43c4c5bba044291fe47c58479fa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hlColor: {r: 2.9960783, g: 1.9749205, b: 0, a: 1}
+  hlColor: {r: 1.3041189, g: 0.8596342, b: 0, a: 1}
 --- !u!4 &2113980395
 Transform:
   m_ObjectHideFlags: 0

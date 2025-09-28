@@ -8,21 +8,13 @@ public class UIElementFitter : MonoBehaviour
     private RectTransform _targetElement;
     [SerializeField] private Canvas _canvas;
 
-    public Vector2 offset;
-
-    public void ShowAt(RectTransform target)
+    public void ShowAt(Vector2 targetPos, Vector2 offset)
     {
-        LayoutRebuilder.ForceRebuildLayoutImmediate(_movableElement);
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(_movableElement);
 
-        _targetElement = target;
-
-        Vector3[] worldCorners = new Vector3[4];
-        target.GetWorldCorners(worldCorners);
-
-        Vector3 targetCenter = (worldCorners[0] + worldCorners[2]) / 2f;
-
-        _movableElement.transform.position = target.position + (Vector3)offset;
-
+        _movableElement.anchoredPosition = ((Vector3)targetPos) + (Vector3)offset;
+        _movableElement.anchoredPosition = new Vector3(_movableElement.anchoredPosition.x, _movableElement.anchoredPosition.y, 1);
+        Debug.Log(targetPos);
         ClampToCanvas();
     }
 

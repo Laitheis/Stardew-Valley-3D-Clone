@@ -1,6 +1,7 @@
 ﻿
 using InventorySystem;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -15,6 +16,7 @@ public class TraderHandler : MonoBehaviour
 
     [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
     [Inject] private TradersTable _tradersTable;
+    [Inject] private DefinitionDatabase _definitionDatabase;
     [Inject] private CurrencyManager _currencyManager;
     [Inject] private SignalBus _signalBus;
     [Inject] private UIDragController _dragController;
@@ -78,15 +80,20 @@ public class TraderHandler : MonoBehaviour
         btn.price = item.ItemDefinition.Price;
     }
 
-    public bool TryPurchase(string itemId, CurrencyType currency, int pricePerPiece, int quantity, object seller = null)
+    public bool TryPurchase(string itemName, CurrencyType currency, int pricePerPiece, int quantity, object seller = null)
     {
         if (_dragController.ItemInstance != null && _dragController.ItemInstance.IsFull())
         {
-            //TODO floating notification
             return false;
         }
 
-        int overallPrice = pricePerPiece * quantity;
+        var itemDef = _definitionDatabase.itemDefinitions.FirstOrDefault(i => i.name == itemName);
+        if (_dragController.ItemInstance != null && _dragController.ItemInstance.ItemDefinition != itemDef)
+        {
+            return false;
+        }
+
+            int overallPrice = pricePerPiece * quantity;
         int before = _currencyManager.currencies[currency];
 
         bool success = _currencyManager.TryDeduct(currency, overallPrice, false);
@@ -97,7 +104,7 @@ public class TraderHandler : MonoBehaviour
             type = currency,
             current = after,
             purchaseSuccess = success,
-            purchasedItem = itemId,
+            purchasedItem = itemName,
             purchasedCount = quantity,
             change = success ? after - before : 0
         };
