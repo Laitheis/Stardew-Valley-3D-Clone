@@ -48,13 +48,13 @@ public class WorldObjectSelector : MonoBehaviour
                     refs = _worldTooltip.GetComponent<WorldTooltipRefs>();
 
                     Vector3Int tilePos = _currentTarget.GetComponent<TilePosHolder>().pos;
-                    var tileState = CropManager.Instance.tileToState[tilePos];
+                    var tileState = CropManager.Instance.CropTiles[tilePos];
 
-                    CropModel cropModel = _itemDatabase.cropModels.Find(c => c.cropId == tileState.cropModelId);
+                    CropModel cropModel = _itemDatabase.cropModels.Find(c => c.cropId == tileState.CropState.cropModelId);
 
                     refs.icon.sprite = cropModel.sprite;
                     refs.name.text = cropModel.displayName;
-                    refs.description.text = "Stage: " + (tileState.currentStage + 1) + "/" + cropModel.daysPerStage.Length;
+                    refs.description.text = "Stage: " + (tileState.CropState.currentStage + 1) + "/" + cropModel.daysPerStage.Length;
 
                     break;
                 default:
