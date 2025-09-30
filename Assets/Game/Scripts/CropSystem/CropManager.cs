@@ -6,22 +6,6 @@ using Zenject;
 
 public class CropManager : MonoBehaviour, IBootstrapLoad
 {
-    public static CropManager Instance;
-
-    public class FarmTiles
-    {
-        private Dictionary<Vector3Int, TileData> _tiles = new();
-
-        public IReadOnlyDictionary<Vector3Int, TileData> TilesCollection => _tiles;
-
-        public void AddTile(Vector3Int pos, TileData data) => _tiles[pos] = data;
-        public void RemoveTile(Vector3Int pos) => _tiles.Remove(pos);
-    }
-
-    public CropModel[] availableCropModels;
-
-    [SerializeField] private string saveFileName = "cropsave.json";
-
     [Inject(Id = ("Soil"))] private GameObject _soilPrefab;
     [Inject(Id = ("SoilWet"))] private GameObject _soilWetPrefab;
     [Inject] private DefinitionDatabase _itemDatabase;
@@ -29,24 +13,11 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
     [Inject] private SignalBus _signalBus;
     [Inject] FarmManager _farmManager;
 
-    public Dictionary<Vector3Int, TileData> CropTiles { 
-        get => _cropTiles;
-        set
-        {
-            _cropTiles = value;
-            _farmManager.farmTiles.TilesCollection = value;
-        }
-    }
+    private Dictionary<Vector3Int, TileState> _farmTiles;
 
     public void Init()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-
+        _farmTiles = _farmManager.farmTiles.TilesCollection;
     }
 
     public static Vector3Int TilePosFromWorld(Vector3 worldPos)
@@ -56,161 +27,210 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
         return new Vector3Int(x, 0, z);
     }
 
-    public void PlowTile(Vector3 tile)
+    public void PlowTile(Vector3Int tile)
     {
-        Vector3Int crdsInt = Vector3Int.CeilToInt(tile);
-        if (CropTiles.ContainsKey(crdsInt)) { Debug.Log($"[CropManager] Can't plow {crdsInt}: already occupied"); return; }
+        if (_farmTiles.ContainsKey(tile))
+        {
+            Debug.Log($"[CropManager] Can't plow {tile}: already occupied"); return;
+        }
 
-        var cropState = new TileState();
-        cropState.soilVisualInstance = Instantiate(_soilPrefab, crdsInt, Quaternion.identity);
+        var cropState = new CropState();
+        SetSoilVisual(tile, false);
         cropState.soilVisualInstance.GetComponent<Animator>().SetTrigger("Plow");
 
-        Instance.CropTiles.Add(crdsInt, new TileData { CropState = cropState });
+        _farmTiles.Add(tile, new TileState { objectOnTile = cropState });
 
-        Debug.Log($"Tile {crdsInt} plowed");
+        Debug.Log($"Tile {tile} plowed");
     }
 
     public bool IsPlowed(Vector3Int tile)
     {
-        return CropTiles.ContainsKey(tile);
+        return _farmTiles.ContainsKey(tile) && _farmTiles[tile].objectOnTile is CropState;
     }
 
     public void UnplowTile(Vector3Int tile)
     {
-        Vector3Int crdsInt = Vector3Int.CeilToInt(tile);
-        CropTiles.Remove(crdsInt);
+        if (_farmTiles.ContainsKey(tile) && _farmTiles[tile].objectOnTile is CropState state)
+        {
+            if (state.crop != null)
+            {
+                if (state.currentStage == state.crop.daysPerStage.Length - 1)
+                {
+                    // Drop plant
+                    HarvestTile(tile);
+                }
+                else
+                {
+                    // Drop seed
+                    SeedDefinition seed = (SeedDefinition)_itemDatabase.itemDefinitions.Find(i => i is SeedDefinition seed && seed.cropModel == state.crop);
+                    ItemInstance item = new ItemInstance(seed, 1);
+                    _signalBus.Fire(new ItemDropEvent(tile, item, false));
+                }
+            }
+
+            // Remove soil
+            if (state.soilVisualInstance != null)
+                Destroy(state.soilVisualInstance);
+
+            _farmTiles[tile].objectOnTile = null;
+        }
     }
 
     public bool PlantSeed(Vector3Int tile, CropModel model)
     {
-        Vector3Int crdsInt = Vector3Int.CeilToInt(tile);
+        if (!IsPlowed(tile))
+        {
+            Debug.Log($"[CropManager] Can't plant {model.cropId} at {tile}: tile not plowed"); return false;
+        }
+        if (IsPlanted(tile))
+        {
+            Debug.Log($"[CropManager] Can't plant {model.cropId} at {tile}: already occupied"); return false;
+        }
 
-        if (!IsPlowed(crdsInt))
-        { Debug.Log($"[CropManager] Can't plant {model.cropId} at {crdsInt}: tile not plowed"); return false; }
-        if (TryGetCropState(crdsInt, out TileState s) && s.crop != null)
-        { Debug.Log($"[CropManager] Can't plant {model.cropId} at {crdsInt}: already occupied"); return false; }
-
-        TileState state = CropTiles[tile].CropState;
+        CropState state = _farmTiles[tile].objectOnTile as CropState;
         state.crop = model;
         state.cropModelId = model.cropId;
 
-        CropTiles[crdsInt].CropState = state;
+        UpdateCropVisual(tile);
 
-        SpawnVisualFor(crdsInt, model, state);
-
-        OnCropPlanted?.Invoke(crdsInt, state);
         Debug.Log($"[CropManager] Planted {model.displayName} at {tile}");
         return true;
     }
 
-    public void WaterTile(Vector3 tile)
+    public bool IsPlanted(Vector3Int tile)
     {
-        Vector3Int crdsInt = Vector3Int.CeilToInt(tile);
+        return _farmTiles.TryGetValue(tile, out TileState s) && (s.objectOnTile is CropState st && st.crop != null);
+    }
 
-        if (TryGetCropState(crdsInt, out TileState state))
+    public void WaterTile(Vector3Int tile)
+    {
+        if (_farmTiles.TryGetValue(tile, out TileState s) && (s.objectOnTile is CropState state && state.crop != null))
         {
             state.wateredToday = true;
-            OnCropWatered?.Invoke(crdsInt, state);
             var soil = state.soilVisualInstance;
             Destroy(soil);
-            state.soilVisualInstance = Instantiate(_soilWetPrefab, crdsInt, Quaternion.identity);
-            Debug.Log($"[CropManager] Watered {state.cropModelId} at {crdsInt}");
+            state.soilVisualInstance = Instantiate(_soilWetPrefab, tile, Quaternion.identity);
+            Debug.Log($"[CropManager] Watered {state.cropModelId} at {tile}");
         }
         else
         {
-            Debug.Log($"[CropManager] Tried watering {crdsInt}, but no crop here");
+            Debug.Log($"[CropManager] Tried watering {tile}, but no crop here");
         }
     }
 
     public bool IsWatered(Vector3Int tile)
     {
-        if (TryGetCropState(tile, out TileState state) && state.wateredToday)
+        if (_farmTiles.TryGetValue(tile, out TileState state) && state.objectOnTile is CropState s && s.wateredToday)
             return true;
         return false;
     }
 
-    // Harvest (return true if succsess)
-    public bool HarvestTile(Vector3Int tile, out int quantity, out int quality)
+    public bool HarvestTile(Vector3Int tile)
     {
-        Vector3Int crdsInt = Vector3Int.CeilToInt(tile);
+        int quantity = 0;
+        int quality = 0;
 
-        quantity = 0;
-        quality = 0;
-        if (!TryGetCropState(crdsInt, out TileState state)) { Debug.Log($"[CropManager] Nothing to harvest at {crdsInt}"); return false; }
-        //if (state.isWithered) { Debug.Log($"[CropManager] Crop at {crdsInt} is withered, can't harvest"); return false; }
-        if (!state.isReadyToHarvest) { Debug.Log($"[CropManager] Crop at {crdsInt} not ready"); return false; }
+        if (!_farmTiles.TryGetValue(tile, out TileState s))
+        {
+            Debug.Log($"[CropManager] Nothing to harvest at {tile}"); return false;
+        }
+        if (!(s.objectOnTile is CropState st))
+        {
+            Debug.Log($"[CropManager] Object on {tile} is not crop"); return false;
+        }
+        if (!(st.isReadyToHarvest))
+        {
+            Debug.Log($"[CropManager] Crop at {tile} is not ready"); return false;
+        }
 
-        CropModel model = CropTiles[crdsInt].CropState.crop;
+        CropState state = _farmTiles[tile].objectOnTile as CropState;
 
-        quality = CalculateQuality(state, model);
-        quantity = CalculateQuantity(state, model);
-
-        // Drop to world
-        OnCropHarvested?.Invoke(crdsInt, state, quantity, quality);
+        quality = CalculateQuality(state);
+        quantity = CalculateQuantity(state);
 
         ItemDefinition itemDef = GetItemByModel(state.crop);
         _signalBus.Fire(new ItemDropEvent(tile, new ItemInstance(itemDef, 1), false));
 
-        if (model.regrows)
+        if (state.crop.regrows)
         {
             state.currentStage = Mathf.Max(0, state.currentStage - 1);
             state.daysInStage = 0;
             state.isReadyToHarvest = false;
             state.daysSincePlanted = 0;
+            UpdateCropVisual(tile);
         }
         else
         {
-            // remove plant
-
-            //state.isWithered = false;
-            //state.wateredToday = false;
-
-            //state.crop = null;
-            //state.cropVisualInstance = null;
-            //state.currentStage = 0;
+            // Remove plant
 
             RemoveCropVisual(state);
 
             bool isWatered = state.wateredToday;
             var soilVisual = state.soilVisualInstance;
 
-            CropTiles.Remove(tile);
-
-            CropTiles.Add(tile, new TileData() { CropState = new TileState() { soilVisualInstance = soilVisual, wateredToday = isWatered } });
+            _farmTiles[tile] = new TileState() { objectOnTile = new CropState() { soilVisualInstance = soilVisual, wateredToday = isWatered } };
         }
 
-        Debug.Log($"[CropManager] Harvested {model.cropId} at {tile} → {quantity} items, quality {quality}");
+        Debug.Log($"[CropManager] Harvested {state.crop.cropId} at {tile} → {quantity} items, quality {quality}");
         return true;
     }
 
-    public void FertilizeTile(Vector3 tile)
+    public void FertilizeTile(Vector3Int tile, string name)
     {
-        Vector3Int crdsInt = Vector3Int.CeilToInt(tile);
-
-        if (!TryGetCropState(crdsInt, out TileState state))
+        if (!_farmTiles.TryGetValue(tile, out TileState s))
         {
-            Debug.Log($"[CropManager] Can't fertilize {crdsInt}: no crop");
-            return;
+            Debug.Log($"[CropManager] Can't fertilize {tile}: nothing here"); return;
+        }
+        if (!(s.objectOnTile is CropState state))
+        {
+            Debug.Log($"[CropManager] Can't fertilize {tile}: object on tile is not crop or soil"); return;
         }
 
-        // например, напрямую уменьшаем daysInStage (аккуратно с минимумом)
-        state.daysInStage = Mathf.Max(0, state.daysInStage - 1);
-        OnCropFertilized?.Invoke(crdsInt, state);
-        Debug.Log($"[CropManager] Fertilized {state.cropModelId} at {crdsInt}");
+        switch (name)
+        {
+            case "Basic":
+                state.isFertilizedQualityBasic = true;
+                break;
+            case "BasicPro":
+                state.isFertilizedQualityPro = true;
+                break;
+            case "Speed":
+                state.isFertilizedSpeed = true;
+                break;
+            case "SpeedPro":
+                state.isFertilizedSpeedPro = true;
+                break;
+            case "Retaining":
+                state.isFertilizedRetaining = true;
+                break;
+            case "Tree":
+                state.isFertilizedTree = true;
+                break;
+            default:
+                break;
+        }
+
+        Debug.Log($"[CropManager] Fertilized {state.cropModelId} at {tile}");
     }
 
-    // Внешне вызывается при конце дня (или при смене дня)
-    // currentSeason можно брать из GameTimeManager (здесь передаём параметром)
+    public void TryHarvestByHand(Vector3Int tile)
+    {
+        HarvestTile(tile);
+    }
+
     public void OnDayEnd(Season currentSeason, HashSet<Vector3Int> irrigatedBySprinklers = null)
     {
         irrigatedBySprinklers = irrigatedBySprinklers ?? new HashSet<Vector3Int>();
 
         // Copy keys
-        var tiles = CropTiles.Keys.ToArray();
+        var tiles = _farmTiles.Keys.ToArray();
         List<Vector3Int> tilesToRemove = new List<Vector3Int>();
         foreach (var tile in tiles)
         {
-            if (!TryGetCropState(tile, out TileState state)) continue;
+            // Continue if tile is not crop
+            if (!(_farmTiles.TryGetValue(tile, out TileState s) && s.objectOnTile is CropState state)) continue;
+
+            // Continue and destroy soil if crop is empty
             if (state.crop == null)
             {
                 Destroy(state.soilVisualInstance);
@@ -224,7 +244,7 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
                 if (!state.crop.seasons.Contains(currentSeason))
                 {
                     state.isWithered = true;
-                    ReplaceVisualWithWithered(tile, state);
+                    UpdateCropVisual(tile);
                     continue;
                 }
             }
@@ -232,11 +252,19 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
             if (state.isReadyToHarvest) continue;
 
             // If it was watered - advance progress, else dry day
+            bool waterToNextDay = false;
             if (state.wateredToday)
             {
-                state.daysInStage += 1;
-                state.daysSincePlanted += 1;
+                state.daysInStage++;
+                state.daysSincePlanted++;
                 state.dryDays = 0;
+                if (state.isFertilizedSpeed) state.daysInStage++;
+                if (state.isFertilizedSpeedPro) state.daysInStage += 2;
+                if (state.isFertilizedRetaining)
+                {
+                    bool result = UnityEngine.Random.Range(0, 2) == 1 ? true : false;
+                    if (result) waterToNextDay = true;
+                }
             }
             else
             {
@@ -245,7 +273,7 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
                 if (state.dryDays >= 3)
                 {
                     state.isWithered = true;
-                    ReplaceVisualWithWithered(tile, state);
+                    UpdateCropVisual(tile);
                     goto SetDrySoil;
                 }
             }
@@ -261,14 +289,16 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
                 {
                     state.currentStage++;
                     state.daysInStage = 0;
-                    OnCropGrown?.Invoke(tile, state);
-                    UpdateVisualFor(tile, state.crop, state);
+                    UpdateCropVisual(tile);
                 }
             }
 
         SetDrySoil:
-            state.wateredToday = false;
-            SetSoilVisual(state, tile, false);
+            if (!waterToNextDay)
+            {
+                state.wateredToday = false;
+                SetSoilVisual(tile, false);
+            }
 
             // Ready to harvest
             state.isReadyToHarvest = state.currentStage == state.crop.stagePrefabs.Length - 1;
@@ -277,62 +307,50 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
         // Use sprinklers
         foreach (var irrig in irrigatedBySprinklers)
         {
-            if (TryGetCropState(irrig, out TileState state))
+            if (_farmTiles.TryGetValue(irrig, out TileState s) && s.objectOnTile is CropState state)
                 state.wateredToday = true;
         }
 
         // Clear empty tiles
         foreach (var tile in tilesToRemove)
         {
-            CropTiles.Remove(tile);
+            _farmTiles.Remove(tile);
         }
     }
 
-    private void SpawnVisualFor(Vector3Int tile, CropModel model, TileState state)
+    private void UpdateCropVisual(Vector3Int tile)
     {
-        RemoveCropVisual(state);
-        int stageIndex = Mathf.Clamp(state.currentStage, 0, model.stagePrefabs.Length - 1);
-        GameObject pref = model.stagePrefabs.Length > 0 ? model.stagePrefabs[stageIndex] : null;
-        if (pref == null) return;
+        _farmTiles.TryGetValue(tile, out TileState s);
+        CropState state = s.objectOnTile as CropState;
+        if (state == null) return;
 
-        Quaternion rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
-        state.cropVisualInstance = Instantiate(pref, tile + model.objectOffset, rotation, this.transform);
-        state.cropVisualInstance.AddComponent<TilePosHolder>().pos = tile;
-    }
-
-    private void UpdateVisualFor(Vector3Int tile, CropModel model, TileState state)
-    {
         if (state.isWithered)
         {
-            ReplaceVisualWithWithered(tile, state);
+            RemoveCropVisual(state);
+
+            if (state.crop.witheredPrefab != null)
+            {
+                state.cropVisualInstance = Instantiate(state.crop.witheredPrefab, tile, Quaternion.identity, this.transform);
+            }
             return;
         }
-        // смена префаба при смене стадии
-        if (state.cropVisualInstance != null)
-            Destroy(state.cropVisualInstance);
 
-        int stageIndex = Mathf.Clamp(state.currentStage, 0, model.stagePrefabs.Length - 1);
-        GameObject pref = model.stagePrefabs.Length > 0
-            ? model.stagePrefabs[stageIndex]
+        RemoveCropVisual(state);
+
+        int stageIndex = Mathf.Clamp(state.currentStage, 0, state.crop.stagePrefabs.Length - 1);
+        GameObject pref = state.crop.stagePrefabs.Length > 0
+            ? state.crop.stagePrefabs[stageIndex]
             : null;
         if (pref == null) return;
-        state.cropVisualInstance = Instantiate(pref, tile, Quaternion.identity, this.transform);
+
+        state.cropVisualInstance = Instantiate(pref, tile, Quaternion.identity);
         state.cropVisualInstance.AddComponent<TilePosHolder>().pos = tile;
 
-        if (state.currentStage == model.daysPerStage.Length - 1)
+        if (state.currentStage == state.crop.daysPerStage.Length - 1)
             Instantiate(_particles, state.cropVisualInstance.transform);
     }
 
-    private void ReplaceVisualWithWithered(Vector3 tile, TileState state)
-    {
-        RemoveCropVisual(state);
-        if (state.crop.witheredPrefab != null)
-        {
-            state.cropVisualInstance = Instantiate(state.crop.witheredPrefab, tile, Quaternion.identity, this.transform);
-        }
-    }
-
-    private void RemoveCropVisual(TileState state)
+    private void RemoveCropVisual(CropState state)
     {
         if (state == null) return;
         if (state.cropVisualInstance != null)
@@ -342,17 +360,18 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
         }
     }
 
-    private void SetSoilVisual(TileState state, Vector3Int crdsInt, bool wet)
+    private void SetSoilVisual(Vector3Int tile, bool wet)
     {
+        CropState state = _farmTiles[tile].objectOnTile as CropState;
         var soil = state.soilVisualInstance;
         Destroy(soil);
-        state.soilVisualInstance = wet ? Instantiate(_soilWetPrefab, crdsInt, Quaternion.identity) : Instantiate(_soilPrefab, crdsInt, Quaternion.identity);
+        state.soilVisualInstance = wet ? Instantiate(_soilWetPrefab, tile, Quaternion.identity) : Instantiate(_soilPrefab, tile, Quaternion.identity);
     }
 
-    private int CalculateQuality(TileState state, CropModel model)
+    private int CalculateQuality(CropState state)
     {
-        float chanceSilver = model.baseSilverChance + model.waterStreakSilverMultiplier;
-        float chanceGold = model.baseGoldChance + model.waterStreakGoldMultiplier;
+        float chanceSilver = state.crop.baseSilverChance + state.crop.waterStreakSilverMultiplier;
+        float chanceGold = state.crop.baseGoldChance + state.crop.waterStreakGoldMultiplier;
 
         chanceSilver = Mathf.Clamp01(chanceSilver);
         chanceGold = Mathf.Clamp01(chanceGold);
@@ -363,30 +382,28 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
         return 0; // normal
     }
 
-    private int CalculateQuantity(TileState state, CropModel model)
+    private int CalculateQuantity(CropState state)
     {
-        // базово 1, модификаторы по качеству/модели
         int q = 1;
-        if (model.multiHarvest) q += UnityEngine.Random.Range(0, 2); // 0..1 additional
+        if (state.crop.multiHarvest) q += UnityEngine.Random.Range(0, 2); // 0..1 additional
         return q;
     }
 
-    bool TryGetCropState(Vector3Int tile, out TileState state)
+    public bool CheckCropOnTile(Vector3Int tile)
     {
-        state = null;
-        if (CropTiles.TryGetValue(tile, out TileData data) && data.CropState != null)
-        {
-            state = data.CropState;
-            return true;
-        }
-        return false;
+        return _farmTiles.TryGetValue(tile, out TileState s) && s.objectOnTile is CropState state && state.crop != null;
+    }
+
+    private ItemDefinition GetItemByModel(CropModel cropModel)
+    {
+        return _itemDatabase.itemDefinitions.Find(i => i is CropDefinition c && c.cropModel == cropModel);
     }
 
     [Serializable]
     public struct CropTileData
     {
         public Vector3Int position;
-        public TileState state;
+        public CropState state;
     }
 
     [Serializable]
@@ -395,79 +412,29 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
         public List<CropTileData> cropTiles;
     }
 
-    public string SaveToJson()
+    public void LoadFromJson(string json)
     {
-        SaveData saveData = new SaveData();
+        SaveData save = JsonUtility.FromJson<SaveData>(json);
 
-        foreach (var tile in CropTiles)
+        // Clear current
+        foreach (var tile in _farmTiles)
         {
-            saveData.cropTiles.Add(new CropTileData() { position = tile.Key, state = tile.Value.CropState });
+            if (tile.Value.objectOnTile is CropState s)
+            {
+                Destroy(s.soilVisualInstance);
+                RemoveCropVisual(s);
+            }
+        }
+        _farmTiles.Clear();
+
+        // Load
+        foreach (var tile in save.cropTiles)
+        {
+            _farmTiles.Add(tile.position, new TileState() { objectOnTile = tile.state });
+            SetSoilVisual(tile.position, tile.state.wateredToday);
+            UpdateCropVisual(tile.position);
         }
 
-        return JsonUtility.ToJson(saveData, true);
+        Debug.Log("CropManager: loaded crop tiles");
     }
-
-    public void TryHarvestByHand(Vector3Int tile)
-    {
-        HarvestTile(tile, out int q, out int q2);
-    }
-
-    public bool CheckCropOnTile(Vector3Int tile)
-    {
-        return TryGetCropState(tile, out TileState state) && state.crop != null;
-    }
-    //public void LoadFromDisk()
-    //{
-    //    string path = Path.Combine(Application.persistentDataPath, saveFileName);
-    //    if (!File.Exists(path)) { Debug.Log("No save found: " + path); return; }
-    //    string json = File.ReadAllText(path);
-    //    SaveData s = JsonUtility.FromJson<SaveData>(json);
-    //    // очистить текущие
-    //    foreach (var st in tileToState.Values) RemoveCropVisual(st);
-    //    tileToState.Clear();
-    //    tileToModel.Clear();
-    //    //plowedTiles.Clear();
-
-    //    // восстановить модели по cropId
-    //    var modelLookup = availableCropModels.ToDictionary(m => m.cropId, m => m);
-
-    //    if (s.cropTiles != null)
-    //        plowedTiles = new HashSet<Vector3>(s.cropTiles);
-
-    //    if (s.models != null)
-    //    {
-    //        foreach (var pair in s.models)
-    //        {
-    //            if (modelLookup.TryGetValue(pair.cropId, out CropModel model))
-    //            {
-    //                tileToModel[pair.pos] = model;
-    //            }
-    //        }
-    //    }
-
-    //    if (s.states != null)
-    //    {
-    //        foreach (var st in s.states)
-    //        {
-    //            tileToState[st.tilePos] = st;
-    //            // восстановить визуалку
-    //            if (tileToModel.TryGetValue(st.tilePos, out CropModel model))
-    //            {
-    //                SpawnVisualFor(st.tilePos, model, st);
-    //            }
-    //        }
-    //    }
-
-    //    Debug.Log("CropManager: loaded from " + path);
-    //}
-    ItemDefinition GetItemByModel(CropModel crop)
-    {
-        return _itemDatabase.itemDefinitions.Find(i => i is CropDefinition c && c.cropModel == crop);
-    }
-
-    public event Action<Vector3Int, TileState> OnCropPlanted;
-    public event Action<Vector3Int, TileState> OnCropWatered;
-    public event Action<Vector3Int, TileState> OnCropGrown;
-    public event Action<Vector3Int, TileState> OnCropFertilized;
-    public event Action<Vector3Int, TileState, int, int> OnCropHarvested;
 }

@@ -10,7 +10,7 @@ public class DebrisGenerator : MonoBehaviour
 
     public void GenerateDebris()
     {
-        Dictionary<Vector3Int, TileData> freeTiles =  _farmTiles.GetFreeTiles();
+        Dictionary<Vector3Int, TileState> freeTiles =  _farmTiles.GetFreeTiles();
 
         foreach (var tile in freeTiles)
         {

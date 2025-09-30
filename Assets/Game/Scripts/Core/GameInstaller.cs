@@ -18,7 +18,9 @@ public class GameInstaller : MonoInstaller
     public CurrencyManager CurrencyManager;
     public UIDragController UIDragController;
     public Camera UICamera;
-
+    public TileContainer FarmTiles;
+    public CropManager CropManager;
+    public FarmManager FarmManager;
 
 
     public override void InstallBindings()
@@ -40,6 +42,8 @@ public class GameInstaller : MonoInstaller
         Container.BindInstance(CurrencyManager);
         Container.BindInstance(UIDragController);
         Container.BindInstance(UICamera);
+        Container.BindInstance(CropManager);
+        Container.BindInstance(FarmTiles).WithId("FarmTiles");
 
 
         SignalBusInstaller.Install(Container);

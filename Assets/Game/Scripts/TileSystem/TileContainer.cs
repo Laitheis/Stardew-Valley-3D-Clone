@@ -2,16 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileData
+public class TileState
 {
     public bool isFarm;
     public object objectOnTile;
-
-    public TileState CropState
-    {
-        get => objectOnTile as TileState;
-        set => objectOnTile = value as TileState;
-    }
 }
 
 public class TileContainer : MonoBehaviour
@@ -21,7 +15,7 @@ public class TileContainer : MonoBehaviour
     public class TileSaveData
     {
         public Vector3Int position;
-        public TileData tile;
+        public TileState tile;
     }
 
     [Serializable]
@@ -31,11 +25,11 @@ public class TileContainer : MonoBehaviour
     }
     #endregion
 
-    private Dictionary<Vector3Int, TileData> _tilesCollection;
+    private Dictionary<Vector3Int, TileState> _tilesCollection;
 
-    public Dictionary<Vector3Int, TileData> TilesCollection { get => _tilesCollection; set => _tilesCollection = value; }
+    public Dictionary<Vector3Int, TileState> TilesCollection { get => _tilesCollection; set => _tilesCollection = value; }
 
-    public void Combine(Dictionary<Vector3Int, TileData> kvp)
+    public void Combine(Dictionary<Vector3Int, TileState> kvp)
     {
         foreach (var tile in kvp)
         {
@@ -68,7 +62,7 @@ public class TileContainer : MonoBehaviour
     public void LoadFromJson(string json)
     {
         TileCollectionData data = JsonUtility.FromJson<TileCollectionData>(json);
-        TilesCollection = new Dictionary<Vector3Int, global::TileData>();
+        TilesCollection = new Dictionary<Vector3Int, TileState>();
 
         foreach (var tileData in data.tiles)
         {
@@ -76,9 +70,9 @@ public class TileContainer : MonoBehaviour
         }
     }
 
-    public Dictionary<Vector3Int, global::TileData> GetFreeTiles()
+    public Dictionary<Vector3Int, TileState> GetFreeTiles()
     {
-        Dictionary<Vector3Int, global::TileData> freeTiles = new Dictionary<Vector3Int, global::TileData>(); 
+        Dictionary<Vector3Int, TileState> freeTiles = new Dictionary<Vector3Int, TileState>(); 
         foreach (var tile in TilesCollection)
         {
             if (tile.Value.objectOnTile != null) freeTiles.Add(tile.Key, tile.Value);

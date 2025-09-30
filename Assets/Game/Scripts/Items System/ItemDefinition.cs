@@ -21,4 +21,4 @@ public class ItemDefinition : ScriptableObject
     public Sprite Sprite => _sprite;
 }
 
-public enum ItemType { None, Regular, Hoe, WaterCan, Scythe, Axe, Pickaxe, Seed, Material, Crop }
+public enum ItemType { None, Regular, Hoe, WaterCan, Scythe, Axe, Pickaxe, Seed, Material, Crop, Fertilize }

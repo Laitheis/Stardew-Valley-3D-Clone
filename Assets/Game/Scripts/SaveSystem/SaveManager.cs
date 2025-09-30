@@ -47,7 +47,6 @@ public static class SaveManager
         {
             string fileJson = File.ReadAllText(file);
 
-            // Пробуем распарсить как список
             SaveFileDataList data = JsonUtility.FromJson<SaveFileDataList>(fileJson);
             if (data != null && data.saveName == saveName)
             {

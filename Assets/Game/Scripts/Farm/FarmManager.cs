@@ -11,22 +11,19 @@ public class FarmManager : MonoBehaviour, IBootstrapLoad
 
     public void Init()
     {
-        LoadFarmTiles();
+        LoadFarmTiles(SaveNameHolder.saveName);
     }
 
     public void SaveFarmData()
     {
         List<string> jsonContents = new List<string>();
-        _farmTiles.Combine(_cropManager.CropTiles);
-        jsonContents.Add(_farmTiles.SaveToJson());
-        SaveManager.Save(new SaveFileDataList() { saveName = "TestSave", jsonContents =})
+        jsonContents.Add(farmTiles.SaveToJson());
+        SaveManager.Save(new SaveFileDataList() { saveName = "TestSave", jsonContents = jsonContents });
     }
 
-    private void LoadFarmTiles()
+    private void LoadFarmTiles(string saveName)
     {
-        foreach (var tile in _farmTiles.TilesCollection)
-        {
-            tile.Key.
-        }
+        List<string> jsonContents = SaveManager.LoadListBySaveName(saveName);
+        _cropManager.LoadFromJson(jsonContents[0]);
     }
 }

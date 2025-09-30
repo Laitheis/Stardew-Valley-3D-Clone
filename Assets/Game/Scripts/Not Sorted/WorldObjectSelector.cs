@@ -12,6 +12,8 @@ public class WorldObjectSelector : MonoBehaviour
     [Inject(Id = "OutlineGlow")] private Material _highlightMaterial;
     [Inject(Id = "WorldTooltip")] private GameObject _worldTooltip;
     [Inject] private DefinitionDatabase _itemDatabase;
+    [Inject] private CropManager _cropManager;
+    [Inject] private FarmManager _farmManager;
 
     private GameObject _currentTarget;
     private WorldObjectType _currentType;
@@ -48,13 +50,13 @@ public class WorldObjectSelector : MonoBehaviour
                     refs = _worldTooltip.GetComponent<WorldTooltipRefs>();
 
                     Vector3Int tilePos = _currentTarget.GetComponent<TilePosHolder>().pos;
-                    var tileState = CropManager.Instance.CropTiles[tilePos];
+                    var cropState = _farmManager.farmTiles.TilesCollection[tilePos].objectOnTile as CropState;
 
-                    CropModel cropModel = _itemDatabase.cropModels.Find(c => c.cropId == tileState.CropState.cropModelId);
+                    CropModel cropModel = _itemDatabase.cropModels.Find(c => c.cropId == cropState.cropModelId);
 
                     refs.icon.sprite = cropModel.sprite;
                     refs.name.text = cropModel.displayName;
-                    refs.description.text = "Stage: " + (tileState.CropState.currentStage + 1) + "/" + cropModel.daysPerStage.Length;
+                    refs.description.text = "Stage: " + (cropState.currentStage + 1) + "/" + cropModel.daysPerStage.Length;
 
                     break;
                 default:

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using Zenject;
 
 public class GameTimeManager : MonoBehaviour
 {
@@ -9,14 +10,14 @@ public class GameTimeManager : MonoBehaviour
 
     [Header("Config")]
     public float realSecondsPerGameMinute = 1f; // сколько секунд IRL занимает минута в игре
-    public int dayStartHour = 6;                // начало дня
+    public int dayStartHour = 0;                // начало дня
     public int dayEndHour = 24;                 // конец дня
 
     [Header("Current Time (debuggable in inspector)")]
     public int currentDay = 1;
     public int currentYear = 1;
     public Season currentSeason = Season.Spring;
-    [Range(0, 23)] public int currentHour = 6;
+    [Range(0, 23)] public int currentHour = 0;
     [Range(0, 59)] public int currentMinute = 0;
 
     [Header("Debug Controls")]
@@ -24,6 +25,8 @@ public class GameTimeManager : MonoBehaviour
     public bool skipMinute = false;
     public bool skipHour = false;
     public bool skipDay = false;
+
+    [Inject] private CropManager _cropManager;
 
     private float timeAccumulator = 0f;
 
@@ -51,7 +54,6 @@ public class GameTimeManager : MonoBehaviour
             AdvanceMinute();
         }
 
-        // отладочные кнопки прямо в инспекторе
         if (skipMinute) { skipMinute = false; AdvanceMinute(); }
         if (skipHour) { skipHour = false; AdvanceHour(); }
         if (skipDay) { skipDay = false; AdvanceDay(); }
@@ -84,7 +86,7 @@ public class GameTimeManager : MonoBehaviour
     private void AdvanceDay()
     {
         currentDay++;
-        if (currentDay > 28) // допустим, 28 дней в сезоне
+        if (currentDay > 28)
         {
             currentDay = 1;
             AdvanceSeason();
@@ -92,8 +94,7 @@ public class GameTimeManager : MonoBehaviour
         OnDayPassed?.Invoke();
         Debug.Log($"[GameTime] Day advanced: Day {currentDay}, Season {currentSeason}, Year {currentYear}");
 
-        // здесь запускаем рост растений
-        CropManager.Instance.OnDayEnd(currentSeason);
+        _cropManager.OnDayEnd(currentSeason);
     }
 
     private void AdvanceSeason()

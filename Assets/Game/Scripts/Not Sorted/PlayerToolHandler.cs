@@ -23,7 +23,7 @@ public class PlayerToolHandler : MonoBehaviour
     public ItemType activeTool = ItemType.None;
 
     [Header("Planting")]
-    public CropModel selectedSeedModel; 
+    public CropState selectedSeedModel;
 
     [Header("Raycast")]
     public LayerMask groundLayer;
@@ -35,9 +35,11 @@ public class PlayerToolHandler : MonoBehaviour
     [Inject] private SelectedSlotHandler _selectedSlotHandler;
     [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
     [Inject] private HintVisualizer _hintVisual;
+    [Inject] private CropManager _cropManager;
+    [Inject] private FarmManager _farmManager;
 
     private RaycastHit _raycastHit;
-    private Vector3Int _currPtrTile;
+    private Vector3Int _currTile;
     private bool _hitGround;
     private void Start()
     {
@@ -58,12 +60,12 @@ public class PlayerToolHandler : MonoBehaviour
     }
     void HandleRaycast()
     {
-        //Обновляем текущий выделенный мышкой тайл
+        // Update current mouse selected tile
         Ray r = mainCam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(r, out _raycastHit, maxRayDistance, groundLayer))
         {
             _hitGround = true;
-            _currPtrTile = CropManager.TilePosFromWorld(_raycastHit.point);
+            _currTile = CropManager.TilePosFromWorld(_raycastHit.point);
         }
         else
         {
@@ -124,47 +126,57 @@ public class PlayerToolHandler : MonoBehaviour
 
         if (_hitGround)
         {
-            if (CheckRadius(_currPtrTile) == false)
+            if (CheckRadius(_currTile) == false)
             {
                 return;
             }
             switch (activeTool)
             {
                 case ItemType.Hoe:
-                    UseHoe(_currPtrTile);
+                    UseHoe(_currTile);
 
-                    UseHand(_currPtrTile);
+                    UseHand(_currTile);
                     break;
                 case ItemType.WaterCan:
-                    UseWater(_currPtrTile);
+                    UseWater(_currTile);
 
-                    UseHand(_currPtrTile);
+                    UseHand(_currTile);
                     break;
                 case ItemType.Scythe:
 
-                    UseHand(_currPtrTile);
+                    UseHand(_currTile);
                     break;
                 case ItemType.Axe:
 
-                    UseHand(_currPtrTile);
+                    UseHand(_currTile);
                     break;
                 case ItemType.Pickaxe:
 
-                    UseHand(_currPtrTile);
+                    UseHand(_currTile);
                     break;
                 case ItemType.Seed:
                     UseSeed();
                     break;
+                case ItemType.Regular:
+                    break;
+                case ItemType.Material:
+                    break;
+                case ItemType.Crop:
+                    break;
+                case ItemType.Fertilize:
+                    UseFertilize(_currTile);
+                    UseHand(_currTile);
+                    break;
                 default:
-                    UseHand(_currPtrTile);
+                    UseHand(_currTile);
                     break;
             }
         }
     }
 
-    private void UseHoe(Vector3 tile)
+    private void UseHoe(Vector3Int tile)
     {
-        CropManager.Instance.PlowTile(tile);
+        _cropManager.PlowTile(tile);
 
         _toolAnimator.SetTrigger("Hoe");
     }
@@ -180,9 +192,9 @@ public class PlayerToolHandler : MonoBehaviour
     //    }
     //}
 
-    private void UseWater(Vector3 tile)
+    private void UseWater(Vector3Int tile)
     {
-        CropManager.Instance.WaterTile(tile);
+        _cropManager.WaterTile(tile);
 
         _toolAnimator.SetTrigger("Water");
 
@@ -203,11 +215,23 @@ public class PlayerToolHandler : MonoBehaviour
     //    }
     //}
 
-    private void UseFertilize(Vector3 tile)
+    private void UseFertilize(Vector3Int tile)
     {
-        CropManager.Instance.FertilizeTile(tile);
-        Debug.Log("Fertilized " + tile);
-        // TODO: отнять удобрение из инвентаря
+        FertilizeDefinition fertilize = _playerInv[_selectedSlotHandler.SelectedSlotNum].ItemDefinition as FertilizeDefinition;
+        if (fertilize != null)
+        {
+            if (_cropManager.IsPlowed(tile))
+            {
+                _playerInv[_selectedSlotHandler.SelectedSlotNum].SetCount(_playerInv[_selectedSlotHandler.SelectedSlotNum].Count - 1);
+                string fertName = Enum.GetName(typeof(FertilizeType), fertilize.type);
+                _cropManager.FertilizeTile(tile, fertName);
+                Debug.Log("[ToolHandler] Fertilized " + tile);
+            }
+            else
+            {
+                Debug.Log("[ToolHandler] Can't fertilize this tile - tile is not plowed");
+            }
+        }
     }
 
     private void UseSeed()
@@ -215,7 +239,7 @@ public class PlayerToolHandler : MonoBehaviour
         SeedDefinition seed = _playerInv[_selectedSlotHandler.SelectedSlotNum].ItemDefinition as SeedDefinition;
         if (seed != null)
         {
-            if (CropManager.Instance.PlantSeed(_currPtrTile, seed.cropModel))
+            if (_cropManager.PlantSeed(_currTile, seed.cropModel))
             {
                 _playerInv[_selectedSlotHandler.SelectedSlotNum].SetCount(_playerInv[_selectedSlotHandler.SelectedSlotNum].Count - 1);
             }
@@ -224,7 +248,7 @@ public class PlayerToolHandler : MonoBehaviour
 
     private void UseHand(Vector3 tile)
     {
-        CropManager.Instance.TryHarvestByHand(_currPtrTile);
+        _cropManager.TryHarvestByHand(_currTile);
     }
 
     ItemType ToolSelected()
@@ -273,50 +297,50 @@ public class PlayerToolHandler : MonoBehaviour
     }
     void HoeHint()
     {
-        if (CheckRadius(_currPtrTile) == false)
+        if (CheckRadius(_currTile) == false)
         {
-            _hintVisual.ShowUnavailable(_currPtrTile);
+            _hintVisual.ShowUnavailable(_currTile);
             return;
         }
-        if (CropManager.Instance.IsPlowed(_currPtrTile))
+        if (_cropManager.IsPlowed(_currTile))
         {
-            _hintVisual.ShowUnavailable(_currPtrTile);
+            _hintVisual.ShowUnavailable(_currTile);
         }
         else
         {
-            _hintVisual.ShowAvailable(_currPtrTile);
+            _hintVisual.ShowAvailable(_currTile);
         }
     }
     void WaterHint()
     {
-        if (CheckRadius(_currPtrTile) == false)
+        if (CheckRadius(_currTile) == false)
         {
-            _hintVisual.ShowUnavailable(_currPtrTile);
+            _hintVisual.ShowUnavailable(_currTile);
             return;
         }
-        if (CropManager.Instance.IsWatered(_currPtrTile) || !CropManager.Instance.tileToState.ContainsKey(_currPtrTile))
+        if (_cropManager.IsWatered(_currTile) || !_farmManager.farmTiles.TilesCollection.ContainsKey(_currTile))
         {
-            _hintVisual.ShowUnavailable(_currPtrTile);
+            _hintVisual.ShowUnavailable(_currTile);
         }
         else
         {
-            _hintVisual.ShowAvailable(_currPtrTile);
+            _hintVisual.ShowAvailable(_currTile);
         }
     }
     void SeedHint()
     {
-        if (CheckRadius(_currPtrTile) == false || CropManager.Instance.CheckCropOnTile(_currPtrTile))
+        if (CheckRadius(_currTile) == false || _cropManager.CheckCropOnTile(_currTile))
         {
-            _hintVisual.ShowUnavailable(_currPtrTile);
+            _hintVisual.ShowUnavailable(_currTile);
             return;
         }
-        if (CropManager.Instance.IsPlowed(_currPtrTile))
+        if (_cropManager.IsPlowed(_currTile))
         {
-            _hintVisual.ShowAvailable(_currPtrTile);
+            _hintVisual.ShowAvailable(_currTile);
         }
         else
         {
-            _hintVisual.ShowUnavailable(_currPtrTile);
+            _hintVisual.ShowUnavailable(_currTile);
         }
     }
 
