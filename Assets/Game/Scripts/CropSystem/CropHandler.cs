@@ -4,20 +4,19 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 
-public class CropManager : MonoBehaviour, IBootstrapLoad
+public class CropHandler : MonoBehaviour
 {
     [Inject(Id = ("Soil"))] private GameObject _soilPrefab;
     [Inject(Id = ("SoilWet"))] private GameObject _soilWetPrefab;
     [Inject] private DefinitionDatabase _itemDatabase;
-    [Inject(Id = "StarParticles")] GameObject _particles;
+    [Inject(Id = "StarParticles")] private GameObject _particles;
     [Inject] private SignalBus _signalBus;
-    [Inject] FarmManager _farmManager;
 
     private Dictionary<Vector3Int, TileState> _farmTiles;
 
-    public void Init()
+    public void InitTiles()
     {
-        _farmTiles = _farmManager.farmTiles.TilesCollection;
+        _farmTiles = FarmManager.instance.farmTiles.TilesCollection;
     }
 
     public static Vector3Int TilePosFromWorld(Vector3 worldPos)
@@ -35,10 +34,10 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
         }
 
         var cropState = new CropState();
+        _farmTiles.Add(tile, new TileState { objectOnTile = cropState });
+
         SetSoilVisual(tile, false);
         cropState.soilVisualInstance.GetComponent<Animator>().SetTrigger("Plow");
-
-        _farmTiles.Add(tile, new TileState { objectOnTile = cropState });
 
         Debug.Log($"Tile {tile} plowed");
     }
@@ -399,40 +398,14 @@ public class CropManager : MonoBehaviour, IBootstrapLoad
         return _itemDatabase.itemDefinitions.Find(i => i is CropDefinition c && c.cropModel == cropModel);
     }
 
-    [Serializable]
-    public struct CropTileData
+    public void VisualiseTiles()
     {
-        public Vector3Int position;
-        public CropState state;
-    }
-
-    [Serializable]
-    private class SaveData
-    {
-        public List<CropTileData> cropTiles;
-    }
-
-    public void LoadFromJson(string json)
-    {
-        SaveData save = JsonUtility.FromJson<SaveData>(json);
-
-        // Clear current
+        // Load
         foreach (var tile in _farmTiles)
         {
-            if (tile.Value.objectOnTile is CropState s)
-            {
-                Destroy(s.soilVisualInstance);
-                RemoveCropVisual(s);
-            }
-        }
-        _farmTiles.Clear();
-
-        // Load
-        foreach (var tile in save.cropTiles)
-        {
-            _farmTiles.Add(tile.position, new TileState() { objectOnTile = tile.state });
-            SetSoilVisual(tile.position, tile.state.wateredToday);
-            UpdateCropVisual(tile.position);
+            CropState cropState = tile.Value.objectOnTile as CropState;
+            SetSoilVisual(tile.Key, cropState.wateredToday);
+            UpdateCropVisual(tile.Key);
         }
 
         Debug.Log("CropManager: loaded crop tiles");

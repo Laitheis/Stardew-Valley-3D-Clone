@@ -12,8 +12,7 @@ public class WorldObjectSelector : MonoBehaviour
     [Inject(Id = "OutlineGlow")] private Material _highlightMaterial;
     [Inject(Id = "WorldTooltip")] private GameObject _worldTooltip;
     [Inject] private DefinitionDatabase _itemDatabase;
-    [Inject] private CropManager _cropManager;
-    [Inject] private FarmManager _farmManager;
+    [Inject] private CropHandler _cropManager;
 
     private GameObject _currentTarget;
     private WorldObjectType _currentType;
@@ -50,7 +49,7 @@ public class WorldObjectSelector : MonoBehaviour
                     refs = _worldTooltip.GetComponent<WorldTooltipRefs>();
 
                     Vector3Int tilePos = _currentTarget.GetComponent<TilePosHolder>().pos;
-                    var cropState = _farmManager.farmTiles.TilesCollection[tilePos].objectOnTile as CropState;
+                    var cropState = FarmManager.instance.farmTiles.TilesCollection[tilePos].objectOnTile as CropState;
 
                     CropModel cropModel = _itemDatabase.cropModels.Find(c => c.cropId == cropState.cropModelId);
 

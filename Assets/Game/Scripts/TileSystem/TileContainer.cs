@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
+[Serializable]
 public class TileState
 {
     public bool isFarm;
@@ -25,7 +27,7 @@ public class TileContainer : MonoBehaviour
     }
     #endregion
 
-    private Dictionary<Vector3Int, TileState> _tilesCollection;
+    private Dictionary<Vector3Int, TileState> _tilesCollection = new();
 
     public Dictionary<Vector3Int, TileState> TilesCollection { get => _tilesCollection; set => _tilesCollection = value; }
 
@@ -55,14 +57,15 @@ public class TileContainer : MonoBehaviour
             });
         }
 
-        string json = JsonUtility.ToJson(data, true);
+        string json = JsonConvert.SerializeObject(data, Formatting.Indented);
         return json;
     }
 
     public void LoadFromJson(string json)
     {
-        TileCollectionData data = JsonUtility.FromJson<TileCollectionData>(json);
-        TilesCollection = new Dictionary<Vector3Int, TileState>();
+        //TileCollectionData data = JsonUtility.FromJson<TileCollectionData>(json);
+        TileCollectionData data = JsonConvert.DeserializeObject<TileCollectionData>(json);
+        //TilesCollection = new Dictionary<Vector3Int, TileState>();
 
         foreach (var tileData in data.tiles)
         {

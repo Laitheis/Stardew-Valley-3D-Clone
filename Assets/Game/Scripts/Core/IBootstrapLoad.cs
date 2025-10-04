@@ -1,5 +1,5 @@
-﻿public interface IBootstrapLoad
-{
-    public void Init();
-}
+﻿//public interface IBootstrapLoad
+//{
+//    public void Init();
+//}
 

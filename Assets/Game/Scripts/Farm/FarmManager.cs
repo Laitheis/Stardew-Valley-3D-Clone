@@ -1,19 +1,30 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using Newtonsoft.Json;
 
-public class FarmManager : MonoBehaviour, IBootstrapLoad
+public class FarmManager : MonoBehaviour
 {
-    public TileContainer farmTiles;
+    public static FarmManager instance;
 
+    [Inject(Id = "FarmTiles")] public TileContainer farmTiles;
     [Inject] private DebrisGenerator _debrisGenerator;
-    [Inject] private CropManager _cropManager;
+    [Inject] private CropHandler _cropHandler;
 
-    public void Init()
+    private void Awake()
     {
-        LoadFarmTiles(SaveNameHolder.saveName);
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+
+        _cropHandler.InitTiles();
+        LoadFarmTiles(SaveNameInputHolder.saveName);
     }
 
+    [ContextMenu("SaveFarmData")]
     public void SaveFarmData()
     {
         List<string> jsonContents = new List<string>();
@@ -24,6 +35,7 @@ public class FarmManager : MonoBehaviour, IBootstrapLoad
     private void LoadFarmTiles(string saveName)
     {
         List<string> jsonContents = SaveManager.LoadListBySaveName(saveName);
-        _cropManager.LoadFromJson(jsonContents[0]);
+        farmTiles.LoadFromJson(jsonContents[0]);
+        _cropHandler.VisualiseTiles();
     }
 }

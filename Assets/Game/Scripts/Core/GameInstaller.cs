@@ -19,8 +19,8 @@ public class GameInstaller : MonoInstaller
     public UIDragController UIDragController;
     public Camera UICamera;
     public TileContainer FarmTiles;
-    public CropManager CropManager;
-    public FarmManager FarmManager;
+    public CropHandler CropManager;
+    public DebrisGenerator DebrisGenerator;
 
 
     public override void InstallBindings()
@@ -43,6 +43,7 @@ public class GameInstaller : MonoInstaller
         Container.BindInstance(UIDragController);
         Container.BindInstance(UICamera);
         Container.BindInstance(CropManager);
+        Container.BindInstance(DebrisGenerator);
         Container.BindInstance(FarmTiles).WithId("FarmTiles");
 
 

@@ -26,7 +26,7 @@ public class GameTimeManager : MonoBehaviour
     public bool skipHour = false;
     public bool skipDay = false;
 
-    [Inject] private CropManager _cropManager;
+    [Inject] private CropHandler _cropManager;
 
     private float timeAccumulator = 0f;
 

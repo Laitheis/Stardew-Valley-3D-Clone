@@ -41,21 +41,21 @@ public class MenuInput : MonoBehaviour
     public void OnExit(InputAction.CallbackContext ctx)
     {
         if (!ctx.started) return;
-        if (GameStateHandler.Instance.CurrentState is TradeState)
+        if (GameStateHandler.instance.CurrentState is TradeState)
         {
-            GameStateHandler.Instance.SetState(GameStateHandler.GameState.World);
+            GameStateHandler.instance.SetState(GameStateHandler.GameState.World);
             return;
         }
 
-        if(GameStateHandler.Instance.CurrentState is WorldState)
+        if(GameStateHandler.instance.CurrentState is WorldState)
         {
-            GameStateHandler.Instance.SetState(GameStateHandler.GameState.Menu);
+            GameStateHandler.instance.SetState(GameStateHandler.GameState.Menu);
             return;
         }
 
-        if (GameStateHandler.Instance.CurrentState is MenuState)
+        if (GameStateHandler.instance.CurrentState is MenuState)
         {
-            GameStateHandler.Instance.SetState(GameStateHandler.GameState.World);
+            GameStateHandler.instance.SetState(GameStateHandler.GameState.World);
             return;
         }
     }

@@ -4,7 +4,7 @@ using System;
 [Serializable]
 public class CropState
 {
-    public CropModel crop;
+    [NonSerialized] public CropModel crop;
 
     public string cropModelId;        // link to CropModel.cropId (for saving)
     public Vector3 tilePos;           // tile world position (use integers)

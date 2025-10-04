@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-// Контроллер действий игрока (инструменты). Не трогаем перемещение/камеру.
-// Требует: на игроке/камера есть Camera.main; курсор свободный — используем Raycast.
 public class PlayerToolHandler : MonoBehaviour
 {
     [Serializable]
@@ -35,8 +33,7 @@ public class PlayerToolHandler : MonoBehaviour
     [Inject] private SelectedSlotHandler _selectedSlotHandler;
     [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
     [Inject] private HintVisualizer _hintVisual;
-    [Inject] private CropManager _cropManager;
-    [Inject] private FarmManager _farmManager;
+    [Inject] private CropHandler _cropManager;
 
     private RaycastHit _raycastHit;
     private Vector3Int _currTile;
@@ -65,7 +62,7 @@ public class PlayerToolHandler : MonoBehaviour
         if (Physics.Raycast(r, out _raycastHit, maxRayDistance, groundLayer))
         {
             _hitGround = true;
-            _currTile = CropManager.TilePosFromWorld(_raycastHit.point);
+            _currTile = CropHandler.TilePosFromWorld(_raycastHit.point);
         }
         else
         {
@@ -318,7 +315,7 @@ public class PlayerToolHandler : MonoBehaviour
             _hintVisual.ShowUnavailable(_currTile);
             return;
         }
-        if (_cropManager.IsWatered(_currTile) || !_farmManager.farmTiles.TilesCollection.ContainsKey(_currTile))
+        if (_cropManager.IsWatered(_currTile) || !FarmManager.instance.farmTiles.TilesCollection.ContainsKey(_currTile))
         {
             _hintVisual.ShowUnavailable(_currTile);
         }
