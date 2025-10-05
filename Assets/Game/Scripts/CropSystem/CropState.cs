@@ -2,7 +2,7 @@
 using System;
 
 [Serializable]
-public class CropState
+public class CropState //: IObjectOnTile
 {
     [NonSerialized] public CropModel crop;
 

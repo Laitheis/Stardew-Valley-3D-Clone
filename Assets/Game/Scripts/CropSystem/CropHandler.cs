@@ -404,8 +404,12 @@ public class CropHandler : MonoBehaviour
         foreach (var tile in _farmTiles)
         {
             CropState cropState = tile.Value.objectOnTile as CropState;
+            if (cropState.cropModelId != null)
+            {
+                cropState.crop = _itemDatabase.cropModels.First(c => c.cropId == cropState.cropModelId);
+                UpdateCropVisual(tile.Key);
+            }
             SetSoilVisual(tile.Key, cropState.wateredToday);
-            UpdateCropVisual(tile.Key);
         }
 
         Debug.Log("CropManager: loaded crop tiles");

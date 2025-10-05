@@ -10,5 +10,6 @@ public enum WorldObjectType
 {
     Item,
     Crop,
+    Build,
 }
 

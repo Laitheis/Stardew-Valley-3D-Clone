@@ -27,7 +27,7 @@ public class WorldObjectSelector : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(1) && _currentTarget != null)
+        if (Input.GetMouseButtonDown(1) && _currentTarget != null && _currentTarget.GetComponent<WorldTooltipable>())
         {
             _worldTooltip.SetActive(true);
             _worldTooltip.GetComponent<Animator>().SetTrigger("Spawn");

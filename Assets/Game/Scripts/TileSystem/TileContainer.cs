@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
+public interface IObjectOnTile { }
+
 [Serializable]
 public class TileState
 {
@@ -57,14 +59,25 @@ public class TileContainer : MonoBehaviour
             });
         }
 
-        string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+        string json = JsonConvert.SerializeObject(data, Formatting.Indented, settings);
         return json;
     }
 
     public void LoadFromJson(string json)
     {
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
         //TileCollectionData data = JsonUtility.FromJson<TileCollectionData>(json);
-        TileCollectionData data = JsonConvert.DeserializeObject<TileCollectionData>(json);
+        TileCollectionData data = JsonConvert.DeserializeObject<TileCollectionData>(json, settings);
+         
         //TilesCollection = new Dictionary<Vector3Int, TileState>();
 
         foreach (var tileData in data.tiles)

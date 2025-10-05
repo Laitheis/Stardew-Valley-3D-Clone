@@ -40,16 +40,16 @@ Material:
     m_Floats:
     - _BottomHeight: -1
     - _DebugMode: 0
-    - _Power: 1.8
+    - _Power: 0.8313784
     - _PreviewMode: 0
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _SimpleVariant: 0
+    - _SimpleVariant: 1
     - _Speed: 0.4
     - _TopHeight: 1
     - _WaveSpeed: 0.1
     m_Colors:
-    - _Color: {r: 0.13573885, g: 1, b: 0, a: 1}
+    - _Color: {r: 0.6603774, g: 0.15886435, b: 0.15886435, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &6319454460467013990
 MonoBehaviour:
