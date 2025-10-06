@@ -5,7 +5,7 @@ using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MenuInput : MonoBehaviour
+public class UIInput : MonoBehaviour
 {
     //private Controls _controls;
     //public InputAction escAction;
@@ -54,6 +54,12 @@ public class MenuInput : MonoBehaviour
         }
 
         if (GameStateHandler.instance.CurrentState is MenuState)
+        {
+            GameStateHandler.instance.SetState(GameStateHandler.GameState.World);
+            return;
+        }
+
+        if (GameStateHandler.instance.CurrentState is CloseAllUIState)
         {
             GameStateHandler.instance.SetState(GameStateHandler.GameState.World);
             return;

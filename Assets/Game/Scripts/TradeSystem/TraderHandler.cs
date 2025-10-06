@@ -53,7 +53,7 @@ public class TraderHandler : MonoBehaviour
             }
             for (int i = 0; i < item.seasons.Length; i++)
             {
-                if (item.seasons[i] == GameTimeManager.Instance.currentSeason)
+                if (item.seasons[i] == GameTimeManager.instance.currentSeason)
                 {
                     availableItems.Add(item);
                     break;

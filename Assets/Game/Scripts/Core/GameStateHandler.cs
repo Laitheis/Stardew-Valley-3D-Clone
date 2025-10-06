@@ -1,80 +1,87 @@
-﻿using System;
+﻿using Core;
+using System;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
-namespace Core
+public class GameStateHandler : MonoBehaviour
 {
-    public class GameStateHandler : MonoBehaviour
+    public event Action OnChange;
+
+    [Inject] SignalBus _sb;
+
+    public enum GameState { World, Menu, Trade, Mine, Dialogue, Cutscene, CloseAllUI }
+
+    private GameStateBase _currentState;
+
+    public static GameStateHandler instance;
+
+    public GameStateBase CurrentState { get => _currentState; set => _currentState = value; }
+
+    private GameStateBase[] _gameStates;
+
+    private void Awake()
     {
-        [Inject] SignalBus _sb;
-
-        public enum GameState { World, Menu, Trade, Mine, Dialogue, Cutscene }
-
-        [SerializeField] private TradeState _tradeState;
-        [SerializeField] private WorldState _worldState;
-        [SerializeField] private MenuState _menuState;
-
-        private GameStateBase _currentState;
-
-        public static GameStateHandler instance;
-
-        public GameStateBase CurrentState { get => _currentState; set => _currentState = value; }
-
-        private void Awake()
+        if (instance != null && instance != this)
         {
-            if (instance != null && instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            instance = this;
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+
+        _gameStates = FindObjectsOfType<GameStateBase>(true);
+    }
+
+    private void Start()
+    {
+        SetState(GameState.World);
+    }
+
+    public void SetState(GameState stateNum)
+    {
+        GameStateBase newState = null;
+        switch (stateNum)
+        {
+            case GameState.World:
+                newState = _gameStates.OfType<WorldState>().FirstOrDefault();
+                break;
+            case GameState.Menu:
+                newState = _gameStates.OfType<MenuState>().FirstOrDefault();
+                break;
+            case GameState.Trade:
+                newState = _gameStates.OfType<TradeState>().FirstOrDefault(); ;
+                break;
+            case GameState.Mine:
+                break;
+            case GameState.Dialogue:
+                break;
+            case GameState.Cutscene:
+                break;
+            case GameState.CloseAllUI:
+                newState = _gameStates.OfType<CloseAllUIState>().FirstOrDefault();
+                break;
         }
 
-        private void Start()
-        {
-            SetState(GameState.World);
-        }
-        
-        public void SetState(GameState stateNum)
-        {
-            GameStateBase newState = null;
-            switch (stateNum)
-            {
-                case GameState.World:
-                    newState = _worldState;
-                    break;
-                case GameState.Menu:
-                    newState = _menuState;
-                    break;
-                case GameState.Trade:
-                    newState = _tradeState;
-                    break;
-                case GameState.Mine:
-                    break;
-                case GameState.Dialogue:
-                    break;
-                case GameState.Cutscene:
-                    break;
-            }
+        if (newState == CurrentState) return;
+        _currentState?.ExitState();
+        _currentState = newState;
+        _currentState.EnterState();
+        OnChange?.Invoke();
+    }
 
-            _currentState?.ExitState();
-            _currentState = newState;
-            _currentState.EnterState();
-        }
+    //public void ToState(GameState stateNum)
+    //{
+    //    SetState(GameState.World);
+    //}
 
-        public void ToState(GameState stateNum)
+    public void ToState(string stateName)
+    {
+        if (Enum.TryParse(typeof(GameState), stateName, true, out object state))
         {
-            SetState(GameState.World);
-        }
-
-        public void ToState(string stateName)
-        {
-            if (Enum.TryParse(typeof(GameState), stateName, true, out object state))
-            {
-                GameState stateType = (GameState)state;
-                SetState(stateType);
-            }
+            GameState stateType = (GameState)state;
+            SetState(stateType);
         }
     }
 }
+
 

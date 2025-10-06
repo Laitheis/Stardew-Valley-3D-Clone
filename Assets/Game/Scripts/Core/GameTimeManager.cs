@@ -30,16 +30,16 @@ public class GameTimeManager : MonoBehaviour
 
     private float timeAccumulator = 0f;
 
-    public static GameTimeManager Instance;
+    public static GameTimeManager instance;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        Instance = this;
+        instance = this;
     }
 
     private void Update()
@@ -59,7 +59,7 @@ public class GameTimeManager : MonoBehaviour
         if (skipDay) { skipDay = false; AdvanceDay(); }
     }
 
-    private void AdvanceMinute()
+    public void AdvanceMinute()
     {
         currentMinute++;
         if (currentMinute >= 60)
@@ -71,7 +71,7 @@ public class GameTimeManager : MonoBehaviour
         //Debug.Log($"[GameTime] Minute advanced: {currentHour:D2}:{currentMinute:D2}");
     }
 
-    private void AdvanceHour()
+    public void AdvanceHour()
     {
         currentHour++;
         if (currentHour >= dayEndHour)
@@ -83,7 +83,7 @@ public class GameTimeManager : MonoBehaviour
         Debug.Log($"[GameTime] Hour advanced: {currentHour}:00");
     }
 
-    private void AdvanceDay()
+    public void AdvanceDay()
     {
         currentDay++;
         if (currentDay > 28)
@@ -97,7 +97,7 @@ public class GameTimeManager : MonoBehaviour
         _cropManager.OnDayEnd(currentSeason);
     }
 
-    private void AdvanceSeason()
+    public void AdvanceSeason()
     {
         currentSeason++;
         if ((int)currentSeason > 3)
