@@ -5,6 +5,7 @@
         base.UnpausePhisycs();
         base.UnpauseTime();
         base.ShowMainUIElements();
+        base.ShowStatusPanel();
         base.EnablePlayerMovement();
         base.ShowPlayerInv();
     }

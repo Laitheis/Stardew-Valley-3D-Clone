@@ -7,7 +7,7 @@ namespace Inventory.UI
     {
         [Inject] private Camera _uiCamera;
 
-        [SerializeField] private UIElementFitter _fitter;
+        [SerializeField] private UIElementFitController _fitter;
         [SerializeField] private TooltipRefs _tooltip;
 
         private bool _isClingToMouse;

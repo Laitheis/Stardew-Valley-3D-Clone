@@ -36,3 +36,5 @@ MonoBehaviour:
     type: 3}
   WorldTooltip: {fileID: 2730668312304119523, guid: 0544117fc2121374791c9a444a8dcb90,
     type: 3}
+  Notification: {fileID: 2964608373851844281, guid: 322d7439c82fde64b8a04d0924053e4d,
+    type: 3}

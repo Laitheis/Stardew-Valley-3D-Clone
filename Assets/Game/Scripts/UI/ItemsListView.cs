@@ -1,4 +1,3 @@
-using UI.Dragging;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -26,7 +25,7 @@ namespace InventorySystem
                 {
                     if (i >= transform.childCount) return;
 
-                    var itemSlot = transform.GetChild(i).GetComponentInChildren<ItemSlot>();
+                    var itemSlot = transform.GetChild(i).GetComponentInChildren<SlotItemHolder>();
                     itemSlot.ItemImage.enabled = false;
                     itemSlot.CountBG.enabled = false;
                     itemSlot.CountText.enabled = false;
@@ -35,7 +34,7 @@ namespace InventorySystem
                 {
                     Sprite sprite = itemInstance.ItemDefinition.Sprite;
 
-                    var itemSlot = transform.GetChild(i).GetComponentInChildren<ItemSlot>();
+                    var itemSlot = transform.GetChild(i).GetComponentInChildren<SlotItemHolder>();
                     itemSlot.ItemImage.sprite = sprite;
 
                     itemSlot.ItemImage.enabled = true;

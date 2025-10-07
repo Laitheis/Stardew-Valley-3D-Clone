@@ -5,6 +5,7 @@
         base.PauseTime();
         base.DisablePlayerMovement();
         base.HideMainUIElements();
+        base.HideStatusPanel();
         base.HidePlayerInv();
     }
 

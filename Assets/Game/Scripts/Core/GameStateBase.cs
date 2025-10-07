@@ -7,8 +7,8 @@ public abstract class GameStateBase : MonoBehaviour
 {
     [Inject] protected TraderHandler _tradingHandler;
     [Inject] protected HintVisualizer _hintVisualizer;
-    [Inject] protected PlayerToolHandler _toolHandler;
-    [Inject] protected SelectedSlotHandler _slotHandler;
+    [Inject] protected PlayerToolController _toolHandler;
+    [Inject] protected SelectedSlotController _slotHandler;
     [Inject(Id = "Dimming")] protected GameObject _dimmingScreen;
     [Inject] protected PlayerController _playerController;
     [Inject] protected UIDragController _dragController;
@@ -36,6 +36,20 @@ public abstract class GameStateBase : MonoBehaviour
         if (!value)
             _hintVisualizer.Hide();
         _hintVisualizer.gameObject.SetActive(value);
+    }
+
+    public void HideStatusPanel()
+    {
+        SetHideStatusPanel(false);
+    }
+
+    public void ShowStatusPanel()
+    {
+        SetHideStatusPanel(true);
+    }
+
+    public void SetHideStatusPanel(bool value)
+    {
         _statusPanel.SetActive(value);
     }
 
@@ -66,12 +80,12 @@ public abstract class GameStateBase : MonoBehaviour
 
     public void PauseTime()
     {
-        GameTimeManager.instance.pauseTime = true;
+        GameTimeService.instance.pauseTime = true;
     }
 
     public void UnpauseTime()
     {
-        GameTimeManager.instance.pauseTime = false;
+        GameTimeService.instance.pauseTime = false;
     }
 
     public void PausePhisycs()

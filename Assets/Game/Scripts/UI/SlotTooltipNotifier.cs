@@ -12,7 +12,7 @@ public class SlotTooltipNotifier : MonoBehaviour, IPointerEnterHandler, IPointer
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        ItemInstance itemInstance = transform.parent.GetComponent<ItemSlot>().ItemInstance;
+        ItemInstance itemInstance = transform.parent.GetComponent<SlotItemHolder>().ItemInstance;
         _tooltipView.ShowTooltip(itemInstance.ItemDefinition, transform.GetComponent<RectTransform>(), _offset, false);
     }
 

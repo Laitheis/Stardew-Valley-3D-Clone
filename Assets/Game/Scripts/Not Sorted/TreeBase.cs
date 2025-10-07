@@ -8,7 +8,7 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
 {
     [Inject] private SignalBus _signalBus;
 
-    protected LootGenerator _lootGenerator;
+    protected LootGeneratorHandler _lootGenerator;
     protected GameObject _smokeEffect;
 
     protected StatContainter _statContainer;
@@ -22,7 +22,7 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
 
     bool _inited = false;
     [Inject]
-    public void Construct(LootGenerator lootGenerator)
+    public void Construct(LootGeneratorHandler lootGenerator)
     {
         _lootGenerator = lootGenerator;
 

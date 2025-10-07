@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
-public interface IObjectOnTile { }
-
 [Serializable]
 public class TileState
 {

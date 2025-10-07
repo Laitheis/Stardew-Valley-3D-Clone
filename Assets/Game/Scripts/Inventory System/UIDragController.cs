@@ -1,12 +1,8 @@
-﻿using InventorySystem;
-using System;
-using UI.Dragging;
+﻿using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
-using static UnityEditor.PlayerSettings;
-using static UnityEditor.Progress;
 
 public class UIDragController : MonoBehaviour
 {

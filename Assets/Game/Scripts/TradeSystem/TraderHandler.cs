@@ -17,7 +17,7 @@ public class TraderHandler : MonoBehaviour
     [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
     [Inject] private TradersTable _tradersTable;
     [Inject] private DefinitionDatabase _definitionDatabase;
-    [Inject] private CurrencyManager _currencyManager;
+    [Inject] private CurrencyHandler _currencyManager;
     [Inject] private SignalBus _signalBus;
     [Inject] private UIDragController _dragController;
 
@@ -53,7 +53,7 @@ public class TraderHandler : MonoBehaviour
             }
             for (int i = 0; i < item.seasons.Length; i++)
             {
-                if (item.seasons[i] == GameTimeManager.instance.currentSeason)
+                if (item.seasons[i] == GameTimeService.instance.currentSeason)
                 {
                     availableItems.Add(item);
                     break;

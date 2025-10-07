@@ -19,6 +19,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
     public Material OutlineGlowMat;
     public GameObject StarParticles;
     public GameObject WorldTooltip;
+    public GameObject Notification;
 
 
     public override void InstallBindings()
@@ -37,6 +38,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
         Container.BindInstance(OutlineGlowMat).WithId("OutlineGlow");
         Container.BindInstance(StarParticles).WithId("StarParticles");
         Container.BindInstance(WorldTooltip).WithId("WorldTooltip");
+        Container.BindInstance(Notification).WithId("Notif");
 
         //HACK
         InstallPlayerParam();

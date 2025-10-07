@@ -144,12 +144,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1716308991893073610}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b8895c6e6cd97345b45cf8bbd4ec493, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c93cc24245e5084a86c8954b490f3f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _item:
     _itemDefinition: {fileID: 0}
-    _guid: b15e09e0-2926-466e-99a1-dab30daff1a2
+    _guid: 3faf29cc-901a-4c70-b425-5d8e7569c5bd
     _count: 0
     _itemFlags: 0
     Properties:

@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 public class PopupText : MonoBehaviour
 {
-    public float moveUpSpeed = 50f;      // пикселей в секунду
-    public float fadeDuration = 1f;      // время до исчезновения
+    public float moveUpSpeed = 50f;
+    public float fadeDuration = 1f;
 
     private Text uiText;
     private Color originalColor;
