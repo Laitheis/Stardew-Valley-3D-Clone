@@ -1,13 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
-using Zenject;
 
 [Serializable]
 public class SaveFileDataList
 {
-    public Guid farmGuid;
+    public string farmGuid;
     public string playerName;
     public string farmName;
     public int currentDay;
@@ -46,7 +45,7 @@ public class SaveService : MonoBehaviour
 
         SaveFileDataList data = new SaveFileDataList
         {
-            farmGuid = PlayerData.farmGuid,
+            farmGuid = PlayerData.farmGuid.ToString(),
             playerName = PlayerData.playerName,
             farmName = PlayerData.farmName,
             dateTime = dateTime,
@@ -60,10 +59,13 @@ public class SaveService : MonoBehaviour
         Debug.Log($"Saved in: {fullPath}");
     }
 
-    public List<string> LoadByFarmGuid(Guid farmGuid)
+    public SaveFileDataList LoadByFarmGuid(Guid farmGuid, out List<string> jsonContents)
     {
         if (!Directory.Exists(SavesFolder))
+        {
+            jsonContents = null;
             return null;
+        }
 
         string[] files = Directory.GetFiles(SavesFolder, "*.json");
         foreach (string file in files)
@@ -71,14 +73,16 @@ public class SaveService : MonoBehaviour
             string fileJson = File.ReadAllText(file);
 
             SaveFileDataList data = JsonUtility.FromJson<SaveFileDataList>(fileJson);
-            if (data != null && data.farmGuid == farmGuid)
+            if (data != null && Guid.Parse(data.farmGuid) == farmGuid)
             {
                 Debug.Log($"Loaded: {file}");
-                return data.jsonContents;
+                jsonContents = data.jsonContents;
+                return data;
             }
         }
 
         Debug.LogWarning($"Save not found.");
+        jsonContents = null;
         return null;
     }
 

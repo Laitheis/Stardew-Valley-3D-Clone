@@ -21,18 +21,32 @@ public class FarmManager : MonoBehaviour
         instance = this;
 
         _cropHandler.InitTiles();
-        LoadFarmTiles();
-    }
 
-    private void LoadFarmTiles()
+    }
+    private void Start()
+    {
+        if (SaveDataHolder.instance != null)
+        {
+            if (SaveDataHolder.instance.isFirstLaunch)
+                PlayerData.farmGuid = SaveDataHolder.instance.saveGuid;
+            else
+                Load();
+        }
+        else 
+            PlayerData.farmGuid = Guid.Empty;
+
+    }
+    private void Load()
     {
         List<string> jsonContents = null;
-        if (SaveGuidHolder.saveGiud != Guid.Empty)
+        if (SaveDataHolder.instance.saveGuid != Guid.Empty)
         {
-            jsonContents = SaveService.instance.LoadByFarmGuid(SaveGuidHolder.saveGiud);
-        }
-        if (jsonContents != null)
-        {
+            var save = SaveService.instance.LoadByFarmGuid(SaveDataHolder.instance.saveGuid, out jsonContents);
+
+            PlayerData.farmName = save.farmName;
+            PlayerData.playerName = save.playerName;
+            GameTimeService.instance.currentDay = save.currentDay;
+            PlayerData.farmGuid = Guid.Parse(save.farmGuid);
             farmTiles.LoadFromJson(jsonContents[0]);
             _cropHandler.VisualiseTiles();
         }

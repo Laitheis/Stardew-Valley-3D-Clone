@@ -41,27 +41,27 @@ public class UIInputHandler : MonoBehaviour
     public void OnExit(InputAction.CallbackContext ctx)
     {
         if (!ctx.started) return;
-        if (GameStateHandler.instance.CurrentState is TradeState)
+        if (GameStateService.instance.CurrentState is TradeState)
         {
-            GameStateHandler.instance.SetState(GameStateHandler.GameState.World);
+            GameStateService.instance.SetState(GameStateService.GameState.World);
             return;
         }
 
-        if(GameStateHandler.instance.CurrentState is WorldState)
+        if(GameStateService.instance.CurrentState is WorldState)
         {
-            GameStateHandler.instance.SetState(GameStateHandler.GameState.Menu);
+            GameStateService.instance.SetState(GameStateService.GameState.Menu);
             return;
         }
 
-        if (GameStateHandler.instance.CurrentState is MenuState)
+        if (GameStateService.instance.CurrentState is MenuState)
         {
-            GameStateHandler.instance.SetState(GameStateHandler.GameState.World);
+            GameStateService.instance.SetState(GameStateService.GameState.World);
             return;
         }
 
-        if (GameStateHandler.instance.CurrentState is CloseAllUIState)
+        if (GameStateService.instance.CurrentState is CloseAllUIState)
         {
-            GameStateHandler.instance.SetState(GameStateHandler.GameState.World);
+            GameStateService.instance.SetState(GameStateService.GameState.World);
             return;
         }
     }

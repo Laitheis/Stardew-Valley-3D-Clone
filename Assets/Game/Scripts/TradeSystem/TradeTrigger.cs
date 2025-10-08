@@ -10,6 +10,6 @@ public class TradeTrigger : MonoBehaviour
     private void OnMouseDown()
     {
         _tradingHandler.SetCurrentTrader(_traderName);
-        GameStateHandler.instance.SetState(GameStateHandler.GameState.Trade);
+        GameStateService.instance.SetState(GameStateService.GameState.Trade);
     }
 }

@@ -103,7 +103,7 @@ public class CropController : MonoBehaviour
 
     public void WaterTile(Vector3Int tile)
     {
-        if (_farmTiles.TryGetValue(tile, out TileState s) && (s.objectOnTile is CropState state && state.crop != null))
+        if (_farmTiles.TryGetValue(tile, out TileState s) && (s.objectOnTile is CropState state))
         {
             state.wateredToday = true;
             var soil = state.soilVisualInstance;
@@ -113,7 +113,7 @@ public class CropController : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[CropManager] Tried watering {tile}, but no crop here");
+            Debug.Log($"[CropManager] Tried watering {tile}, but no soil here");
         }
     }
 

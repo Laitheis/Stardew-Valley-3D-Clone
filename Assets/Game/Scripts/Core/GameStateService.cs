@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 
-public class GameStateHandler : MonoBehaviour
+public class GameStateService : MonoBehaviour
 {
     public event Action OnChange;
 
@@ -14,7 +14,7 @@ public class GameStateHandler : MonoBehaviour
 
     private GameStateBase _currentState;
 
-    public static GameStateHandler instance;
+    public static GameStateService instance;
 
     public GameStateBase CurrentState { get => _currentState; set => _currentState = value; }
 

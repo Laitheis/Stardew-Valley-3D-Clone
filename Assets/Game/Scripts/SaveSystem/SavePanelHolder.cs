@@ -20,4 +20,9 @@ public class SavePanelHolder : MonoBehaviour
     {
         _loadController.currentSaveSlot = transform.GetSiblingIndex();
     }
+
+    public void SuggestToDestroySelf()
+    {
+        _loadController.ShowDestroySaveConfirm(saveGuid, gameObject);
+    }
 }

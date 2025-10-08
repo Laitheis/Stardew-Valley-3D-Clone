@@ -8,7 +8,7 @@ using DG.Tweening;
 using Zenject;
 
 
-public class SleepController : MonoBehaviour
+public class NextDaySaveController : MonoBehaviour
 {
     [SerializeField] private GameObject _confirmPanel;
     [SerializeField] private GameObject _darkScreen;
@@ -17,12 +17,12 @@ public class SleepController : MonoBehaviour
 
     private void Start()
     {
-        GameStateHandler.instance.OnChange += Back;
+        GameStateService.instance.OnChange += Back;
     }
 
     private void OnMouseDown()
     {
-        GameStateHandler.instance.SetState(GameStateHandler.GameState.CloseAllUI);
+        GameStateService.instance.SetState(GameStateService.GameState.CloseAllUI);
         _confirmPanel.SetActive(true);
         ScaleAnimator.PlayScale(_confirmPanel.transform);
     }
@@ -31,7 +31,7 @@ public class SleepController : MonoBehaviour
     {
         if (_confirmPanel.activeSelf)
         {
-            GameStateHandler.instance.SetState(GameStateHandler.GameState.World);
+            GameStateService.instance.SetState(GameStateService.GameState.World);
             _confirmPanel.SetActive(false);
         }
     }
@@ -52,7 +52,7 @@ public class SleepController : MonoBehaviour
 
         seq.Append(cg.DOFade(1f, 2f));
         seq.AppendCallback(() => {
-            GameStateHandler.instance.SetState(GameStateHandler.GameState.World);
+            GameStateService.instance.SetState(GameStateService.GameState.World);
         });
         seq.AppendCallback(() => NotificationService.DisplayNotification(NotificationService.NotificationColor.Green, "The game is saved..."));
         seq.AppendInterval(3f);

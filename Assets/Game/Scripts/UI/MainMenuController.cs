@@ -40,7 +40,8 @@ public class MainMenuController : MonoBehaviour
 
     public void StartNewGame()
     {
-        PlayerData.farmGuid = System.Guid.NewGuid();
+        SaveDataHolder.instance.saveGuid = System.Guid.NewGuid();
+        SaveDataHolder.instance.isFirstLaunch = true;
         SceneManager.LoadScene("Gameplay");
     }
 
@@ -52,5 +53,10 @@ public class MainMenuController : MonoBehaviour
         //List<string> saveContents = new();
         //saveContents.Add();
         //SaveManager.Save();
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }

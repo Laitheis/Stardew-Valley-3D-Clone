@@ -36,6 +36,8 @@ public class PickableItemController : MonoBehaviour
 
     void OnPlayerCollide()
     {
+        if (Time.timeScale == 0) return;
+        if (!(GameStateService.instance.CurrentState is WorldState || GameStateService.instance.CurrentState is TradeState)) return;
         if (!_isPickable) return;
 
         var playerCollection = GameObject.FindWithTag("PlayerInv").GetComponent<InventoryHandler>().Collection;
