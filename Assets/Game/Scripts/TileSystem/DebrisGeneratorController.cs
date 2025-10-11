@@ -4,22 +4,33 @@ using Zenject;
 
 public class DebrisGeneratorController : MonoBehaviour
 {
+    [SerializeField, Range(0, 100)] private float density = 30f;
+
     [Inject(Id = "FarmTiles")] private TileContainer _farmTiles;
+    [Inject] private DefinitionDatabase _definitionDatabase;
 
-    [SerializeField] private List<GameObject> _debrisObjects;
+    private List<DebrisModel> _debrisModels;
 
+    public void Init()
+    {
+        _debrisModels = _definitionDatabase.debrisModels;
+    }
     public void GenerateDebris()
     {
         Dictionary<Vector3Int, TileState> freeTiles =  _farmTiles.GetFreeTiles();
 
         foreach (var tile in freeTiles)
         {
-            GameObject randomObject = _debrisObjects[Random.Range(0, _debrisObjects.Count - 1)];
+            float result = Random.Range(0f, 100f);
+            if (result > density) continue;
+
+            DebrisModel randomDebris = _debrisModels[Random.Range(0, _debrisModels.Count)];
             Vector3 randomRotation = new Vector3(0, Random.Range(0f, 360f), 0);
             Quaternion rotation = Quaternion.Euler(randomRotation);
-            Vector3 position = new Vector3(tile.Key.x, tile.Key.y, 0);
+            Vector3 position = new Vector3(tile.Key.x, 0, tile.Key.y);
             Vector3 spawnOffset = new Vector3(0, 0, 0);
-            Instantiate(randomObject, position + spawnOffset, rotation);
+            var GO = Instantiate(randomDebris.worldPrefab, position + spawnOffset, rotation);
+            _farmTiles[tile.Key] = new TileState(new DebrisState() { debrisModelId = randomDebris.debrisId, debrisVisualInstance = GO, tilePos = tile.Key });
         }
     }
 }

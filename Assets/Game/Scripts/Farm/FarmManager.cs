@@ -11,7 +11,10 @@ public class FarmManager : MonoBehaviour
     [Inject] private DebrisGeneratorController _debrisGenerator;
     [Inject] private CropController _cropHandler;
 
-    private void Awake()
+    private Vector2Int lowerLeftCorner = new Vector2Int(30, 30);
+    private Vector2Int widthAndHeight = new Vector2Int(15, 20);
+
+    public void Init()
     {
         if (instance != null && instance != this)
         {
@@ -20,20 +23,24 @@ public class FarmManager : MonoBehaviour
         }
         instance = this;
 
-        _cropHandler.InitTiles();
+        farmTiles.FillSquare(lowerLeftCorner, widthAndHeight);
 
-    }
-    private void Start()
-    {
         if (SaveDataHolder.instance != null)
         {
+            // First launch settings
             if (SaveDataHolder.instance.isFirstLaunch)
+            {
                 PlayerData.farmGuid = SaveDataHolder.instance.saveGuid;
+                _debrisGenerator.GenerateDebris();
+            }
             else
                 Load();
         }
-        else 
+        else // Debuging launch Gameplay scene 
+        {
             PlayerData.farmGuid = Guid.Empty;
+            _debrisGenerator.GenerateDebris();
+        }
 
     }
     private void Load()

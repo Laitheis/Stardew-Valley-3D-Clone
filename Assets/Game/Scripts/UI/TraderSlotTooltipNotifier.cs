@@ -1,13 +1,11 @@
-﻿using Inventory.UI;
-using InventorySystem;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
 public class TraderSlotTooltipNotifier : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [Inject] private ItemTooltipView _tooltipView;
+    [Inject] private TooltipView _tooltipView;
     [Inject] private DefinitionDatabase _definitionDatabase;
 
     private Vector2 _offset = new Vector2(0, 0);

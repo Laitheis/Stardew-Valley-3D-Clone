@@ -30,6 +30,9 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
     }
     void Start()
     {
+        var sceneContext = FindObjectOfType<SceneContext>();
+        sceneContext.Container.Inject(this);
+
         _animator = GetComponent<Animator>();
 
         InitializeStats();

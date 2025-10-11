@@ -1,12 +1,10 @@
-﻿using Inventory.UI;
-using InventorySystem;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
 public class SlotTooltipNotifier : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [Inject] private ItemTooltipView _tooltipView;
+    [Inject] private TooltipView _tooltipView;
 
     private Vector2 _offset = new Vector2(45, 45);
 

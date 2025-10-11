@@ -3,12 +3,12 @@ using UnityEngine.UI;
 using Zenject;
 
 [CreateAssetMenu(fileName = "GameSettings", menuName = "Installers/GameSettings")]
-public class GameSettings : ScriptableObjectInstaller<GameSettings>
+public class BindingSettings : ScriptableObjectInstaller<BindingSettings>
 {
     public GameObject WorldItemPrefab;
     public GameObject SmokeExplosionEffect;
     public Image DraggedImagePrefab;
-    public DefinitionDatabase ItemDatabase;
+    public DefinitionDatabase DefinitionDatabase;
     public GameObject ItemSlotPrefab;
     public GameObject SoilPrefab;
     public GameObject SoilWetPrefab;
@@ -27,7 +27,7 @@ public class GameSettings : ScriptableObjectInstaller<GameSettings>
         Container.BindInstance(WorldItemPrefab).WithId("WorldItem");
         Container.BindInstance(SmokeExplosionEffect).WithId("SmokeEffect");
         Container.BindInstance(DraggedImagePrefab).WithId("DraggedImagePrefab");
-        Container.BindInstance(ItemDatabase).NonLazy();
+        Container.BindInstance(DefinitionDatabase).NonLazy();
         Container.BindInstance(ItemSlotPrefab).WithId("ItemSlot");
         Container.BindInstance(SoilPrefab).WithId("Soil");
         Container.BindInstance(SoilWetPrefab).WithId("SoilWet");

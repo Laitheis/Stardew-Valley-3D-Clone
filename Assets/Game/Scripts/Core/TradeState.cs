@@ -14,5 +14,9 @@
     public override void ExitState()
     {
         _tradingHandler.TradeWindow.gameObject.SetActive(false);
+        if(_tooltipView.IsClingToMouse)
+        {
+            _tooltipView.CloseTooltip();
+        }
     }
 }

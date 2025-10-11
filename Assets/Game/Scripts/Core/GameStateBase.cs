@@ -14,6 +14,7 @@ public abstract class GameStateBase : MonoBehaviour
     [Inject] protected UIDragController _dragController;
     [Inject(Id = "PlayerInv")] protected InventoryHandler _playerInv;
     [Inject(Id = "StatusPanel")] protected GameObject _statusPanel;
+    [Inject] protected TooltipView _tooltipView;
 
     public abstract void EnterState();
     public abstract void ExitState();

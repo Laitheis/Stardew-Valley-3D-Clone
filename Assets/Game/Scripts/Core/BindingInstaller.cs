@@ -1,12 +1,11 @@
-﻿using Inventory.UI;
-using InventorySystem;
+﻿using InventorySystem;
 using UnityEngine;
 using Zenject;
 
-public class GameInstaller : MonoInstaller
+public class BindingInstaller : MonoInstaller
 {
     public Canvas MainCanvas;
-    public ItemTooltipView TooltipView;
+    public TooltipView TooltipView;
     public GameObject Player;
     public InventoryHandler PlayerInv;
     public SelectedSlotController SelSlotHandler;
@@ -22,6 +21,7 @@ public class GameInstaller : MonoInstaller
     public CropController CropManager;
     public DebrisGeneratorController DebrisGenerator;
     public GameObject StatusPanel;
+    public FarmManager FarmManager;
 
 
     public override void InstallBindings()
@@ -47,6 +47,7 @@ public class GameInstaller : MonoInstaller
         Container.BindInstance(DebrisGenerator);
         Container.BindInstance(StatusPanel).WithId("StatusPanel");
         Container.BindInstance(FarmTiles).WithId("FarmTiles");
+        Container.BindInstance(FarmManager);
 
 
         SignalBusInstaller.Install(Container);

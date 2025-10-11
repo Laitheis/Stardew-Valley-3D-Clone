@@ -8,12 +8,13 @@ using DG.Tweening;
 using Zenject;
 
 
-public class NextDaySaveController : MonoBehaviour
+public class NextDayController : MonoBehaviour
 {
     [SerializeField] private GameObject _confirmPanel;
     [SerializeField] private GameObject _darkScreen;
 
     [Inject] private Canvas _mainCanvas;
+    [Inject] private DebrisGeneratorController _debrisGenerator;
 
     private void Start()
     {
@@ -38,10 +39,6 @@ public class NextDaySaveController : MonoBehaviour
 
     public void Apply()
     {
-        GameTimeService.instance.AdvanceDay();
-        GameTimeService.instance.currentHour = 6;
-        GameTimeService.instance.currentMinute = 0;
-
         _confirmPanel.SetActive(false);
 
         var darkScreen = Instantiate(_darkScreen, _mainCanvas.transform);
@@ -54,6 +51,14 @@ public class NextDaySaveController : MonoBehaviour
         seq.AppendCallback(() => {
             GameStateService.instance.SetState(GameStateService.GameState.World);
         });
+
+        seq.AppendCallback(() => {
+            GameTimeService.instance.AdvanceDay();
+            GameTimeService.instance.currentHour = 6;
+            GameTimeService.instance.currentMinute = 0;
+        });
+        seq.AppendCallback(() => _debrisGenerator.GenerateDebris());
+
         seq.AppendCallback(() => NotificationService.DisplayNotification(NotificationService.NotificationColor.Green, "The game is saved..."));
         seq.AppendInterval(3f);
         seq.Append(cg.DOFade(0f, 2.8f));

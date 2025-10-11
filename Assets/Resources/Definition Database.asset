@@ -22,3 +22,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 56b853d6fed194147a2645b73c44b436, type: 2}
   cropModels:
   - {fileID: 11400000, guid: dbffdc1b6ca5a284fbf5608db4853996, type: 2}
+  debrisModels:
+  - {fileID: 11400000, guid: 1af2b71671f2ffe4b857a63b555461c8, type: 2}

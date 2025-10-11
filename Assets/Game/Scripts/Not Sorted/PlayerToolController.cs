@@ -14,7 +14,6 @@ public class PlayerToolController : MonoBehaviour
     }
     [SerializeField] private List<HandItemEntry> _itemEntries;
     [SerializeField] private List<HandItemEntry> handItemEntries;
-    [SerializeField] private Grid _grid;
     [SerializeField] private Animator _toolAnimator;
     [SerializeField] private ParticleSystem _waterParticles;
 
@@ -33,11 +32,15 @@ public class PlayerToolController : MonoBehaviour
     [Inject] private CropController _cropManager;
 
     private RaycastHit _raycastHit;
-    private Vector3Int _currTile;
+    private Vector3 _currTileWorld;
+    private Vector3Int _currTileGrid;
     private bool _hitGround;
+    private Dictionary<Vector3Int, TileState> _farmTiles;
+
     private void Start()
     {
         mainCam = Camera.main;
+        _farmTiles = FarmManager.instance.farmTiles.TilesCollection;
     }
 
     private void Update()
@@ -59,7 +62,10 @@ public class PlayerToolController : MonoBehaviour
         if (Physics.Raycast(r, out _raycastHit, maxRayDistance, groundLayer))
         {
             _hitGround = true;
-            _currTile = CropController.TilePosFromWorld(_raycastHit.point);
+            _currTileWorld = TileContainer.TilePosFromWorld(_raycastHit.point);
+            Vector3Int tile = new Vector3Int((int)_currTileWorld.x, (int)_currTileWorld.y, (int)_currTileWorld.z);
+            Vector3Int swapped = new Vector3Int(tile.x, tile.z, tile.y);
+            _currTileGrid = swapped;
         }
         else
         {
@@ -118,39 +124,38 @@ public class PlayerToolController : MonoBehaviour
 
     private void TryUseTool()
     {
-
         if (_hitGround)
         {
-            if (CheckRadius(_currTile) == false)
+            if (CheckRadius(_currTileWorld) == false)
             {
                 return;
             }
             switch (activeTool)
             {
                 case ItemType.Hoe:
-                    UseHoe(_currTile);
+                    UseHoe(_currTileGrid);
 
-                    UseHand(_currTile);
+                    UseHand(_currTileGrid);
                     break;
                 case ItemType.WaterCan:
-                    UseWater(_currTile);
+                    UseWater(_currTileGrid);
 
-                    UseHand(_currTile);
+                    UseHand(_currTileGrid);
                     break;
                 case ItemType.Scythe:
 
-                    UseHand(_currTile);
+                    UseHand(_currTileGrid);
                     break;
                 case ItemType.Axe:
 
-                    UseHand(_currTile);
+                    UseHand(_currTileGrid);
                     break;
                 case ItemType.Pickaxe:
 
-                    UseHand(_currTile);
+                    UseHand(_currTileGrid);
                     break;
                 case ItemType.Seed:
-                    UseSeed();
+                    UseSeed(_currTileGrid);
                     break;
                 case ItemType.Regular:
                     break;
@@ -159,11 +164,11 @@ public class PlayerToolController : MonoBehaviour
                 case ItemType.Crop:
                     break;
                 case ItemType.Fertilize:
-                    UseFertilize(_currTile);
-                    UseHand(_currTile);
+                    UseFertilize(_currTileGrid);
+                    UseHand(_currTileGrid);
                     break;
                 default:
-                    UseHand(_currTile);
+                    UseHand(_currTileGrid);
                     break;
             }
         }
@@ -176,17 +181,6 @@ public class PlayerToolController : MonoBehaviour
         _toolAnimator.SetTrigger("Hoe");
     }
 
-    //private void UsePlant(Vector3 tile)
-    //{
-    //    if (selectedSeedModel == null) { Debug.Log("No seed selected"); return; }
-    //    bool ok = CropManager.Instance.PlantSeed(tile, selectedSeedModel);
-    //    if (!ok) { Debug.Log("Can't plant here"); return; }
-    //    else
-    //    {
-    //        // TODO: отнимать семена из инвентаря
-    //    }
-    //}
-
     private void UseWater(Vector3Int tile)
     {
         _cropManager.WaterTile(tile);
@@ -195,20 +189,6 @@ public class PlayerToolController : MonoBehaviour
 
         _waterParticles.Play();
     }
-
-    //private void UseHarvest(Vector3Int tile)
-    //{
-    //    bool success = CropManager.Instance.HarvestTile(tile, out int quantity, out int quality);
-    //    if (success)
-    //    {
-    //        Debug.Log($"Harvested {quantity} (quality {quality}) at {tile}");
-    //        // TODO: добавить в инвентарь
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("Nothing to harvest");
-    //    }
-    //}
 
     private void UseFertilize(Vector3Int tile)
     {
@@ -229,21 +209,21 @@ public class PlayerToolController : MonoBehaviour
         }
     }
 
-    private void UseSeed()
+    private void UseSeed(Vector3Int tile)
     {
         SeedDefinition seed = _playerInv[_selectedSlotHandler.SelectedSlotNum].ItemDefinition as SeedDefinition;
         if (seed != null)
         {
-            if (_cropManager.PlantSeed(_currTile, seed.cropModel))
+            if (_cropManager.PlantSeed(tile, seed.cropModel))
             {
                 _playerInv[_selectedSlotHandler.SelectedSlotNum].SetCount(_playerInv[_selectedSlotHandler.SelectedSlotNum].Count - 1);
             }
         }
     }
 
-    private void UseHand(Vector3 tile)
+    private void UseHand(Vector3Int tile)
     {
-        _cropManager.TryHarvestByHand(_currTile);
+        _cropManager.TryHarvestByHand(_currTileGrid);
     }
 
     ItemType ToolSelected()
@@ -254,7 +234,7 @@ public class PlayerToolController : MonoBehaviour
             return _playerInv[_selectedSlotHandler.SelectedSlotNum].ItemDefinition.type;
     }
 
-    //true - зеленый, false - краный
+    //true - green, false - red
     private void HandleToolHint()
     {
         ItemType tool = activeTool;
@@ -290,53 +270,55 @@ public class PlayerToolController : MonoBehaviour
 
         }
     }
+
     void HoeHint()
     {
-        if (CheckRadius(_currTile) == false)
+        if (CheckRadius(_currTileWorld) == false)
         {
-            _hintVisual.ShowUnavailable(_currTile);
+            _hintVisual.ShowUnavailable(_currTileWorld);
             return;
         }
-        if (_cropManager.IsPlowed(_currTile))
+        if ((_farmTiles.TryGetValue(_currTileGrid, out TileState s) && s.objectOnTile != null) || !(s != null && s.isFarm))
         {
-            _hintVisual.ShowUnavailable(_currTile);
+            _hintVisual.ShowUnavailable(_currTileWorld);
         }
         else
         {
-            _hintVisual.ShowAvailable(_currTile);
-        }
-    }
-    void WaterHint()
-    {
-        if (CheckRadius(_currTile) == false)
-        {
-            _hintVisual.ShowUnavailable(_currTile);
-            return;
-        }
-        if (_cropManager.IsWatered(_currTile) || !FarmManager.instance.farmTiles.TilesCollection.ContainsKey(_currTile))
-        {
-            _hintVisual.ShowUnavailable(_currTile);
-        }
-        else
-        {
-            _hintVisual.ShowAvailable(_currTile);
-        }
-    }
-    void SeedHint()
-    {
-        if (CheckRadius(_currTile) == false || _cropManager.CheckCropOnTile(_currTile))
-        {
-            _hintVisual.ShowUnavailable(_currTile);
-            return;
-        }
-        if (_cropManager.IsPlowed(_currTile))
-        {
-            _hintVisual.ShowAvailable(_currTile);
-        }
-        else
-        {
-            _hintVisual.ShowUnavailable(_currTile);
+            _hintVisual.ShowAvailable(_currTileWorld);
         }
     }
 
+    void WaterHint()
+    {
+        if (CheckRadius(_currTileWorld) == false)
+        {
+            _hintVisual.ShowUnavailable(_currTileWorld);
+            return;
+        }
+        if (_cropManager.IsWatered(_currTileGrid) || !(_farmTiles.TryGetValue(_currTileGrid, out TileState s) && s.objectOnTile is CropState))
+        {
+            _hintVisual.ShowUnavailable(_currTileWorld);
+        }
+        else
+        {
+            _hintVisual.ShowAvailable(_currTileWorld);
+        }
+    }
+
+    void SeedHint()
+    {
+        if (CheckRadius(_currTileWorld) == false || _cropManager.CheckCropOnTile(_currTileGrid))
+        {
+            _hintVisual.ShowUnavailable(_currTileWorld);
+            return;
+        }
+        if (_cropManager.IsPlowed(_currTileGrid))
+        {
+            _hintVisual.ShowAvailable(_currTileWorld);
+        }
+        else
+        {
+            _hintVisual.ShowUnavailable(_currTileWorld);
+        }
+    }
 }

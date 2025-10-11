@@ -22,8 +22,6 @@ public class CropModel : ScriptableObject
     public float baseGoldChance = 0.01f;
     public float waterStreakSilverMultiplier = 0.02f;
     public float waterStreakGoldMultiplier = 0.01f;
-
-    public Vector3 objectOffset;
 }
 
 public enum Season { Spring, Summer, Fall, Winter }

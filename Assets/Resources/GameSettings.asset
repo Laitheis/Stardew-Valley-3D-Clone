@@ -18,7 +18,7 @@ MonoBehaviour:
     type: 3}
   DraggedImagePrefab: {fileID: 3713797426686455791, guid: 35044733adca2e94da2280343e967d03,
     type: 3}
-  ItemDatabase: {fileID: 11400000, guid: 1caa0a176f1ca9d4f8a6e7fbb903fd8d, type: 2}
+  DefinitionDatabase: {fileID: 11400000, guid: 1caa0a176f1ca9d4f8a6e7fbb903fd8d, type: 2}
   ItemSlotPrefab: {fileID: 1037548831250969525, guid: 5ae5623af4fb30340b0cb34083890aea,
     type: 3}
   SoilPrefab: {fileID: 3428209508248169748, guid: 41fceadb5d5205e488d571702f0bdc4c,
