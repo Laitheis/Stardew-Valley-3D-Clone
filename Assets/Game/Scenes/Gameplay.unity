@@ -1887,7 +1887,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &408111213
 Transform:
   m_ObjectHideFlags: 0
@@ -1897,8 +1897,8 @@ Transform:
   m_GameObject: {fileID: 408111212}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.06, y: 0, z: 1.49}
-  m_LocalScale: {x: 1.8501, y: 0.4343, z: 2.1173}
+  m_LocalPosition: {x: -0.0548, y: 0, z: 1.5098}
+  m_LocalScale: {x: 2.3424785, y: 0.4343, z: 2.1570861}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1211034982}
@@ -4542,6 +4542,79 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &887457308
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2425227816212436385, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_Name
+      value: Stone
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 33.57242
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.12140473
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 16.509542
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7264971646141504345, guid: b7500a840b68a574d8514d69089ca813,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b7500a840b68a574d8514d69089ca813, type: 3}
 --- !u!1 &901231323
 GameObject:
   m_ObjectHideFlags: 0
@@ -10607,7 +10680,6 @@ MonoBehaviour:
     obj: {fileID: 592997296}
   _toolAnimator: {fileID: 451136157}
   _waterParticles: {fileID: 1112278418}
-  activeTool: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -13747,9 +13819,9 @@ MonoBehaviour:
     _itemFlags: 0
     Properties:
       CustomPrice: 0
-  - _itemDefinition: {fileID: 0}
+  - _itemDefinition: {fileID: 11400000, guid: 5e93a1c6b749b2046ba26b3724dca33f, type: 2}
     _guid: 
-    _count: 0
+    _count: 1
     _itemFlags: 0
     Properties:
       CustomPrice: 0
@@ -13992,3 +14064,4 @@ SceneRoots:
   - {fileID: 2071484556}
   - {fileID: 68118831099953124}
   - {fileID: 433048670}
+  - {fileID: 887457308}

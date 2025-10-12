@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b897d6fd8348e504d836f0479b89a23a, type: 3}
-  m_Name: Resin
+  m_Name: Stone
   m_EditorClassIdentifier: 
   isTool: 0
-  _name: Resin
+  _name: Stone
   type: 8
   _maxCountInStack: 64
-  _price: 25
+  _price: 5
   _description: 
-  _sprite: {fileID: 21300000, guid: 1fad520d91711084d841abec79d897a1, type: 3}
+  _sprite: {fileID: 21300000, guid: d0a80bae31e34ed4aabe6b450278d5c8, type: 3}
   _prefab: {fileID: 6376372425519703063, guid: f9fc3558dc2fe4f41bb6c7526ca4c2ce, type: 3}
   _damage: 0

@@ -2,9 +2,9 @@
 using System;
 
 [Serializable]
-public class CropState //: IObjectOnTile
+public class CropState
 {
-    [NonSerialized] public CropModel crop;
+    [NonSerialized] public CropModel model;
 
     public string cropModelId;        // link to CropModel.cropId (for saving)
     public Vector3 tilePos;           // tile world position (use integers)

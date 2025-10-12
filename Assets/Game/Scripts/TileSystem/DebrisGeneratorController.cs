@@ -8,6 +8,7 @@ public class DebrisGeneratorController : MonoBehaviour
 
     [Inject(Id = "FarmTiles")] private TileContainer _farmTiles;
     [Inject] private DefinitionDatabase _definitionDatabase;
+    [Inject] private DiContainer _diContainer;
 
     private List<DebrisModel> _debrisModels;
 
@@ -24,13 +25,16 @@ public class DebrisGeneratorController : MonoBehaviour
             float result = Random.Range(0f, 100f);
             if (result > density) continue;
 
-            DebrisModel randomDebris = _debrisModels[Random.Range(0, _debrisModels.Count)];
+            DebrisModel debrisModel = _debrisModels[Random.Range(0, _debrisModels.Count)];
             Vector3 randomRotation = new Vector3(0, Random.Range(0f, 360f), 0);
             Quaternion rotation = Quaternion.Euler(randomRotation);
             Vector3 position = new Vector3(tile.Key.x, 0, tile.Key.y);
             Vector3 spawnOffset = new Vector3(0, 0, 0);
-            var GO = Instantiate(randomDebris.worldPrefab, position + spawnOffset, rotation);
-            _farmTiles[tile.Key] = new TileState(new DebrisState() { debrisModelId = randomDebris.debrisId, debrisVisualInstance = GO, tilePos = tile.Key });
+            var GO = Instantiate(debrisModel.worldPrefab, position + spawnOffset, rotation);
+            _farmTiles[tile.Key] = new TileState(new DebrisState() { model = debrisModel, debrisModelId = debrisModel.debrisId, debrisVisualInstance = GO, tilePos = tile.Key});
+            var destrObjBase =  GO.GetComponent<DestructibleObjectBase>();
+            destrObjBase.Init(tile.Key);
+            _diContainer.Inject(destrObjBase);
         }
     }
 }

@@ -52,9 +52,9 @@ public class CropController : MonoBehaviour
     {
         if (_farmTiles.ContainsKey(tile) && _farmTiles[tile].objectOnTile is CropState state)
         {
-            if (state.crop != null)
+            if (state.model != null)
             {
-                if (state.currentStage == state.crop.daysPerStage.Length - 1)
+                if (state.currentStage == state.model.daysPerStage.Length - 1)
                 {
                     // Drop plant
                     HarvestTile(tile);
@@ -62,7 +62,7 @@ public class CropController : MonoBehaviour
                 else
                 {
                     // Drop seed
-                    SeedDefinition seed = (SeedDefinition)_itemDatabase.itemDefinitions.Find(i => i is SeedDefinition seed && seed.cropModel == state.crop);
+                    SeedDefinition seed = (SeedDefinition)_itemDatabase.itemDefinitions.Find(i => i is SeedDefinition seed && seed.cropModel == state.model);
                     ItemInstance item = new ItemInstance(seed, 1);
                     _signalBus.Fire(new ItemDropEvent(tile, item, false));
                 }
@@ -88,7 +88,7 @@ public class CropController : MonoBehaviour
         }
 
         CropState state = _farmTiles[tile].objectOnTile as CropState;
-        state.crop = model;
+        state.model = model;
         state.cropModelId = model.cropId;
 
         UpdateCropVisual(tile);
@@ -99,7 +99,7 @@ public class CropController : MonoBehaviour
 
     public bool IsPlanted(Vector3Int tile)
     {
-        return _farmTiles.TryGetValue(tile, out TileState s) && (s.objectOnTile is CropState st && st.crop != null);
+        return _farmTiles.TryGetValue(tile, out TileState s) && (s.objectOnTile is CropState st && st.model != null);
     }
 
     public void WaterTile(Vector3Int tile)
@@ -146,10 +146,10 @@ public class CropController : MonoBehaviour
         quality = CalculateQuality(state);
         quantity = CalculateQuantity(state);
 
-        ItemDefinition itemDef = GetItemByModel(state.crop);
+        ItemDefinition itemDef = GetItemByModel(state.model);
         _signalBus.Fire(new ItemDropEvent(tile, new ItemInstance(itemDef, 1), false));
 
-        if (state.crop.regrows)
+        if (state.model.regrows)
         {
             state.currentStage = Mathf.Max(0, state.currentStage - 1);
             state.daysInStage = 0;
@@ -169,7 +169,7 @@ public class CropController : MonoBehaviour
             _farmTiles[tile] = new TileState(new CropState() { soilVisualInstance = soilVisual, wateredToday = isWatered });
         }
 
-        Debug.Log($"[CropManager] Harvested {state.crop.cropId} at {tile} → {quantity} items, quality {quality}");
+        Debug.Log($"[CropManager] Harvested {state.model.cropId} at {tile} → {quantity} items, quality {quality}");
         return true;
     }
 
@@ -229,7 +229,7 @@ public class CropController : MonoBehaviour
             if (!(_farmTiles.TryGetValue(tile, out TileState s) && s.objectOnTile is CropState state)) continue;
 
             // Continue and destroy soil if crop is empty
-            if (state.crop == null)
+            if (state.model == null)
             {
                 Destroy(state.soilVisualInstance);
                 tilesToRemove.Add(tile);
@@ -237,9 +237,9 @@ public class CropController : MonoBehaviour
             }
 
             // Seasonal wilt
-            if (state.crop.withersIfNotInSeason && state.crop.seasons != null && state.crop.seasons.Length > 0)
+            if (state.model.withersIfNotInSeason && state.model.seasons != null && state.model.seasons.Length > 0)
             {
-                if (!state.crop.seasons.Contains(currentSeason))
+                if (!state.model.seasons.Contains(currentSeason))
                 {
                     state.isWithered = true;
                     UpdateCropVisual(tile);
@@ -277,7 +277,7 @@ public class CropController : MonoBehaviour
             }
 
             // Stage transition
-            int needed = state.crop.daysPerStage[Mathf.Clamp(state.currentStage, 0, state.crop.daysPerStage.Length - 1)];
+            int needed = state.model.daysPerStage[Mathf.Clamp(state.currentStage, 0, state.model.daysPerStage.Length - 1)];
             if (state.daysInStage >= needed && state.wateredToday)
             {
                 float diff = state.daysInStage - needed;
@@ -299,7 +299,7 @@ public class CropController : MonoBehaviour
             }
 
             // Ready to harvest
-            state.isReadyToHarvest = state.currentStage == state.crop.stagePrefabs.Length - 1;
+            state.isReadyToHarvest = state.currentStage == state.model.stagePrefabs.Length - 1;
         }
 
         // Use sprinklers
@@ -312,7 +312,7 @@ public class CropController : MonoBehaviour
         // Clear empty tiles
         foreach (var tile in tilesToRemove)
         {
-            _farmTiles.Remove(tile);
+            _farmTiles[tile].objectOnTile = null;
         }
     }
 
@@ -327,25 +327,25 @@ public class CropController : MonoBehaviour
         {
             RemoveCropVisual(state);
 
-            if (state.crop.witheredPrefab != null)
+            if (state.model.witheredPrefab != null)
             {
-                state.cropVisualInstance = Instantiate(state.crop.witheredPrefab, pos, Quaternion.identity, this.transform);
+                state.cropVisualInstance = Instantiate(state.model.witheredPrefab, pos, Quaternion.identity, this.transform);
             }
             return;
         }
 
         RemoveCropVisual(state);
 
-        int stageIndex = Mathf.Clamp(state.currentStage, 0, state.crop.stagePrefabs.Length - 1);
-        GameObject pref = state.crop.stagePrefabs.Length > 0
-            ? state.crop.stagePrefabs[stageIndex]
+        int stageIndex = Mathf.Clamp(state.currentStage, 0, state.model.stagePrefabs.Length - 1);
+        GameObject pref = state.model.stagePrefabs.Length > 0
+            ? state.model.stagePrefabs[stageIndex]
             : null;
         if (pref == null) return;
 
         state.cropVisualInstance = Instantiate(pref, pos, Quaternion.identity);
         state.cropVisualInstance.AddComponent<TilePosHolder>().pos = tile;
 
-        if (state.currentStage == state.crop.daysPerStage.Length - 1)
+        if (state.currentStage == state.model.daysPerStage.Length - 1)
             Instantiate(_particles, state.cropVisualInstance.transform);
     }
 
@@ -370,8 +370,8 @@ public class CropController : MonoBehaviour
 
     private int CalculateQuality(CropState state)
     {
-        float chanceSilver = state.crop.baseSilverChance + state.crop.waterStreakSilverMultiplier;
-        float chanceGold = state.crop.baseGoldChance + state.crop.waterStreakGoldMultiplier;
+        float chanceSilver = state.model.baseSilverChance + state.model.waterStreakSilverMultiplier;
+        float chanceGold = state.model.baseGoldChance + state.model.waterStreakGoldMultiplier;
 
         chanceSilver = Mathf.Clamp01(chanceSilver);
         chanceGold = Mathf.Clamp01(chanceGold);
@@ -385,13 +385,13 @@ public class CropController : MonoBehaviour
     private int CalculateQuantity(CropState state)
     {
         int q = 1;
-        if (state.crop.multiHarvest) q += UnityEngine.Random.Range(0, 2); // 0..1 additional
+        if (state.model.multiHarvest) q += UnityEngine.Random.Range(0, 2); // 0..1 additional
         return q;
     }
 
     public bool CheckCropOnTile(Vector3Int tile)
     {
-        return _farmTiles.TryGetValue(tile, out TileState s) && s.objectOnTile is CropState state && state.crop != null;
+        return _farmTiles.TryGetValue(tile, out TileState s) && s.objectOnTile is CropState state && state.model != null;
     }
 
     private ItemDefinition GetItemByModel(CropModel cropModel)
@@ -408,7 +408,7 @@ public class CropController : MonoBehaviour
             CropState cropState = tile.Value.objectOnTile as CropState;
             if (cropState.cropModelId != null)
             {
-                cropState.crop = _itemDatabase.cropModels.First(c => c.cropId == cropState.cropModelId);
+                cropState.model = _itemDatabase.cropModels.First(c => c.cropId == cropState.cropModelId);
                 UpdateCropVisual(tile.Key);
             }
             SetSoilVisual(tile.Key, cropState.wateredToday);

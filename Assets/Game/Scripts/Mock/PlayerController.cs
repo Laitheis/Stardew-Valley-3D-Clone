@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
                 IDestructible hitObject = hit.GetComponent<IDestructible>();
                 if (hitObject != null)
                 {
-                    hitObject.TakeDamage(10);
+                    hitObject.TakeDamage(10, ItemType.Axe);
                 }
             }
 

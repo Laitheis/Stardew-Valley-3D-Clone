@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface IDestructible
 {
-    public void TakeDamage(int amount);
+    public void TakeDamage(int amount, ItemType tool);
     public void OnDestroyed();
 }

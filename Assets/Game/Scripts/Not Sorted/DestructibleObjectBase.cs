@@ -4,34 +4,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, IStats
+public abstract class DestructibleObjectBase : MonoBehaviour, IDestructible, IStats
 {
-    [Inject] private SignalBus _signalBus;
-
-    protected LootGeneratorHandler _lootGenerator;
-    protected GameObject _smokeEffect;
-
     protected StatContainter _statContainer;
     protected List<ItemInstance> _pendingLoot;
 
+    protected GameObject _smokeEffect;
     protected Animator _animator;
 
     protected bool _isFalling;
 
+    public ItemType _acceptableTool;
+    [HideInInspector] public Vector3Int _gridPos;
+
     public StatContainter StatContainer => _statContainer;
 
-    bool _inited = false;
-    [Inject]
-    public void Construct(LootGeneratorHandler lootGenerator)
-    {
-        _lootGenerator = lootGenerator;
+    protected bool _inited = false;
 
-        _animator = GetComponent<Animator>();
-    }
-    void Start()
+    [Inject] protected LootGeneratorHandler _lootGenerator;
+    [Inject] private SignalBus _signalBus;
+
+    public void Init(Vector3Int gridPos)
     {
-        var sceneContext = FindObjectOfType<SceneContext>();
-        sceneContext.Container.Inject(this);
+        _gridPos = gridPos;
 
         _animator = GetComponent<Animator>();
 
@@ -40,6 +35,7 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
 
         _inited = true;
     }
+
     public virtual void InitializeStats()
     {
         if (_inited)
@@ -54,14 +50,14 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
         durability.OnMinValueReached += OnDestroyed;
     }
 
-    public virtual void InitializeLoot()
+    protected virtual void InitializeLoot()
     {
         if (_inited)
         {
             return;
         }
 
-        _pendingLoot = _lootGenerator.GenerateLoot("Oak", 0);
+        // Example _pendingLoot = _lootGenerator.GenerateLoot("Oak", 0);
     }
 
     public virtual async void OnDestroyed()
@@ -71,64 +67,52 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
         UnsubscribeFromDurability();
         StartFalling();
 
-        await HandleTrunkFall();
-
         await PlayDestructionAnimation();
 
         HarvestAndCleanup();
+
+        FarmManager.instance.farmTiles.TilesCollection[_gridPos].objectOnTile = null;
     }
 
-    public virtual void TakeDamage(int amount)
+    public virtual void TakeDamage(int amount, ItemType tool)
     {
         if (_isFalling) return;
+        if (tool != _acceptableTool) return;
 
         Debug.Log($"{gameObject} has {amount} damage.");
 
         _statContainer.GetStat(StatTypes.Durability).Value -= amount;
 
-
-        _animator.SetTrigger("Cut");
+        _animator.SetTrigger("Damage");
 
         Debug.Log($"new {gameObject} durability is {_statContainer.GetStat(StatTypes.Durability).Value}");
     }
 
-    private void UnsubscribeFromDurability()
+    protected void UnsubscribeFromDurability()
     {
         var durability = _statContainer.GetStat(StatTypes.Durability);
         durability.OnMinValueReached -= OnDestroyed;
     }
 
-    private void StartFalling()
-    {
-        _isFalling = true;
-        _animator.enabled = false;
-    }
-
-    private async UniTask HandleTrunkFall()
-    {
-        GameObject trunk = transform.Find("Trunk").gameObject;
-        Rigidbody trunkRigidbody = trunk.AddComponent<Rigidbody>();
-        SetupTrunkPhysics(trunkRigidbody);
-        trunkRigidbody.AddForce(Vector3.right * 5000f);
-
-        await UniTask.Delay(TimeSpan.FromSeconds(4f));
-    }
-
-    private async UniTask PlayDestructionAnimation()
+    protected async UniTask PlayDestructionAnimation()
     {
         _animator.enabled = true;
         _animator.SetTrigger("Dis");
         await UniTask.Delay(TimeSpan.FromSeconds(_animator.GetCurrentAnimatorStateInfo(0).length));
     }
 
-    private void HarvestAndCleanup()
+    protected void HarvestAndCleanup()
     {
         Harvest();
-        //Instantiate(_smokeEffect, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 
-    public virtual void Harvest()
+    protected virtual void StartFalling()
+    {
+        _isFalling = true;
+    }
+
+    protected virtual void Harvest()
     {
         var durability = _statContainer.GetStat(StatTypes.Durability);
 
@@ -138,14 +122,5 @@ public abstract class TreeBase : MonoBehaviour, IHarvestable, IDestructible, ISt
         {
             _signalBus.Fire(new ItemDropEvent(transform.position, item, false));
         }
-    }
-
-    private void SetupTrunkPhysics(Rigidbody rigidbody)
-    {
-        if (rigidbody == null) return;
-
-        rigidbody.mass = 25f;
-        rigidbody.drag = 0.2f;
-        rigidbody.angularDrag = 0.1f;
     }
 }

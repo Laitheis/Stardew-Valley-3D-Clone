@@ -7,7 +7,7 @@
         _statContainer.GetStat(StatTypes.Durability).Value = 85;
     }
 
-    public override void InitializeLoot()
+    protected override void InitializeLoot()
     {
         _pendingLoot = _lootGenerator.GenerateLoot("Oak", 0);
     }

@@ -1,5 +1,4 @@
-﻿using InventorySystem;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
@@ -17,7 +16,8 @@ public class PlayerToolController : MonoBehaviour
     [SerializeField] private Animator _toolAnimator;
     [SerializeField] private ParticleSystem _waterParticles;
 
-    public ItemType activeTool = ItemType.None;
+    private ItemType activeTool = ItemType.None;
+    private ItemDefinition activeItemDef;
 
     [Header("Raycast")]
     public LayerMask groundLayer;
@@ -30,6 +30,9 @@ public class PlayerToolController : MonoBehaviour
     [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
     [Inject] private HintVisualizer _hintVisual;
     [Inject] private CropController _cropManager;
+    [Inject] private LootGeneratorHandler _lootGenerator;
+    [Inject] private SignalBus _signalBus;
+    [Inject(Id = "Player")] private GameObject _player;
 
     private RaycastHit _raycastHit;
     private Vector3 _currTileWorld;
@@ -114,7 +117,8 @@ public class PlayerToolController : MonoBehaviour
 
         if (collection[_selectedSlotHandler.SelectedSlotNum].ItemDefinition != null)
         {
-            activeTool = collection[_selectedSlotHandler.SelectedSlotNum].ItemDefinition.type;
+            activeItemDef = collection[_selectedSlotHandler.SelectedSlotNum].ItemDefinition;
+            activeTool = activeItemDef.type;
         }
         else
         {
@@ -130,34 +134,27 @@ public class PlayerToolController : MonoBehaviour
             {
                 return;
             }
+            UseHand(_currTileGrid);
             switch (activeTool)
             {
                 case ItemType.Hoe:
                     UseHoe(_currTileGrid);
-
-                    UseHand(_currTileGrid);
                     break;
                 case ItemType.WaterCan:
                     UseWater(_currTileGrid);
-
-                    UseHand(_currTileGrid);
                     break;
                 case ItemType.Scythe:
-
-                    UseHand(_currTileGrid);
+                    UseScythe();
                     break;
                 case ItemType.Axe:
-
-                    UseHand(_currTileGrid);
                     break;
                 case ItemType.Pickaxe:
-
-                    UseHand(_currTileGrid);
+                    UsePickaxe();
                     break;
                 case ItemType.Seed:
                     UseSeed(_currTileGrid);
                     break;
-                case ItemType.Regular:
+                case ItemType.Trash:
                     break;
                 case ItemType.Material:
                     break;
@@ -165,13 +162,37 @@ public class PlayerToolController : MonoBehaviour
                     break;
                 case ItemType.Fertilize:
                     UseFertilize(_currTileGrid);
-                    UseHand(_currTileGrid);
                     break;
                 default:
-                    UseHand(_currTileGrid);
                     break;
             }
         }
+    }
+
+    private void UseScythe()
+    {
+        BoxCollider damageZone = _player.GetComponent<PlayerController>().DamageZone;
+        Collider[] hits = Physics.OverlapBox(damageZone.bounds.center, damageZone.bounds.extents, _player.transform.rotation);
+
+        foreach (Collider hit in hits)
+        {
+
+        }
+    }
+
+    private void UsePickaxe()
+    {
+        if ((_farmTiles.TryGetValue(_currTileGrid, out TileState s) && s.objectOnTile is CropState))
+        {
+            _cropManager.UnplowTile(_currTileGrid);
+        }
+        if (s.objectOnTile is DebrisState debrisSt)
+        {
+            var destructibleObj = debrisSt.debrisVisualInstance.GetComponent<DestructibleObjectBase>();
+            destructibleObj.TakeDamage(activeItemDef.Damage, ItemType.Pickaxe);
+        }
+
+        _toolAnimator.SetTrigger("Pickaxe");
     }
 
     private void UseHoe(Vector3Int tile)
@@ -244,7 +265,7 @@ public class PlayerToolController : MonoBehaviour
             case ItemType.Seed:
                 SeedHint();
                 break;
-            case ItemType.Regular:
+            case ItemType.Trash:
                 _hintVisual.Hide();
                 break;
             case ItemType.Hoe:
@@ -260,6 +281,7 @@ public class PlayerToolController : MonoBehaviour
                 _hintVisual.Hide();
                 break;
             case ItemType.Pickaxe:
+                PickaxeHint();
                 break;
             case ItemType.None:
                 _hintVisual.Hide();
@@ -269,6 +291,24 @@ public class PlayerToolController : MonoBehaviour
                 break;
 
         }
+    }
+
+    private void PickaxeHint()
+    {
+        if (CheckRadius(_currTileWorld) == false)
+        {
+            _hintVisual.ShowUnavailable(_currTileWorld);
+            return;
+        }
+        if (!_farmTiles.TryGetValue(_currTileGrid, out TileState s))
+        {
+            _hintVisual.ShowUnavailable(_currTileWorld);
+            return;
+        }
+        if (s.objectOnTile != null)
+            _hintVisual.ShowAvailable(_currTileWorld);
+        else
+            _hintVisual.ShowUnavailable(_currTileWorld);
     }
 
     void HoeHint()
