@@ -35,11 +35,11 @@ public class UIDragController : MonoBehaviour
     private GameObject _player;
     [Inject] private SignalBus _signalBus;
 
-    public bool IsDragging { get => _isDragging; set => _isDragging = value; }
     public int OriginalSlotNum { get => _originalSlotNum; set => _originalSlotNum = value; }
     public bool IsCountinueDragging { get => _isCountinueDragging; set => _isCountinueDragging = value; }
     public ItemInstance ItemInstance { get => _itemInstance; set => _itemInstance = value; }
     public bool IsMouseOverTraderPanel { get => _isMouseOverTraderPanel; set => _isMouseOverTraderPanel = value; }
+    public bool IsDragging { get => _isDragging; set { if (value != _isDragging) { Debug.LogWarning("IsDragging changed"); _isDragging = value; } } }
 
     [Inject]
     private void Constructor([Inject(Id = "DraggedImagePrefab")] Image draggedImagePrefab, [Inject(Id = "Player")] GameObject player, Canvas mainCanvas)
@@ -51,14 +51,17 @@ public class UIDragController : MonoBehaviour
 
     private void Update()
     {
-        HandleInput();
-
-        if (_isDragging && _draggedRect != null)
+        if (IsDragging && _draggedRect != null)
         {
             DragUpdate();
         }
 
         ClearItemInstance();
+    }
+
+    public void OnClick()
+    {
+        HandleInput();
     }
 
     private void ClearItemInstance()
@@ -73,7 +76,7 @@ public class UIDragController : MonoBehaviour
         {
             _mouseButton = Input.GetMouseButtonDown(0) ? 0 : 1;
 
-            if (_isDragging)
+            if (IsDragging)
             {
                 TryLandDraggedObject();
             }
@@ -99,7 +102,7 @@ public class UIDragController : MonoBehaviour
         var item = _sourceItemsCollection[OriginalSlotNum];
         if (item.ItemDefinition == null) return;
 
-        _isDragging = true;
+        IsDragging = true;
         OnStartDrag?.Invoke(new()
         {
             ItemInstance = item,
@@ -124,7 +127,7 @@ public class UIDragController : MonoBehaviour
             if (_mouseButton == 0 || ItemInstance.Count == 1)
             {
                 _signalBus.Fire(new ItemDropEvent(_player.transform.position, ItemInstance, true));
-                _isDragging = false;
+                IsDragging = false;
                 if (_draggedRect != null) 
                     ClearDraggedRect();
             }
@@ -139,7 +142,7 @@ public class UIDragController : MonoBehaviour
         }
 
         _slotUnderCursorNum = landable.GetHierarchyIndex();
-        _isDragging = false;
+        IsDragging = false;
 
         ClearDraggedRect();
 
@@ -173,7 +176,7 @@ public class UIDragController : MonoBehaviour
 
     public void SetDraggedItem(ItemInstance itemInstance)
     {
-        _isDragging = true;
+        IsDragging = true;
         ItemInstance = itemInstance;
     }
 

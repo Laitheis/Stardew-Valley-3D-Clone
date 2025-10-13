@@ -1,4 +1,6 @@
-﻿public class Rock : DestructibleObjectBase
+﻿using UnityEngine;
+
+public class Stone : DestructibleObjectBase
 {
     public override void InitializeStats()
     {

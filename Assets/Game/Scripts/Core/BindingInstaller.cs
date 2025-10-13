@@ -22,6 +22,7 @@ public class BindingInstaller : MonoInstaller
     public DebrisGeneratorController DebrisGenerator;
     public GameObject StatusPanel;
     public FarmManager FarmManager;
+    public InputHandler InputHandler;
 
 
     public override void InstallBindings()
@@ -48,6 +49,7 @@ public class BindingInstaller : MonoInstaller
         Container.BindInstance(StatusPanel).WithId("StatusPanel");
         Container.BindInstance(FarmTiles).WithId("FarmTiles");
         Container.BindInstance(FarmManager);
+        Container.BindInstance(InputHandler);
 
 
         SignalBusInstaller.Install(Container);

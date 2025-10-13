@@ -147,7 +147,8 @@ public class CropController : MonoBehaviour
         quantity = CalculateQuantity(state);
 
         ItemDefinition itemDef = GetItemByModel(state.model);
-        _signalBus.Fire(new ItemDropEvent(tile, new ItemInstance(itemDef, 1), false));
+        Vector3 pos = new Vector3(tile.x, tile.z, tile.y);
+        _signalBus.Fire(new ItemDropEvent(pos, new ItemInstance(itemDef, 1), false));
 
         if (state.model.regrows)
         {
@@ -415,5 +416,14 @@ public class CropController : MonoBehaviour
         }
 
         Debug.Log("CropManager: loaded crop tiles");
+    }
+
+    [ContextMenu("Test Cabbage")]
+    public void TestCabbage()
+    {
+        ItemInstance item = new ItemInstance();
+        item.SetItemDefById(1);
+        item.SetCount(1);
+        _signalBus.Fire(new ItemDropEvent(new Vector3(32, 0, 35), item, false));
     }
 }

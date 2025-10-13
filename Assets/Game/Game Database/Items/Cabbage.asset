@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Cabbage
   m_EditorClassIdentifier: 
   isTool: 0
+  _id: 1
   _name: Cabbage
   type: 9
   _maxCountInStack: 64
@@ -20,4 +21,5 @@ MonoBehaviour:
   _description: Fresh and crispy.
   _sprite: {fileID: 21300000, guid: 553c9d7f6c265554c88bac049ce64491, type: 3}
   _prefab: {fileID: 1716308991893073610, guid: 395a5d3dd91df034da734a5497892ece, type: 3}
+  _damage: 0
   cropModel: {fileID: 11400000, guid: dbffdc1b6ca5a284fbf5608db4853996, type: 2}

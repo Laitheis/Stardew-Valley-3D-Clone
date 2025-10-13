@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using DG.Tweening;
 using Zenject;
+using UnityEngine.UI;
 
 
 public class NextDayController : MonoBehaviour
@@ -42,12 +43,13 @@ public class NextDayController : MonoBehaviour
         _confirmPanel.SetActive(false);
 
         var darkScreen = Instantiate(_darkScreen, _mainCanvas.transform);
-        var cg = darkScreen.GetComponent<CanvasGroup>();
+        var blackout = darkScreen.GetComponent<CanvasGroup>();
         DG.Tweening.Sequence seq = DOTween.Sequence();
 
         SaveService.instance.Save();
 
-        seq.Append(cg.DOFade(1f, 2f));
+        seq.Append(blackout.DOFade(1f, 2f));
+        seq.AppendCallback(() => { blackout.GetComponent<Image>().raycastTarget = true; });
         seq.AppendCallback(() => {
             GameStateService.instance.SetState(GameStateService.GameState.World);
         });
@@ -61,7 +63,8 @@ public class NextDayController : MonoBehaviour
 
         seq.AppendCallback(() => NotificationService.DisplayNotification(NotificationService.NotificationColor.Green, "The game is saved..."));
         seq.AppendInterval(3f);
-        seq.Append(cg.DOFade(0f, 2.8f));
+        seq.AppendCallback(() => { blackout.GetComponent<Image>().raycastTarget = false; }); 
+        seq.Append(blackout.DOFade(0f, 2f));
         seq.AppendCallback(() => { 
             Destroy(darkScreen);
         });

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,7 +7,7 @@ public class ItemInstance
     [SerializeField] private ItemDefinition _itemDefinition;
 
     [SerializeField] private string _guid;
-    [SerializeField] [Min(0)] private int _count = 0;
+    [SerializeField][Min(0)] private int _count = 0;
     [SerializeField] private ItemFlags _itemFlags;
 
     public ChangeableProperties Properties;
@@ -31,7 +31,7 @@ public class ItemInstance
         Properties = new ChangeableProperties();
         Properties.CustomPrice = definition.Price;
         _guid = System.Guid.NewGuid().ToString();
-        _count = count; //Mathf.Clamp(count, 1, definition.MaxCountInStack);
+        _count = count;
     }
 
     public ItemInstance()
@@ -130,6 +130,20 @@ public class ItemInstance
     public void ClearFlags()
     {
         _itemFlags = ItemFlags.None;
+    }
+
+    /// <summary>
+    /// Used for debugging or during scene loading. 
+    /// Not recommended for real-time calls.
+    /// </summary>
+    public void SetItemDefById(int id)
+    {
+        var db = Resources.Load<DefinitionDatabase>("DefinitionDatabase");
+        var itemDef = db.itemDefinitions.First(i => i.Id == id);
+        if (itemDef)
+        {
+            _itemDefinition = itemDef;
+        }
     }
 }
 

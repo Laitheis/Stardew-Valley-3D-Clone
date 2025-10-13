@@ -24,7 +24,7 @@ public abstract class DestructibleObjectBase : MonoBehaviour, IDestructible, ISt
     [Inject] protected LootGeneratorHandler _lootGenerator;
     [Inject] private SignalBus _signalBus;
 
-    public void Init(Vector3Int gridPos)
+    public virtual void Init(Vector3Int gridPos)
     {
         _gridPos = gridPos;
 
@@ -60,14 +60,12 @@ public abstract class DestructibleObjectBase : MonoBehaviour, IDestructible, ISt
         // Example _pendingLoot = _lootGenerator.GenerateLoot("Oak", 0);
     }
 
-    public virtual async void OnDestroyed()
+    public virtual void OnDestroyed()
     {
         Debug.Log($"{gameObject} has been destroyed");
 
         UnsubscribeFromDurability();
         StartFalling();
-
-        await PlayDestructionAnimation();
 
         HarvestAndCleanup();
 
@@ -97,6 +95,7 @@ public abstract class DestructibleObjectBase : MonoBehaviour, IDestructible, ISt
     protected async UniTask PlayDestructionAnimation()
     {
         _animator.enabled = true;
+        await UniTask.Delay(TimeSpan.FromSeconds(0.01f));
         _animator.SetTrigger("Dis");
         await UniTask.Delay(TimeSpan.FromSeconds(_animator.GetCurrentAnimatorStateInfo(0).length));
     }

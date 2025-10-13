@@ -1,6 +1,9 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Zenject;
 
 public class PlayerToolController : MonoBehaviour
@@ -11,20 +14,16 @@ public class PlayerToolController : MonoBehaviour
         public ItemType type;
         public GameObject obj;
     }
-    [SerializeField] private List<HandItemEntry> _itemEntries;
-    [SerializeField] private List<HandItemEntry> handItemEntries;
-    [SerializeField] private Animator _toolAnimator;
-    [SerializeField] private ParticleSystem _waterParticles;
-
-    private ItemType activeTool = ItemType.None;
-    private ItemDefinition activeItemDef;
 
     [Header("Raycast")]
     public LayerMask groundLayer;
     public float maxRayDistance = 100f;
     public float toolUseRadius = 5;
 
-    private Camera mainCam;
+    [SerializeField] private List<HandItemEntry> handItemEntries;
+    [SerializeField] private Animator _toolAnimator;
+    [SerializeField] private ParticleSystem _waterParticles;
+    [SerializeField] private Slider _cooldown;
 
     [Inject] private SelectedSlotController _selectedSlotHandler;
     [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
@@ -33,15 +32,27 @@ public class PlayerToolController : MonoBehaviour
     [Inject] private LootGeneratorHandler _lootGenerator;
     [Inject] private SignalBus _signalBus;
     [Inject(Id = "Player")] private GameObject _player;
+    [Inject(Id = "ToolDelay")] private int _toolDelay;
+    [Inject] private Canvas _mainCanvas;
+    [Inject] private UIDragController _dragController;
 
+    private ItemType activeTool = ItemType.None;
+    private ItemDefinition activeItemDef;
+    private Camera mainCam;
     private RaycastHit _raycastHit;
     private Vector3 _currTileWorld;
     private Vector3Int _currTileGrid;
     private bool _hitGround;
     private Dictionary<Vector3Int, TileState> _farmTiles;
+    private GraphicRaycaster raycaster;
+    private PointerEventData pointerEventData;
+    private EventSystem eventSystem;
+    [SerializeField] private bool isToolUsageFrozen;
 
     private void Start()
     {
+        raycaster = _mainCanvas.GetComponent<GraphicRaycaster>();
+        eventSystem = EventSystem.current;
         mainCam = Camera.main;
         _farmTiles = FarmManager.instance.farmTiles.TilesCollection;
     }
@@ -53,11 +64,18 @@ public class PlayerToolController : MonoBehaviour
         HandleToolSwitchInput();
         HandleToolHint();
         HandleToolVisual();
-        if (Input.GetMouseButtonDown(0))
-        {
-            TryUseTool();
-        }
     }
+
+    public void OnClick()
+    {
+        TryUseTool();
+    }
+
+    public void OnEndClick()
+    {
+        isToolUsageFrozen = false;
+    }
+
     void HandleRaycast()
     {
         // Update current mouse selected tile
@@ -130,11 +148,46 @@ public class PlayerToolController : MonoBehaviour
     {
         if (_hitGround)
         {
-            if (CheckRadius(_currTileWorld) == false)
+            Debug.Log("Try use tool");
+
+            // Check - if we click on Inventory - return
             {
+                pointerEventData = new PointerEventData(eventSystem)
+                {
+                    position = Input.mousePosition
+                };
+
+                var results = new List<RaycastResult>();
+                raycaster.Raycast(pointerEventData, results);
+
+                foreach (var element in results)
+                {
+                    if (element.gameObject.GetComponent<InventoryHandler>()) return;
+                }
+            }
+
+            if (isToolUsageFrozen) return;
+            if (_dragController.IsDragging)
+            {
+                isToolUsageFrozen = true;
                 return;
             }
+            if (_cooldown.value > 0) return;
+            if (CheckRadius(_currTileWorld) == false) return;
+
             UseHand(_currTileGrid);
+
+            // Start cooldown
+            {
+                _cooldown.gameObject.SetActive(true);
+                _cooldown.value = 1;
+                DOVirtual.Float(1, 0, _toolDelay, value =>
+                {
+                    _cooldown.value = value;
+                    if (_cooldown.value == 0) _cooldown.gameObject.SetActive(false);
+                });
+            }
+
             switch (activeTool)
             {
                 case ItemType.Hoe:
@@ -186,7 +239,7 @@ public class PlayerToolController : MonoBehaviour
         {
             _cropManager.UnplowTile(_currTileGrid);
         }
-        if (s.objectOnTile is DebrisState debrisSt)
+        if (s != null && s.objectOnTile is DebrisState debrisSt)
         {
             var destructibleObj = debrisSt.debrisVisualInstance.GetComponent<DestructibleObjectBase>();
             destructibleObj.TakeDamage(activeItemDef.Damage, ItemType.Pickaxe);
@@ -244,7 +297,7 @@ public class PlayerToolController : MonoBehaviour
 
     private void UseHand(Vector3Int tile)
     {
-        _cropManager.TryHarvestByHand(_currTileGrid);
+        _cropManager.TryHarvestByHand(tile);
     }
 
     ItemType ToolSelected()

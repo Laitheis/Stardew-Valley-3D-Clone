@@ -33,8 +33,8 @@ public class DebrisGeneratorController : MonoBehaviour
             var GO = Instantiate(debrisModel.worldPrefab, position + spawnOffset, rotation);
             _farmTiles[tile.Key] = new TileState(new DebrisState() { model = debrisModel, debrisModelId = debrisModel.debrisId, debrisVisualInstance = GO, tilePos = tile.Key});
             var destrObjBase =  GO.GetComponent<DestructibleObjectBase>();
-            destrObjBase.Init(tile.Key);
             _diContainer.Inject(destrObjBase);
+            destrObjBase.Init(tile.Key);
         }
     }
 }

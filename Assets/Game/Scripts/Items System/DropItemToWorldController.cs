@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -47,6 +48,8 @@ public class DropItemToWorldController : Zenject.IInitializable
                 signal.Position + _spawnOffset,
                 Quaternion.identity,
                 null);
+            itemGO.GetComponent<BoxCollider>().enabled = false;
+            DOVirtual.DelayedCall(0.3f, () => { itemGO.GetComponent<BoxCollider>().enabled = true; }, false);
 
             _spawnOffset += new Vector3(0, 1, 0);
 
@@ -68,7 +71,11 @@ public class DropItemToWorldController : Zenject.IInitializable
         }
 
         if (!signal.IsDroppedFromPlayer)
-            _container.InstantiatePrefab(_smokeEffect, signal.Position, Quaternion.identity, null);
+        {
+            var smoke = _container.InstantiatePrefab(_smokeEffect, signal.Position, Quaternion.identity, null);
+            GameObject.Destroy(smoke, 1.5f);
+        }
+
         //Debug.Log($"Loot named {signal.Item.Name} drops at position {signal.Position} with quantity {signal.Item.Count}");
     }
 }

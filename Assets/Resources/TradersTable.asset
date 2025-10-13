@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff54c002c7522af498be4da721d8c730, type: 3}
-  m_Name: Traders Table
+  m_Name: TradersTable
   m_EditorClassIdentifier: 
   _traders:
   - Name: Eris
