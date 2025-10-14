@@ -18,5 +18,7 @@
         {
             _tooltipView.CloseTooltip();
         }
+        _dragController.SetMouseExitTraderPanelFlag();
+        _tradingHandler.Close();
     }
 }

@@ -32,7 +32,7 @@ public class PlayerToolController : MonoBehaviour
     [Inject] private LootGeneratorHandler _lootGenerator;
     [Inject] private SignalBus _signalBus;
     [Inject(Id = "Player")] private GameObject _player;
-    [Inject(Id = "ToolDelay")] private int _toolDelay;
+    [Inject(Id = "ToolDelay")] private float _toolDelay;
     [Inject] private Canvas _mainCanvas;
     [Inject] private UIDragController _dragController;
 

@@ -4,8 +4,6 @@ using Zenject;
 
 public class DebrisGeneratorController : MonoBehaviour
 {
-    [SerializeField, Range(0, 100)] private float density = 30f;
-
     [Inject(Id = "FarmTiles")] private TileContainer _farmTiles;
     [Inject] private DefinitionDatabase _definitionDatabase;
     [Inject] private DiContainer _diContainer;
@@ -16,7 +14,7 @@ public class DebrisGeneratorController : MonoBehaviour
     {
         _debrisModels = _definitionDatabase.debrisModels;
     }
-    public void GenerateDebris()
+    public void GenerateDebris(float density)
     {
         Dictionary<Vector3Int, TileState> freeTiles =  _farmTiles.GetFreeTiles();
 

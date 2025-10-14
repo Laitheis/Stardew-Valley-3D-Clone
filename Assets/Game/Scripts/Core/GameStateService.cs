@@ -10,7 +10,7 @@ public class GameStateService : MonoBehaviour
 
     [Inject] SignalBus _sb;
 
-    public enum GameState { World, Menu, Trade, Mine, Dialogue, Cutscene, CloseAllUI }
+    public enum GameState { World, Menu, Trade, Mine, Dialogue, Cutscene, CloseAllUI, Pending}
 
     private GameStateBase _currentState;
 
@@ -59,6 +59,9 @@ public class GameStateService : MonoBehaviour
                 break;
             case GameState.CloseAllUI:
                 newState = _gameStates.OfType<CloseAllUIState>().FirstOrDefault();
+                break;
+            case GameState.Pending:
+                newState = _gameStates.OfType<PendingState>().FirstOrDefault(); ;
                 break;
         }
 

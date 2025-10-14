@@ -31,7 +31,7 @@ public class FarmManager : MonoBehaviour
             if (SaveDataHolder.instance.isFirstLaunch)
             {
                 PlayerData.farmGuid = SaveDataHolder.instance.saveGuid;
-                _debrisGenerator.GenerateDebris();
+                _debrisGenerator.GenerateDebris(30f);
             }
             else
                 Load();
@@ -39,7 +39,7 @@ public class FarmManager : MonoBehaviour
         else // Debuging launch Gameplay scene 
         {
             PlayerData.farmGuid = Guid.Empty;
-            _debrisGenerator.GenerateDebris();
+            _debrisGenerator.GenerateDebris(30f);
         }
 
     }

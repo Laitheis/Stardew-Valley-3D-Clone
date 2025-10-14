@@ -9,6 +9,7 @@ public class TradeTrigger : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (!(GameStateService.instance.CurrentState is WorldState)) return;
         _tradingHandler.SetCurrentTrader(_traderName);
         GameStateService.instance.SetState(GameStateService.GameState.Trade);
     }

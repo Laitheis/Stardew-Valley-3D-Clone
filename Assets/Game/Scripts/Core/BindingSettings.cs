@@ -48,6 +48,6 @@ public class BindingSettings : ScriptableObjectInstaller<BindingSettings>
     {
         //HACK
         Container.BindInstance(3).WithId("PickupDistance");
-        Container.BindInstance(1).WithId("ToolDelay");
+        Container.BindInstance(0.67f).WithId("ToolDelay");
     }
 }

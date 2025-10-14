@@ -48,22 +48,25 @@ public class NextDayController : MonoBehaviour
 
         SaveService.instance.Save();
 
+        seq.AppendCallback(() => {
+            GameStateService.instance.SetState(GameStateService.GameState.Pending);
+        });
         seq.Append(blackout.DOFade(1f, 2f));
         seq.AppendCallback(() => { blackout.GetComponent<Image>().raycastTarget = true; });
-        seq.AppendCallback(() => {
-            GameStateService.instance.SetState(GameStateService.GameState.World);
-        });
 
-        seq.AppendCallback(() => {
+        seq.AppendCallback(() => {  
             GameTimeService.instance.AdvanceDay();
             GameTimeService.instance.currentHour = 6;
             GameTimeService.instance.currentMinute = 0;
         });
-        seq.AppendCallback(() => _debrisGenerator.GenerateDebris());
+        seq.AppendCallback(() => _debrisGenerator.GenerateDebris(8f));
 
         seq.AppendCallback(() => NotificationService.DisplayNotification(NotificationService.NotificationColor.Green, "The game is saved..."));
         seq.AppendInterval(3f);
-        seq.AppendCallback(() => { blackout.GetComponent<Image>().raycastTarget = false; }); 
+        seq.AppendCallback(() => { blackout.GetComponent<Image>().raycastTarget = false; });
+        seq.AppendCallback(() => {
+            GameStateService.instance.SetState(GameStateService.GameState.World);
+        });
         seq.Append(blackout.DOFade(0f, 2f));
         seq.AppendCallback(() => { 
             Destroy(darkScreen);
