@@ -102,4 +102,23 @@ public class SaveService : MonoBehaviour
 
         return saves;
     }
+
+    [ContextMenu("UseTestSave")]
+    public void UseTestSave()
+    {
+        FarmManager.instance.ClearAllFarmTiles();
+        SaveDataHolder.instance.saveGuid = Guid.Parse("f3b0a4cb-02e5-4e0f-9f7d-9cb0e0f40f8d");
+        FarmManager.instance.Load();
+    }
+
+    [ContextMenu("CreateTestSave")]
+    public void CreateTestSave()
+    {
+        PlayerData.playerName = "TestSavePlayer";
+        PlayerData.farmName = "TestSaveFarm";
+        PlayerData.farmGuid = Guid.Parse("f3b0a4cb-02e5-4e0f-9f7d-9cb0e0f40f8d");
+        PlayerData.isPlayerMale = true;
+        SaveDataHolder.instance.saveGuid = PlayerData.farmGuid;
+        Save();
+    }
 }

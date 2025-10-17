@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 
-public class PlayerToolController : MonoBehaviour
+public class PlayerToolController : MonoBehaviour, IClickConsumer
 {
     [Serializable]
     class HandItemEntry
@@ -35,6 +35,7 @@ public class PlayerToolController : MonoBehaviour
     [Inject(Id = "ToolDelay")] private float _toolDelay;
     [Inject] private Canvas _mainCanvas;
     [Inject] private UIDragController _dragController;
+    [Inject] private InputHandler _inputHandler;
 
     private ItemType activeTool = ItemType.None;
     private ItemDefinition activeItemDef;
@@ -48,6 +49,11 @@ public class PlayerToolController : MonoBehaviour
     private PointerEventData pointerEventData;
     private EventSystem eventSystem;
     [SerializeField] private bool isToolUsageFrozen;
+
+    public int ClickPriority => 40;
+
+    void OnEnable() => _inputHandler.RegisterConsumer(this);
+    void OnDisable() => _inputHandler.UnregisterConsumer(this);
 
     private void Start()
     {
@@ -64,16 +70,6 @@ public class PlayerToolController : MonoBehaviour
         HandleToolSwitchInput();
         HandleToolHint();
         HandleToolVisual();
-    }
-
-    public void OnClick()
-    {
-        TryUseTool();
-    }
-
-    public void OnEndClick()
-    {
-        isToolUsageFrozen = false;
     }
 
     void HandleRaycast()
@@ -144,36 +140,36 @@ public class PlayerToolController : MonoBehaviour
         }
     }
 
-    private void TryUseTool()
+    private bool TryUseTool()
     {
         if (_hitGround)
         {
             Debug.Log("Try use tool");
 
-            // Check - if we click on Inventory - return
-            {
-                pointerEventData = new PointerEventData(eventSystem)
-                {
-                    position = Input.mousePosition
-                };
+            //// Check - if we click on Inventory - return
+            //{
+            //    pointerEventData = new PointerEventData(eventSystem)
+            //    {
+            //        position = Input.mousePosition
+            //    };
 
-                var results = new List<RaycastResult>();
-                raycaster.Raycast(pointerEventData, results);
+            //    var results = new List<RaycastResult>();
+            //    raycaster.Raycast(pointerEventData, results);
 
-                foreach (var element in results)
-                {
-                    if (element.gameObject.GetComponent<InventoryHandler>()) return;
-                }
-            }
+            //    foreach (var element in results)
+            //    {
+            //        if (element.gameObject.GetComponent<InventoryHandler>()) return false;
+            //    }
+            //}
 
-            if (isToolUsageFrozen) return;
+            if (isToolUsageFrozen) return false;
             if (_dragController.IsDragging)
             {
                 isToolUsageFrozen = true;
-                return;
+                return false;
             }
-            if (_cooldown.value > 0) return;
-            if (CheckRadius(_currTileWorld) == false) return;
+            if (_cooldown.value > 0) return false;
+            if (CheckRadius(_currTileWorld) == false) return false;
 
             UseHand(_currTileGrid);
 
@@ -219,7 +215,9 @@ public class PlayerToolController : MonoBehaviour
                 default:
                     break;
             }
+            return true;
         }
+        return false;
     }
 
     private void UseScythe()
@@ -413,5 +411,33 @@ public class PlayerToolController : MonoBehaviour
         {
             _hintVisual.ShowUnavailable(_currTileWorld);
         }
+    }
+
+    public bool OnClick()
+    {
+        if (TryUseTool())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool OnRightClick()
+    {
+        return false;
+    }
+
+    public void OnEndClick()
+    {
+        isToolUsageFrozen = false;
+    }
+
+    public bool OnHold()
+    {
+        if (TryUseTool())
+        {
+            return true;
+        }
+        return false;
     }
 }

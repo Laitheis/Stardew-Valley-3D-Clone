@@ -1,16 +1,30 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 
-public class UIDragController : MonoBehaviour
+public class DragEventInfo
+{
+    public int SlotUnderCursorNum;
+    public int OriginalSlotNum;
+
+    public ItemsCollection SourceItemsCollection;
+    public ItemInstance ItemInstance;
+    public GameObject ObjectUnderCursor;
+    public RectTransform DraggedRect;
+    public IUIDraggable draggableComponent;
+    public IDragLandable landableComponent;
+}
+
+public class UIDragController : MonoBehaviour, IClickConsumer
 {
     public event Action<DragEventInfo> OnDrag;
     public event Action<DragEventInfo> OnStartDrag;
     public event Action<DragEventInfo> OnEndDrag;
 
     [SerializeField] Camera _camera;
+
+    [Inject] private InputHandler _inputHandler;
 
     private Image _draggedImagePrefab;
 
@@ -41,6 +55,11 @@ public class UIDragController : MonoBehaviour
     public bool IsMouseOverTraderPanel { get => _isMouseOverTraderPanel; set => _isMouseOverTraderPanel = value; }
     public bool IsDragging { get => _isDragging; set { if (value != _isDragging) { Debug.LogWarning("IsDragging changed"); _isDragging = value; } } }
 
+    public int ClickPriority => 50;
+
+    void OnEnable() => _inputHandler.RegisterConsumer(this);
+    void OnDisable() => _inputHandler.UnregisterConsumer(this);
+
     [Inject]
     private void Constructor([Inject(Id = "DraggedImagePrefab")] Image draggedImagePrefab, [Inject(Id = "Player")] GameObject player, Canvas mainCanvas)
     {
@@ -59,9 +78,24 @@ public class UIDragController : MonoBehaviour
         ClearItemInstance();
     }
 
-    public void OnClick()
+    public bool OnClick()
     {
-        HandleInput();
+        return HandleInput(true);
+    }
+
+    public bool OnRightClick()
+    {
+        return HandleInput(false);
+    }
+
+    public void OnEndClick()
+    {
+        //
+    }
+
+    public bool OnHold()
+    {
+        return false;
     }
 
     private void ClearItemInstance()
@@ -70,29 +104,26 @@ public class UIDragController : MonoBehaviour
             _itemInstance = null;
     }
 
-    private void HandleInput()
+    private bool HandleInput(bool isMouseButton0)
     {
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-        {
-            _mouseButton = Input.GetMouseButtonDown(0) ? 0 : 1;
+        _mouseButton = isMouseButton0 ? 0 : 1;
 
-            if (IsDragging)
-            {
-                TryLandDraggedObject();
-            }
-            else
-            {
-                TryStartDragging();
-            }
+        if (IsDragging)
+        {
+            return TryLandDraggedObject();
+        }
+        else
+        {
+            return TryStartDragging();
         }
     }
 
-    private void TryStartDragging()
+    private bool TryStartDragging()
     {
         IUIDraggable draggable = null;
         UiDetectUtil.TryGetUIElementUnderCursor(out GameObject clickedObject);
         clickedObject?.transform.parent.TryGetComponent(out draggable);
-        if (draggable == null) return;
+        if (draggable == null) return false;
 
         _slotUnderCursorNum = draggable.GetHierarchyIndex();
         _objectUnderCursor = clickedObject;
@@ -100,7 +131,7 @@ public class UIDragController : MonoBehaviour
         OriginalSlotNum = _slotUnderCursorNum;
 
         var item = _sourceItemsCollection[OriginalSlotNum];
-        if (item.ItemDefinition == null) return;
+        if (item.ItemDefinition == null) return false;
 
         IsDragging = true;
         OnStartDrag?.Invoke(new()
@@ -112,9 +143,10 @@ public class UIDragController : MonoBehaviour
             SourceItemsCollection = _sourceItemsCollection,
             draggableComponent = draggable
         });
+        return true;
     }
 
-    private void TryLandDraggedObject()
+    private bool TryLandDraggedObject()
     {
         IDragLandable landable = null;
         UiDetectUtil.TryGetUIElementUnderCursor(out GameObject targetObject);
@@ -122,23 +154,25 @@ public class UIDragController : MonoBehaviour
 
         if (landable == null)
         {
-            if (_isMouseOverTraderPanel) return;
+            if (_isMouseOverTraderPanel) return false;
 
             if (_mouseButton == 0 || ItemInstance.Count == 1)
-            {
+            { // Left mouse button - drop full item
                 _signalBus.Fire(new ItemDropEvent(_player.transform.position, ItemInstance, true));
                 IsDragging = false;
-                if (_draggedRect != null) 
+                if (_draggedRect != null)
                     ClearDraggedRect();
+                return true;
             }
-            else if (_mouseButton == 1 || ItemInstance.Count > 1)
-            {
+            else if (_mouseButton == 1)
+            { // Right mouse button - drop one unit of an item
                 ItemInstance.SetCount(ItemInstance.Count - 1);
                 var droppedItemInst = new ItemInstance(ItemInstance.ItemDefinition, 1);
                 _signalBus.Fire(new ItemDropEvent(_player.transform.position, droppedItemInst, true));
+                return true;
             }
 
-            return;
+            return false;
         }
 
         _slotUnderCursorNum = landable.GetHierarchyIndex();
@@ -156,6 +190,8 @@ public class UIDragController : MonoBehaviour
             OriginalSlotNum = OriginalSlotNum,
             landableComponent = landable
         });
+
+        return true;
     }
 
     public int GetMouseButton() => _mouseButton;
@@ -216,17 +252,3 @@ public class UIDragController : MonoBehaviour
         _isMouseOverTraderPanel = false;
     }
 }
-
-public class DragEventInfo
-{
-    public int SlotUnderCursorNum;
-    public int OriginalSlotNum;
-
-    public ItemsCollection SourceItemsCollection;
-    public ItemInstance ItemInstance;
-    public GameObject ObjectUnderCursor;
-    public RectTransform DraggedRect;
-    public IUIDraggable draggableComponent;
-    public IDragLandable landableComponent;
-}
-

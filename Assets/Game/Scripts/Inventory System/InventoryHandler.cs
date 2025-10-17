@@ -71,7 +71,7 @@ public class InventoryHandler : MonoBehaviour
         }
     }
 
-    protected virtual void OnDragStarted(DragEventInfo dragEventInfo)
+    protected void OnDragStarted(DragEventInfo dragEventInfo)
     {
         // Validate InvHandler
         if (dragEventInfo.ObjectUnderCursor.transform.GetComponentInParent<InventoryHandler>() != this)
@@ -129,7 +129,7 @@ public class InventoryHandler : MonoBehaviour
         _dragController.SetDraggedItem(draggedItemInst);
     }
 
-    protected virtual void OnDragEnd(DragEventInfo dragEventInfo)
+    protected void OnDragEnd(DragEventInfo dragEventInfo)
     {
         if (dragEventInfo.ObjectUnderCursor?.transform.GetComponentInParent<InventoryHandler>() != this)
             return;

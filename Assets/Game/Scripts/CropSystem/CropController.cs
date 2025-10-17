@@ -68,9 +68,12 @@ public class CropController : MonoBehaviour
                 }
             }
 
-            // Remove soil
+            // Remove soil and cropVisual
             if (state.soilVisualInstance != null)
+            {
                 Destroy(state.soilVisualInstance);
+                Destroy(state.cropVisualInstance);
+            }
 
             _farmTiles[tile].objectOnTile = null;
         }
@@ -405,7 +408,7 @@ public class CropController : MonoBehaviour
         // Load
         foreach (var tile in _farmTiles)
         {
-            if (tile.Value.objectOnTile == null) continue;
+            if (tile.Value.objectOnTile == null || !(tile.Value.objectOnTile is CropState)) continue;
             CropState cropState = tile.Value.objectOnTile as CropState;
             if (cropState.cropModelId != null)
             {

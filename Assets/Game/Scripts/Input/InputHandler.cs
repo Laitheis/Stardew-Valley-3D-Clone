@@ -5,10 +5,11 @@ using Zenject;
 
 public interface IClickConsumer
 {
-    int Priority { get; }            // больший — выше приоритет
-    bool OnClick();                  // true — клик обработан, дальше не передавать
-    bool OnRightClick();             // при необходимости
-    void OnEndClick();               // отпускание мыши
+    public int ClickPriority { get; }
+    public bool OnClick();
+    public bool OnRightClick();
+    public void OnEndClick();
+    public bool OnHold();
 }
 
 public class InputHandler : MonoBehaviour
@@ -19,22 +20,21 @@ public class InputHandler : MonoBehaviour
     private List<IClickConsumer> _consumers = new List<IClickConsumer>();
     private PlayerToolController _toolController;
 
+    public void Init()
+    {
+        _toolController = _player.GetComponent<PlayerToolController>();
+    }
+
     public void RegisterConsumer(IClickConsumer c)
     {
         if (!_consumers.Contains(c))
             _consumers.Add(c);
-        // сортируем по приоритету (desc)
-        _consumers = _consumers.OrderByDescending(x => x.Priority).ToList();
+        _consumers = _consumers.OrderByDescending(x => x.ClickPriority).ToList();
     }
 
     public void UnregisterConsumer(IClickConsumer c)
     {
         _consumers.Remove(c);
-    }
-
-    public void Init()
-    {
-        _toolController = _player.GetComponent<PlayerToolController>();
     }
 
     void Update()
@@ -44,7 +44,7 @@ public class InputHandler : MonoBehaviour
             foreach (var c in _consumers)
             {
                 if (c.OnClick())
-                    break; // клик обработан, дальше не передаём
+                    break;
             }
         }
 
@@ -59,6 +59,15 @@ public class InputHandler : MonoBehaviour
             foreach (var c in _consumers)
             {
                 if (c.OnRightClick())
+                    break;
+            }
+        }
+
+        if(Input.GetMouseButton(0))
+        {
+            foreach (var c in _consumers)
+            {
+                if (c.OnHold())
                     break;
             }
         }

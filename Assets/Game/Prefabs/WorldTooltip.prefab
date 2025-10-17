@@ -33,8 +33,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5014528067619868283}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 3.2356, y: 0}
   m_Pivot: {x: 0, y: 1}
@@ -369,6 +369,7 @@ GameObject:
   - component: {fileID: 9188503663379231308}
   - component: {fileID: 8299650828128292399}
   - component: {fileID: 3888813029770857092}
+  - component: {fileID: 5403215613380155893}
   m_Layer: 0
   m_Name: WorldTooltip
   m_TagString: Untagged
@@ -428,6 +429,18 @@ MonoBehaviour:
   icon: {fileID: 1431252594161945796}
   name: {fileID: 6458853487916618701}
   description: {fileID: 8838381370429839745}
+--- !u!114 &5403215613380155893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2730668312304119523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d56c2b30546b6c94eac051fa6ce96144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2787790410114887896
 GameObject:
   m_ObjectHideFlags: 0
