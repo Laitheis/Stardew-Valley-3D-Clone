@@ -24,6 +24,10 @@ public class BindingInstaller : MonoInstaller
     public FarmManager FarmManager;
     public InputHandler InputHandler;
     public UIInputHandler UIInputHandler;
+    public GameTimeHandler GameTimeHandler;
+    public GameObject MenuPanel;
+    public GameObject InterfacePanel;
+    public StatusInfoController StatusInfo;
 
 
     public override void InstallBindings()
@@ -52,6 +56,10 @@ public class BindingInstaller : MonoInstaller
         Container.BindInstance(FarmManager);
         Container.BindInstance(InputHandler);
         Container.BindInstance(UIInputHandler);
+        Container.BindInstance(GameTimeHandler);
+        Container.BindInstance(MenuPanel).WithId("MenuPanel");
+        Container.BindInstance(InterfacePanel).WithId("InterfacePanel");
+        Container.BindInstance(StatusInfo);
 
 
         SignalBusInstaller.Install(Container);

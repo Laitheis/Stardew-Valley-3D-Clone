@@ -4,15 +4,15 @@ using Zenject;
 
 public class Bootstrap : MonoBehaviour
 {
-    [Inject] private CropController _cropHandler;
     [Inject] private FarmManager _farmManager;
     [Inject] private DebrisGeneratorController _debrisGen;
     [Inject] private InputHandler _inputHandler;
+    [Inject] private GameTimeHandler _timeHandler;
     private void Awake()
     {
+        _timeHandler.Init();
         _debrisGen.Init();
         _farmManager.Init();
-        _cropHandler.InitTiles();
         _inputHandler.Init();
     }
 }

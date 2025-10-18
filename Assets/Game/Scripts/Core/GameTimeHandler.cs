@@ -2,7 +2,7 @@
 using System;
 using Zenject;
 
-public class GameTimeService : MonoBehaviour
+public class GameTimeHandler : MonoBehaviour
 {
     public event Action OnMinutePassed;
     public event Action OnHourPassed;
@@ -15,6 +15,7 @@ public class GameTimeService : MonoBehaviour
 
     [Header("Current Time (debuggable in inspector)")]
     public int currentDay = 1;
+    public int totalDays = 1;
     public int currentYear = 1;
     public Season currentSeason = Season.Spring;
     [Range(0, 23)] public int currentHour = 0;
@@ -30,9 +31,9 @@ public class GameTimeService : MonoBehaviour
 
     private float timeAccumulator = 0f;
 
-    public static GameTimeService instance;
+    public static GameTimeHandler instance;
 
-    private void Awake()
+    public void Init()
     {
         if (instance != null && instance != this)
         {
@@ -85,6 +86,7 @@ public class GameTimeService : MonoBehaviour
 
     public void AdvanceDay()
     {
+        totalDays++;
         currentDay++;
         if (currentDay > 28)
         {

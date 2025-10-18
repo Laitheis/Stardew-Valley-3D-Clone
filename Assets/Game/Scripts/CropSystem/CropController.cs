@@ -406,7 +406,7 @@ public class CropController : MonoBehaviour
     public void VisualiseTiles()
     {
         // Load
-        foreach (var tile in _farmTiles)
+        foreach (var tile in FarmManager.instance.farmTiles)
         {
             if (tile.Value.objectOnTile == null || !(tile.Value.objectOnTile is CropState)) continue;
             CropState cropState = tile.Value.objectOnTile as CropState;

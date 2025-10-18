@@ -4,9 +4,9 @@ using Zenject;
 
 public class CurrencyTextHandler : MonoBehaviour
 {
-    [SerializeField] TMP_Text _text;
+    [SerializeField] private TMP_Text _text;
 
-    [Inject] SignalBus _signalBus;
+    [Inject] private SignalBus _signalBus;
 
     private bool _isFistSet = true;
 
@@ -14,6 +14,7 @@ public class CurrencyTextHandler : MonoBehaviour
     {
         _signalBus.Subscribe<CurrencyEventArgs>(CurrencyChanged);
     }
+
     void CurrencyChanged(CurrencyEventArgs e)
     {
         _text.text = e.current.ToString();

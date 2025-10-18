@@ -7,10 +7,12 @@
         base.HideMainUIElements();
         base.HideStatusPanel();
         base.HidePlayerInv();
+
+        base.EnableMenuPanel();
     }
 
     public override void ExitState()
     {
-
+        base.DisableMenuPanel();
     }
 }

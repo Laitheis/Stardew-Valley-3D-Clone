@@ -15,10 +15,10 @@ GameObject:
   - component: {fileID: 805126707775963067}
   - component: {fileID: 3788483823459406295}
   - component: {fileID: 8624684140823893817}
-  - component: {fileID: -4289324873524821644}
-  - component: {fileID: 1668807434279183831}
+  - component: {fileID: 2793111085799962164}
+  - component: {fileID: 215992904999928988}
   m_Layer: 3
-  m_Name: WoodenLog
+  m_Name: Stone
   m_TagString: Selectable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,7 +34,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 60, y: 60, z: 60}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -46,7 +46,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6376372425519703063}
-  m_Mesh: {fileID: -4915248100108163651, guid: 0ebf49a4bcc806c4182c32edb70813b0, type: 3}
+  m_Mesh: {fileID: -2605931710798131250, guid: 4a342214c74c6444e9adea0c74fc5be1, type: 3}
 --- !u!23 &6002050765960019089
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -6478536213147159724, guid: 0ebf49a4bcc806c4182c32edb70813b0, type: 3}
+  - {fileID: 2100000, guid: 113212b2c88cda24f8670294e4407378, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -135,8 +135,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 0.019629888, y: 0.01929821, z: 0.03757872}
-  m_Center: {x: 0.000012465119, y: -0.00001381278, z: -0.0000049746036}
+  m_Size: {x: 0.67693275, y: 0.83919305, z: 1.1279149}
+  m_Center: {x: 0.071216434, y: -0.16800955, z: 0.4425844}
 --- !u!114 &3788483823459406295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
---- !u!114 &-4289324873524821644
+--- !u!114 &2793111085799962164
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -181,14 +181,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6c35991cb320d04780fa0054b52b60d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1668807434279183831
+--- !u!114 &215992904999928988
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6376372425519703063}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
   m_Name: 

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using Zenject;
 
 
-public class WorldObjectSelectController : MonoBehaviour
+public class WorldObjectSelectAndTooltipController : MonoBehaviour
 {
     [SerializeField, ColorUsage(true, true)]
     private Color hlColor;
@@ -95,6 +95,7 @@ public class WorldObjectSelectController : MonoBehaviour
 
         var outline = _currentTarget.GetComponent<Outline>();
         outline.OutlineColor = hlColor;
+        outline.OutlineWidth = 5f;
         outline.enabled = true;
     }
 

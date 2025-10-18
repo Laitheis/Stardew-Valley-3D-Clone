@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 
 public class UIInputHandler : MonoBehaviour
 {
+    // Called from Unity Event on object PlayerInput
     public void OnExit(InputAction.CallbackContext ctx)
     {
         if (!ctx.started) return;
@@ -29,6 +30,29 @@ public class UIInputHandler : MonoBehaviour
         }
 
         if (GameStateService.instance.CurrentState is CloseAllUIState)
+        {
+            GameStateService.instance.SetState(GameStateService.GameState.World);
+            return;
+        }
+
+        if (GameStateService.instance.CurrentState is PlayerInterfaceState)
+        {
+            GameStateService.instance.SetState(GameStateService.GameState.World);
+            return;
+        }
+    }
+
+    // Called from Unity Event on object PlayerInput
+    public void OnOpenInterface(InputAction.CallbackContext ctx)
+    {
+        if (!ctx.started) return;
+        if (GameStateService.instance.CurrentState is WorldState)
+        {
+            GameStateService.instance.SetState(GameStateService.GameState.Interface);
+            return;
+        }
+
+        if (GameStateService.instance.CurrentState is PlayerInterfaceState)
         {
             GameStateService.instance.SetState(GameStateService.GameState.World);
             return;

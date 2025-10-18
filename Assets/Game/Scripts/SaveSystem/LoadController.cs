@@ -31,16 +31,19 @@ public class LoadController : MonoBehaviour
             var refs = panel.GetComponent<SavePanelHolder>();
             refs.farmName.text = "Farm name: " + save.farmName;
             refs.playerName.text = "Player name: " + save.playerName;
-            refs.daysLived.text = "Days lived: " + save.currentDay;
+            refs.daysLived.text = "Days lived: " + save.totalDays;
             refs.saveGuid = Guid.Parse(save.farmGuid);
         }
     }
 
     public void Load()
     {
-        SaveDataHolder.instance.saveGuid = _saveListContent.GetChild(currentSaveSlot).GetComponent<SavePanelHolder>().saveGuid;
-        SaveDataHolder.instance.isFirstLaunch = false;
-        SceneManager.LoadScene("Gameplay");
+        if (_saveListContent.childCount > 0)
+        {
+            SaveDataHolder.instance.saveGuid = _saveListContent.GetChild(currentSaveSlot).GetComponent<SavePanelHolder>().saveGuid;
+            SaveDataHolder.instance.isFirstLaunch = false;
+            SceneManager.LoadScene("Gameplay");
+        }
     }
 
     public void ShowDestroySaveConfirm(Guid saveGuid, GameObject panelToDelete)

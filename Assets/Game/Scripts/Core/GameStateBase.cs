@@ -16,7 +16,10 @@ public abstract class GameStateBase : MonoBehaviour
     [Inject(Id = "StatusPanel")] protected GameObject _statusPanel;
     [Inject] protected TooltipView _tooltipView;
     [Inject] protected UIInputHandler _inputHandler;
-
+    [Inject(Id = "MenuPanel")] protected GameObject _menuPanel;
+    [Inject(Id = "InterfacePanel")] protected GameObject _interfacePanel;
+    [Inject] protected StatusInfoController _statusInfo;
+ 
     public abstract void EnterState();
     public abstract void ExitState();
 
@@ -38,6 +41,11 @@ public abstract class GameStateBase : MonoBehaviour
         if (!value)
             _hintVisualizer.Hide();
         _hintVisualizer.gameObject.SetActive(value);
+
+        if (_tooltipView.IsClingToMouse)
+        {
+            _tooltipView.CloseTooltip();
+        }
     }
 
     public void HideStatusPanel()
@@ -82,12 +90,12 @@ public abstract class GameStateBase : MonoBehaviour
 
     public void PauseTime()
     {
-        GameTimeService.instance.pauseTime = true;
+        GameTimeHandler.instance.pauseTime = true;
     }
 
     public void UnpauseTime()
     {
-        GameTimeService.instance.pauseTime = false;
+        GameTimeHandler.instance.pauseTime = false;
     }
 
     public void PausePhisycs()
@@ -98,6 +106,26 @@ public abstract class GameStateBase : MonoBehaviour
     public void UnpausePhisycs()
     {
         Time.timeScale = 1;
+    }
+
+    public void DisableMenuPanel()
+    {
+        _menuPanel.SetActive(false);
+    }
+
+    public void EnableMenuPanel()
+    {
+        _menuPanel.SetActive(true);
+    }
+
+    public void DisableInterfacePanel()
+    {
+        _interfacePanel.SetActive(false);
+    }
+
+    public void EnableInterfacePanel()
+    {
+        _interfacePanel.SetActive(true);
     }
 }
 

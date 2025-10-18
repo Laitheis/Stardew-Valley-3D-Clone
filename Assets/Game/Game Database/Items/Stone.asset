@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Stone
   m_EditorClassIdentifier: 
   isTool: 0
+  _id: 0
   _name: Stone
   type: 8
   _maxCountInStack: 64
   _price: 5
-  _description: 
-  _sprite: {fileID: 21300000, guid: d0a80bae31e34ed4aabe6b450278d5c8, type: 3}
-  _prefab: {fileID: 6376372425519703063, guid: f9fc3558dc2fe4f41bb6c7526ca4c2ce, type: 3}
+  _description: Somewhere it was a part of a big mountain.
+  _sprite: {fileID: 21300000, guid: 5d294957c41370443baad46dcbd163b7, type: 3}
+  _prefab: {fileID: 6376372425519703063, guid: 583256499f6cdfa48a111b5b9709faa5, type: 3}
   _damage: 0

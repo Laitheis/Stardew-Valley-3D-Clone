@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -21,12 +22,16 @@ public class FarmManager : MonoBehaviour
 
     public void Init()
     {
+        Debug.Log("IsPlayerMale - " + PlayerData.isPlayerMale);
+
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
         instance = this;
+
+        _cropHandler.InitTiles();
 
         farmTiles.FillSquare(lowerLeftCorner, widthAndHeight);
 
@@ -57,7 +62,7 @@ public class FarmManager : MonoBehaviour
 
             PlayerData.farmName = save.farmName;
             PlayerData.playerName = save.playerName;
-            GameTimeService.instance.currentDay = save.currentDay;
+            GameTimeHandler.instance.totalDays = save.totalDays;
             PlayerData.farmGuid = Guid.Parse(save.farmGuid);
             farmTiles.LoadFromJson(jsonContents[0]);
             _cropHandler.VisualiseTiles();
@@ -99,5 +104,20 @@ public class FarmManager : MonoBehaviour
             }
         }
         farmTiles.TilesCollection.Clear();
+    }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    public void BackToGame()
+    {
+        GameStateService.instance.SetState(GameStateService.GameState.World);
     }
 }

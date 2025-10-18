@@ -40,7 +40,7 @@ Material:
     m_Floats:
     - _BottomHeight: -1
     - _DebugMode: 0
-    - _Power: 1.8
+    - _Power: 1.0366569
     - _PreviewMode: 0
     - _QueueControl: 0
     - _QueueOffset: 0

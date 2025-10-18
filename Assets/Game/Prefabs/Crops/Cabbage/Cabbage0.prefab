@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 2027861467733330506}
   - component: {fileID: 1551966665784130842}
   - component: {fileID: 476956085327955787}
-  - component: {fileID: 1131835939498233227}
   - component: {fileID: -6014008525968803410}
   - component: {fileID: 7347353851335024777}
   - component: {fileID: -772021234834820336}
+  - component: {fileID: 1131835939498233227}
   m_Layer: 0
   m_Name: cabbage0
   m_TagString: Untagged
@@ -87,19 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1131835939498233227
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3039719231857714410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adc0f35f431bc5843a3df108e7a78a59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 1
 --- !u!65 &-6014008525968803410
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -151,3 +138,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6c35991cb320d04780fa0054b52b60d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1131835939498233227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3039719231857714410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adc0f35f431bc5843a3df108e7a78a59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 1

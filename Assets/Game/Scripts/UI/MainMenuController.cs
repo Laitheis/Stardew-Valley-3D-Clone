@@ -28,6 +28,7 @@ public class MainMenuController : MonoBehaviour
             femaleVisual.SetActive(false);
 
             _rotate.target = maleVisual.transform;
+            PlayerData.isPlayerMale = true;
         }
         else
         {
@@ -35,6 +36,7 @@ public class MainMenuController : MonoBehaviour
             maleVisual.SetActive(false);
 
             _rotate.target = femaleVisual.transform;
+            PlayerData.isPlayerMale = false;
         }
     }
 
@@ -43,16 +45,6 @@ public class MainMenuController : MonoBehaviour
         SaveDataHolder.instance.saveGuid = System.Guid.NewGuid();
         SaveDataHolder.instance.isFirstLaunch = true;
         SceneManager.LoadScene("Gameplay");
-    }
-
-    public void LoadGame()
-    {
-        //CropManager.SaveData farmSaveData = new();
-
-        //string farmTileData = JsonUtility.ToJson(farmSaveData.cropTiles);
-        //List<string> saveContents = new();
-        //saveContents.Add();
-        //SaveManager.Save();
     }
 
     public void ExitGame()

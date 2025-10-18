@@ -26,17 +26,17 @@ public class PopupText : MonoBehaviour
     {
         timer += Time.deltaTime;
 
-        // Сдвиг вверх
+        // Upward shift
         transform.position += Vector3.up * moveUpSpeed * Time.deltaTime;
 
-        // Плавное исчезновение
+        // Smooth disappearance
         if (uiText != null)
         {
             float alpha = Mathf.Lerp(originalColor.a, 0f, timer / fadeDuration);
             uiText.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
         }
 
-        // Уничтожаем после fadeDuration
+        // Destroy after fadeDuration
         if (timer >= fadeDuration) Destroy(gameObject);
     }
 }

@@ -46,8 +46,6 @@ public class NextDayController : MonoBehaviour
         var blackout = darkScreen.GetComponent<CanvasGroup>();
         DG.Tweening.Sequence seq = DOTween.Sequence();
 
-        SaveService.instance.Save();
-
         seq.AppendCallback(() => {
             GameStateService.instance.SetState(GameStateService.GameState.Pending);
         });
@@ -55,13 +53,14 @@ public class NextDayController : MonoBehaviour
         seq.AppendCallback(() => { blackout.GetComponent<Image>().raycastTarget = true; });
 
         seq.AppendCallback(() => {  
-            GameTimeService.instance.AdvanceDay();
-            GameTimeService.instance.currentHour = 6;
-            GameTimeService.instance.currentMinute = 0;
+            GameTimeHandler.instance.AdvanceDay();
+            GameTimeHandler.instance.currentHour = 6;
+            GameTimeHandler.instance.currentMinute = 0;
         });
         seq.AppendCallback(() => _debrisGenerator.GenerateDebris(8f));
 
         seq.AppendCallback(() => NotificationService.DisplayNotification(NotificationService.NotificationColor.Green, "The game is saved..."));
+        seq.AppendCallback(() => SaveService.instance.Save());
         seq.AppendInterval(3f);
         seq.AppendCallback(() => { blackout.GetComponent<Image>().raycastTarget = false; });
         seq.AppendCallback(() => {

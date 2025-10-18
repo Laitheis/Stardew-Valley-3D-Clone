@@ -9,7 +9,7 @@ public class SaveFileDataList
     public string farmGuid;
     public string playerName;
     public string farmName;
-    public int currentDay;
+    public int totalDays;
     public string dateTime;
     public List<string> jsonContents;
 }
@@ -49,7 +49,7 @@ public class SaveService : MonoBehaviour
             playerName = PlayerData.playerName,
             farmName = PlayerData.farmName,
             dateTime = dateTime,
-            currentDay = GameTimeService.instance.currentDay,
+            totalDays = GameTimeHandler.instance.totalDays,
             jsonContents = jsonContents
         };
 
