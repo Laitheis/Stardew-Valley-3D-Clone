@@ -29,3 +29,11 @@ MonoBehaviour:
         Item: {fileID: 11400000, guid: 8c710738f203fd3448d4fa889c793c6f, type: 2}
         MinCount: 1
         MaxCount: 3
+  - LootName: Grass
+    LootByGrades:
+    - Grade: 0
+      Loot:
+      - Chance: 100
+        Item: {fileID: 11400000, guid: 8c710738f203fd3448d4fa889c793c6f, type: 2}
+        MinCount: 1
+        MaxCount: 3
