@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public abstract class DestructibleObjectBase : MonoBehaviour, IDestructible, IStats
+public abstract class DestructibleObjectBase : MonoBehaviour
 {
     protected StatContainter _statContainer;
     protected List<ItemInstance> _pendingLoot;
@@ -34,6 +34,36 @@ public abstract class DestructibleObjectBase : MonoBehaviour, IDestructible, ISt
         InitializeLoot();
 
         _inited = true;
+
+        ChangeLayers();
+    }
+
+    void Reset()
+    {
+        ChangeLayers();
+    }
+
+    private void ChangeLayers()
+    {
+        int targetLayer = LayerMask.NameToLayer("StaticObject");
+        if (targetLayer == -1)
+        {
+            Debug.LogError($"Layer does not exist!");
+            return;
+        }
+
+        SetLayerRecursively(transform, targetLayer);
+    }
+
+    private void SetLayerRecursively(Transform parent, int layer)
+    {
+        parent.gameObject.layer = layer;
+        Debug.Log($"Changed layer to {layer} for: {parent.name}");
+
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            SetLayerRecursively(parent.GetChild(i), layer);
+        }
     }
 
     public virtual void InitializeStats()
@@ -76,12 +106,16 @@ public abstract class DestructibleObjectBase : MonoBehaviour, IDestructible, ISt
     {
         if (_isFalling) return;
         if (tool != _acceptableTool) return;
+        if (_statContainer == null) return;
 
         Debug.Log($"{gameObject} has {amount} damage.");
 
-        _statContainer.GetStat(StatTypes.Durability).Value -= amount;
-
-        _animator.SetTrigger("Damage");
+        Stat stat = _statContainer.GetStat(StatTypes.Durability);
+        if (stat != null)
+        {
+            stat.Value -= amount;
+            _animator.SetTrigger("Damage");
+        }
 
         Debug.Log($"new {gameObject} durability is {_statContainer.GetStat(StatTypes.Durability).Value}");
     }
@@ -96,13 +130,14 @@ public abstract class DestructibleObjectBase : MonoBehaviour, IDestructible, ISt
     {
         _animator.enabled = true;
         await UniTask.Delay(TimeSpan.FromSeconds(0.01f));
-        _animator.SetTrigger("Dis");
+        _animator.Play("Disappearance", 0, 0f);
         await UniTask.Delay(TimeSpan.FromSeconds(_animator.GetCurrentAnimatorStateInfo(0).length));
     }
 
-    protected void HarvestAndCleanup()
+    protected async void HarvestAndCleanup()
     {
         Harvest();
+        await PlayDestructionAnimation();
         Destroy(gameObject);
     }
 

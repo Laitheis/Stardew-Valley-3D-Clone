@@ -146,21 +146,21 @@ public class PlayerToolController : MonoBehaviour, IClickConsumer
         {
             Debug.Log("Try use tool");
 
-            //// Check - if we click on Inventory - return
-            //{
-            //    pointerEventData = new PointerEventData(eventSystem)
-            //    {
-            //        position = Input.mousePosition
-            //    };
+            // Check: if we click on Inventory - return
+            {
+                pointerEventData = new PointerEventData(eventSystem)
+                {
+                    position = Input.mousePosition
+                };
 
-            //    var results = new List<RaycastResult>();
-            //    raycaster.Raycast(pointerEventData, results);
+                var results = new List<RaycastResult>();
+                raycaster.Raycast(pointerEventData, results);
 
-            //    foreach (var element in results)
-            //    {
-            //        if (element.gameObject.GetComponent<InventoryHandler>()) return false;
-            //    }
-            //}
+                foreach (var element in results)
+                {
+                    if (element.gameObject.GetComponent<InventoryHandler>()) return false;
+                }
+            }
 
             if (isToolUsageFrozen) return false;
             if (_dragController.IsDragging)
@@ -169,7 +169,8 @@ public class PlayerToolController : MonoBehaviour, IClickConsumer
                 return false;
             }
             if (_cooldown.value > 0) return false;
-            if (CheckRadius(_currTileWorld) == false) return false;
+            // Don't CheckRadius if is Scythe
+            if (CheckRadius(_currTileWorld) == false && !(activeTool == ItemType.Scythe)) return false;
 
             UseHand(_currTileGrid);
 
@@ -222,12 +223,18 @@ public class PlayerToolController : MonoBehaviour, IClickConsumer
 
     private void UseScythe()
     {
+        _toolAnimator.SetTrigger("Scythe");
+
         BoxCollider damageZone = _player.GetComponent<PlayerController>().DamageZone;
-        Collider[] hits = Physics.OverlapBox(damageZone.bounds.center, damageZone.bounds.extents, _player.transform.rotation);
+        Collider[] hits = Physics.OverlapBox(damageZone.bounds.center, damageZone.transform.lossyScale / 2, _player.transform.rotation);
 
         foreach (Collider hit in hits)
         {
-
+            if (hit.gameObject.TryGetComponent<Grass>(out Grass debris))
+            {
+                hit.gameObject.GetComponent<Animator>().SetTrigger("Dis");
+                debris.TakeDamage(10, ItemType.Scythe);
+            }
         }
     }
 
@@ -314,33 +321,41 @@ public class PlayerToolController : MonoBehaviour, IClickConsumer
         switch (tool)
         {
             case ItemType.Seed:
+                _hintVisual.damageAreaHint.SetActive(false);
                 SeedHint();
                 break;
             case ItemType.Trash:
+                _hintVisual.damageAreaHint.SetActive(false);
                 _hintVisual.Hide();
                 break;
             case ItemType.Hoe:
+                _hintVisual.damageAreaHint.SetActive(false);
                 HoeHint();
                 break;
             case ItemType.WaterCan:
+                _hintVisual.damageAreaHint.SetActive(false);
                 WaterHint();
                 break;
             case ItemType.Scythe:
-                //TODO
+                _hintVisual.Hide();
+                ScytheHint();
                 break;
             case ItemType.Axe:
+                _hintVisual.damageAreaHint.SetActive(false);
                 _hintVisual.Hide();
                 break;
             case ItemType.Pickaxe:
+                _hintVisual.damageAreaHint.SetActive(false);
                 PickaxeHint();
                 break;
             case ItemType.None:
+                _hintVisual.damageAreaHint.SetActive(false);
                 _hintVisual.Hide();
                 break;
             default:
+                _hintVisual.damageAreaHint.SetActive(false);
                 _hintVisual.Hide();
                 break;
-
         }
     }
 
@@ -411,6 +426,11 @@ public class PlayerToolController : MonoBehaviour, IClickConsumer
         {
             _hintVisual.ShowUnavailable(_currTileWorld);
         }
+    }
+
+    void ScytheHint()
+    {
+        _hintVisual.damageAreaHint.SetActive(true);
     }
 
     public bool OnClick()

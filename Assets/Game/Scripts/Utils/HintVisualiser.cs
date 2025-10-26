@@ -7,6 +7,7 @@ public class HintVisualizer : MonoBehaviour
 {
     [SerializeField] private Color _availableColor;
     [SerializeField] private Color _unavailableColor;
+    [SerializeField] public GameObject damageAreaHint;
 
     private GameObject _hint;
 
@@ -48,6 +49,7 @@ public class HintVisualizer : MonoBehaviour
     {
         ChangeState(State.None);
         _hint.SetActive(false);
+        damageAreaHint.SetActive(false);
     }
 
     private void ChangeState(State newState)
@@ -65,7 +67,7 @@ public class HintVisualizer : MonoBehaviour
                 EnableFade(false);
                 break;
             case State.None:
-                // например выключаем оба
+                // if both are off
                 EnableFade(false);
                 break;
         }

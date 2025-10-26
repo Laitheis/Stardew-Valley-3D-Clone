@@ -32,6 +32,9 @@ public class PickableItemController : MonoBehaviour
             _unpickableTimer -= Time.deltaTime;
         }
         else _isPickable = true;
+
+        if (transform.position.y < -40)
+            Destroy(gameObject);
     }
 
     void OnPlayerCollide()

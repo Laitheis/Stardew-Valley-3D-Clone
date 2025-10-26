@@ -2,6 +2,7 @@
 using UnityEngine;
 using Zenject;
 
+// Hack class
 public class InventoryFiller : MonoBehaviour
 {
     public ItemsCollection itemCollection1;

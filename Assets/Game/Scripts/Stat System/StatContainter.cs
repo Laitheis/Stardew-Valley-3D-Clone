@@ -16,7 +16,12 @@ public class StatContainter
     public Stat GetStat(StatTypes name)
     {
         var stat = _container.FirstOrDefault(item => item.Name == name);
-        return stat;
+        if (stat != null)
+        {
+            return stat;
+        }
+        else
+            return null;
     }
 
     public Stat Add(StatTypes name, int maxValue)

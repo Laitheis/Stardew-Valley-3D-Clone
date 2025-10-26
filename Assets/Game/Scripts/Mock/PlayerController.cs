@@ -31,11 +31,11 @@ public class PlayerController : MonoBehaviour
             {
                 if (hit.gameObject == gameObject) continue;
 
-                IDestructible hitObject = hit.GetComponent<IDestructible>();
-                if (hitObject != null)
-                {
-                    hitObject.TakeDamage(10, ItemType.Axe);
-                }
+                //IDestructible hitObject = hit.GetComponent<IDestructible>();
+                //if (hitObject != null)
+                //{
+                //    hitObject.TakeDamage(10, ItemType.Axe);
+                //}
             }
 
             WaitSeconds(delay).Forget();

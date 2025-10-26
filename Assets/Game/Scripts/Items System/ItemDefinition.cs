@@ -13,7 +13,7 @@ public class ItemDefinition : ScriptableObject
     [SerializeField][TextArea] private string _description;
     [SerializeField] private Sprite _sprite;
     [SerializeField] private GameObject _prefab;
-    [Header("For Axe and Pickaxe")]
+    [Header("For Tools")]
     [SerializeField] private int _damage;
 
     public string Name => _name;
