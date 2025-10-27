@@ -4,7 +4,7 @@ using Zenject;
 
 public class Bootstrap : MonoBehaviour
 {
-    [Inject] private FarmManager _farmManager;
+    [Inject] private MainGameManager _farmManager;
     [Inject] private DebrisGeneratorController _debrisGen;
     [Inject] private InputHandler _inputHandler;
     [Inject] private GameTimeHandler _timeHandler;

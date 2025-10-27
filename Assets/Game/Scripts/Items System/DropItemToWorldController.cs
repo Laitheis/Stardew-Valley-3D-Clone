@@ -7,6 +7,7 @@ public class DropItemToWorldController : Zenject.IInitializable
 {
     [Inject] private SignalBus _signalBus;
     [Inject(Id = "SmokeEffect")] private GameObject _smokeEffect;
+    [Inject(Id = "StarParticles")] private GameObject _starsEffect;
 
     private DiContainer _container;
     private GameObject _itemPrefab;
@@ -34,7 +35,6 @@ public class DropItemToWorldController : Zenject.IInitializable
         {
             ItemInstance _itemInstance = new ItemInstance(itemDefinition);
 
-            _itemInstance.Properties = signal.Item.Properties;
             _itemInstance.SetCount(1);
 
             singleItemInstances.Add(_itemInstance);
@@ -68,6 +68,8 @@ public class DropItemToWorldController : Zenject.IInitializable
             var itemInstance = itemGO.GetComponent<PickableItemController>();
 
             itemInstance.Item = item;
+
+            var stars = _container.InstantiatePrefab(_starsEffect, itemGO.transform);
         }
 
         if (!signal.IsDroppedFromPlayer)
@@ -75,6 +77,7 @@ public class DropItemToWorldController : Zenject.IInitializable
             var smoke = _container.InstantiatePrefab(_smokeEffect, signal.Position, Quaternion.identity, null);
             GameObject.Destroy(smoke, 1.5f);
         }
+
 
         //Debug.Log($"Loot named {signal.Item.Name} drops at position {signal.Position} with quantity {signal.Item.Count}");
     }

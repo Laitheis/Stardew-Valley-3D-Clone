@@ -49,7 +49,7 @@ public class WorldObjectSelectAndTooltipController : MonoBehaviour
                     refs = _worldTooltip.GetComponent<WorldTooltipRefs>();
 
                     Vector3Int tilePos = _currentTarget.GetComponent<TilePosHolder>().pos;
-                    var cropState = FarmManager.instance.farmTiles.TilesCollection[tilePos].objectOnTile as CropState;
+                    var cropState = MainGameManager.instance.farmTiles.TilesCollection[tilePos].objectOnTile as CropState;
 
                     CropModel cropModel = _itemDatabase.cropModels.Find(c => c.cropId == cropState.cropModelId);
 

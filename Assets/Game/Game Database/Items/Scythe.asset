@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Scythe
   m_EditorClassIdentifier: 
   isTool: 0
-  _id: 0
+  _id: 6
   _name: Scythe
   type: 4
   _maxCountInStack: 1

@@ -7,15 +7,16 @@ using UnityEngine.UIElements;
 using Zenject;
 using Random = UnityEngine.Random;
 
-public class FarmManager : MonoBehaviour
+public class MainGameManager : MonoBehaviour
 {
-    public static FarmManager instance;
+    public static MainGameManager instance;
 
     [Inject(Id = "FarmTiles")] public TileContainer farmTiles;
     [Inject] private DebrisGeneratorController _debrisGenerator;
     [Inject] private CropController _cropHandler;
     [Inject] private DefinitionDatabase _definitionDatabase;
     [Inject] private DiContainer _diContainer;
+    [Inject(Id ="PlayerInv")] private InventoryHandler _playerInv;
 
     private Vector2Int lowerLeftCorner = new Vector2Int(30, 30);
     private Vector2Int widthAndHeight = new Vector2Int(15, 20);
@@ -65,6 +66,7 @@ public class FarmManager : MonoBehaviour
             GameTimeHandler.instance.totalDays = save.totalDays;
             PlayerData.farmGuid = Guid.Parse(save.farmGuid);
             farmTiles.LoadFromJson(jsonContents[0]);
+            _playerInv.LoadFromJson(jsonContents[1]);
             _cropHandler.VisualiseTiles();
             VisualizeDebris();
         }

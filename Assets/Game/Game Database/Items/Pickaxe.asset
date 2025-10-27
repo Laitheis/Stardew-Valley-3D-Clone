@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Pickaxe
   m_EditorClassIdentifier: 
   isTool: 1
+  _id: 4
   _name: Pickaxe
   type: 6
   _maxCountInStack: 1

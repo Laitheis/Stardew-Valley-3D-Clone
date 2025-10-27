@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1864084956565998850
+--- !u!1 &1845772441949823266
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,52 +8,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3769823171904887140}
-  - component: {fileID: 9125772524065025801}
-  - component: {fileID: 2402246012665705778}
-  - component: {fileID: 897980630802554880}
-  - component: {fileID: 5809107053283350290}
-  - component: {fileID: 8882937206951988699}
-  - component: {fileID: 5658692301682981743}
-  - component: {fileID: 1749144660887315595}
-  - component: {fileID: 5707317853822974867}
+  - component: {fileID: 8613357171273140292}
+  - component: {fileID: 4622550449822492403}
+  - component: {fileID: 4328329231547163118}
   m_Layer: 3
-  m_Name: Grass
-  m_TagString: Selectable
+  m_Name: GameObject
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3769823171904887140
+--- !u!4 &8613357171273140292
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1864084956565998850}
+  m_GameObject: {fileID: 1845772441949823266}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25.88, y: 1.025599, z: 30.347195}
-  m_LocalScale: {x: 999.99994, y: 999.99994, z: 999.99994}
-  m_ConstrainProportionsScale: 1
+  m_LocalPosition: {x: 0, y: 0, z: -0.000796}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 3769823171904887140}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &9125772524065025801
+--- !u!33 &4622550449822492403
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1864084956565998850}
+  m_GameObject: {fileID: 1845772441949823266}
   m_Mesh: {fileID: -9015282845353648803, guid: 175983ec1c00f104b860ca5bbffd613c, type: 3}
---- !u!23 &2402246012665705778
+--- !u!23 &4328329231547163118
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1864084956565998850}
+  m_GameObject: {fileID: 1845772441949823266}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -89,6 +83,44 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &1864084956565998850
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3769823171904887140}
+  - component: {fileID: 897980630802554880}
+  - component: {fileID: 5809107053283350290}
+  - component: {fileID: 8882937206951988699}
+  - component: {fileID: 5658692301682981743}
+  - component: {fileID: 1749144660887315595}
+  - component: {fileID: 5707317853822974867}
+  m_Layer: 3
+  m_Name: Grass
+  m_TagString: Selectable
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3769823171904887140
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1864084956565998850}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 25.88, y: 1.025599, z: 30.347195}
+  m_LocalScale: {x: 999.99994, y: 999.99994, z: 999.99994}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 8613357171273140292}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &897980630802554880
 Rigidbody:
   m_ObjectHideFlags: 0

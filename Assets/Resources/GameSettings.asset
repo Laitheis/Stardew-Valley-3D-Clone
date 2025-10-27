@@ -38,3 +38,5 @@ MonoBehaviour:
     type: 3}
   Notification: {fileID: 2964608373851844281, guid: 322d7439c82fde64b8a04d0924053e4d,
     type: 3}
+  DamageParticles: {fileID: 533653673038364071, guid: 1ce93f10f0fa9c84c92f85a3e49daa88,
+    type: 3}

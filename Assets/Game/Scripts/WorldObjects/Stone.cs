@@ -6,7 +6,7 @@ public class Stone : DestructibleObjectBase
     {
         base.InitializeStats();
 
-        _statContainer.GetStat(StatTypes.Durability).Value = 50;
+        _statContainer.GetStat(StatTypes.Durability).Value = 30;
     }
 
     protected override void InitializeLoot()

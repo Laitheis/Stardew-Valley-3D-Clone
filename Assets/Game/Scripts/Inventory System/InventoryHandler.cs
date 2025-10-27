@@ -1,6 +1,10 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
+using static TileContainer;
 
 
 [RequireComponent(typeof(ItemsCollection))]
@@ -17,7 +21,7 @@ public class InventoryHandler : MonoBehaviour
     [Header("Properties")]
     [Min(0)][SerializeField] private int _inventoryCapacity;
 
-    public ItemsCollection Collection { get => _itemsCollection; set => _itemsCollection = value; }
+    public ItemsCollection ItemsCollection { get => _itemsCollection; set => _itemsCollection = value; }
 
     [Inject]
     public void Constructor([Inject(Id = "ItemSlot")] GameObject itemSlotPrefab, DiContainer container)
@@ -89,7 +93,7 @@ public class InventoryHandler : MonoBehaviour
 
             foreach (var inv in allInventories)
             {
-                int overflow = inv.Collection.AddWithOverflow(dragEventInfo.ItemInstance, -1, dragEventInfo.ItemInstance.Count);
+                int overflow = inv.ItemsCollection.AddWithOverflow(dragEventInfo.ItemInstance, -1, dragEventInfo.ItemInstance.Count);
 
                 if (overflow == -1) continue;
 
@@ -197,6 +201,35 @@ public class InventoryHandler : MonoBehaviour
 
     public ItemInstance this[int index]
     {
-        get => Collection[index];
+        get => ItemsCollection[index];
+    }
+
+    public string SaveToJson()
+    {
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+        string json = JsonConvert.SerializeObject(_itemsCollection.Collection, Formatting.Indented, settings);
+        return json;
+    }
+
+    public void LoadFromJson(string json)
+    {
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
+        List<ItemInstance> data = JsonConvert.DeserializeObject<List<ItemInstance>>(json, settings);
+
+        _itemsCollection.Collection = data;
+        var db = Resources.Load<DefinitionDatabase>("DefinitionDatabase");
+        foreach (var item in _itemsCollection.Collection)
+        {
+            item.ItemDefinition = db.itemDefinitions.FirstOrDefault(i => i.Id == item.Id);
+        }
     }
 }

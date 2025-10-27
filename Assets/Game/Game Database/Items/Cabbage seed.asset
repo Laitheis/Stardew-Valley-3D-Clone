@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Cabbage seed
   m_EditorClassIdentifier: 
   isTool: 0
+  _id: 2
   _name: Cabbage seed
   type: 7
-  _isRenameable: 0
   _maxCountInStack: 10
   _price: 5
   _description: 
   _sprite: {fileID: 21300000, guid: 014d699d590ed56459de43158a43cb2c, type: 3}
   _prefab: {fileID: 6376372425519703063, guid: f9fc3558dc2fe4f41bb6c7526ca4c2ce, type: 3}
+  _damage: 0
   cropModel: {fileID: 11400000, guid: dbffdc1b6ca5a284fbf5608db4853996, type: 2}

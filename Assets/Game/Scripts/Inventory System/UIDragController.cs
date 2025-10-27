@@ -53,7 +53,7 @@ public class UIDragController : MonoBehaviour, IClickConsumer
     public bool IsCountinueDragging { get => _isCountinueDragging; set => _isCountinueDragging = value; }
     public ItemInstance ItemInstance { get => _itemInstance; set => _itemInstance = value; }
     public bool IsMouseOverTraderPanel { get => _isMouseOverTraderPanel; set => _isMouseOverTraderPanel = value; }
-    public bool IsDragging { get => _isDragging; set { if (value != _isDragging) { Debug.LogWarning("IsDragging changed"); _isDragging = value; } } }
+    public bool IsDragging { get => _isDragging; set { if (value != _isDragging) { _isDragging = value; } } }
 
     public int ClickPriority => 50;
 

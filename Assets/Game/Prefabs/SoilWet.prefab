@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5532467766768119979}
   m_Layer: 0
-  m_Name: Soil Wet
+  m_Name: SoilWet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

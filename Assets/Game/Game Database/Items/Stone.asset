@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stone
   m_EditorClassIdentifier: 
   isTool: 0
-  _id: 0
+  _id: 7
   _name: Stone
   type: 8
   _maxCountInStack: 64

@@ -41,11 +41,11 @@ public abstract class GameStateBase : MonoBehaviour
         if (!value)
             _hintVisualizer.Hide();
         _hintVisualizer.gameObject.SetActive(value);
+    }
 
-        if (_tooltipView.IsClingToMouse)
-        {
-            _tooltipView.CloseTooltip();
-        }
+    public void HideUITooltip()
+    {
+        _tooltipView.CloseTooltip();
     }
 
     public void HideStatusPanel()

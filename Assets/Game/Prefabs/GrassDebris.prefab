@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 574e70d89307a174ca3bf298b955b59d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _damageTex: {fileID: 2800000, guid: f56efedb7d01dc84195f8a204d13c1f3, type: 3}
   _acceptableTool: 4
   _gridPos: {x: 0, y: 0, z: 0}
 --- !u!95 &4530693946632605388

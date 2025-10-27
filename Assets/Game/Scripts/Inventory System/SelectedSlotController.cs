@@ -11,7 +11,7 @@ public class SelectedSlotController : MonoBehaviour
     public int SelectedSlotNum
     {
         get => _selectedSlotNum;
-        set => _selectedSlotNum = Mathf.Clamp(value, 0, _inventory.Collection.Count - 1);
+        set => _selectedSlotNum = Mathf.Clamp(value, 0, _inventory.ItemsCollection.Count - 1);
     }
     public RectTransform SelectionFrame { get => _selectionFrame; set => _selectionFrame = value; }
 

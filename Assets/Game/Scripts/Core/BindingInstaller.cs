@@ -21,7 +21,7 @@ public class BindingInstaller : MonoInstaller
     public CropController CropManager;
     public DebrisGeneratorController DebrisGenerator;
     public GameObject StatusPanel;
-    public FarmManager FarmManager;
+    public MainGameManager FarmManager;
     public InputHandler InputHandler;
     public UIInputHandler UIInputHandler;
     public GameTimeHandler GameTimeHandler;

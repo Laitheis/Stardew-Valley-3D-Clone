@@ -16,7 +16,7 @@ public class CropController : MonoBehaviour
 
     public void InitTiles()
     {
-        _farmTiles = FarmManager.instance.farmTiles.TilesCollection;
+        _farmTiles = MainGameManager.instance.farmTiles.TilesCollection;
     }
 
     public void PlowTile(Vector3Int tile)
@@ -406,7 +406,7 @@ public class CropController : MonoBehaviour
     public void VisualiseTiles()
     {
         // Load
-        foreach (var tile in FarmManager.instance.farmTiles)
+        foreach (var tile in MainGameManager.instance.farmTiles)
         {
             if (tile.Value.objectOnTile == null || !(tile.Value.objectOnTile is CropState)) continue;
             CropState cropState = tile.Value.objectOnTile as CropState;

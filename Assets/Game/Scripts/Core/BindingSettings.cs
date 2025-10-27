@@ -20,6 +20,7 @@ public class BindingSettings : ScriptableObjectInstaller<BindingSettings>
     public GameObject StarParticles;
     public GameObject WorldTooltip;
     public GameObject Notification;
+    public GameObject DamageParticles;
 
 
     public override void InstallBindings()
@@ -39,6 +40,7 @@ public class BindingSettings : ScriptableObjectInstaller<BindingSettings>
         Container.BindInstance(StarParticles).WithId("StarParticles");
         Container.BindInstance(WorldTooltip).WithId("WorldTooltip");
         Container.BindInstance(Notification).WithId("Notif");
+        Container.BindInstance(DamageParticles).WithId("DamageParticles");
 
         //HACK
         InstallPlayerParam();

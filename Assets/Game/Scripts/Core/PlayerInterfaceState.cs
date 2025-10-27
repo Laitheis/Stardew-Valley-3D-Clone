@@ -6,6 +6,7 @@
         base.HidePlayerInv();
         base.HideMainUIElements();
         base.DisablePlayerMovement();
+        base.HideUITooltip();
 
         base.EnableInterfacePanel();
         _statusInfo.SetStatus();

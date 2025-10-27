@@ -13,6 +13,7 @@ public class ItemsCollection : MonoBehaviour, ICollection<ItemInstance>
     public int Count => _collection.Count;
     public bool RemoveWhenQuantityZero { get; set; } = true;
     public bool IsReadOnly => throw new NotImplementedException();
+    public List<ItemInstance> Collection { get => _collection; set => _collection = value; }
 
     public void AddEmpty() => _collection.Add(new ItemInstance());
 

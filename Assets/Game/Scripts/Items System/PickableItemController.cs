@@ -43,7 +43,7 @@ public class PickableItemController : MonoBehaviour
         if (!(GameStateService.instance.CurrentState is WorldState || GameStateService.instance.CurrentState is TradeState)) return;
         if (!_isPickable) return;
 
-        var playerCollection = GameObject.FindWithTag("PlayerInv").GetComponent<InventoryHandler>().Collection;
+        var playerCollection = GameObject.FindWithTag("PlayerInv").GetComponent<InventoryHandler>().ItemsCollection;
         if (playerCollection.Add(Item))
         {
             Destroy(gameObject);

@@ -13,6 +13,7 @@ namespace Core
             base.DisablePlayerMovement();
             base.HideMainUIElements();
             base.HidePlayerInv();
+            base.HideUITooltip();
         }
 
         public override void ExitState()

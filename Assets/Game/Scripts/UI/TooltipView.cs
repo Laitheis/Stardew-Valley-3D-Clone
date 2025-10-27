@@ -6,7 +6,7 @@ public class TooltipView : MonoBehaviour
     [Inject] private Camera _uiCamera;
 
     [SerializeField] private UIElementFitController _fitter;
-    [SerializeField] private TooltipRefs _tooltip;
+    [SerializeField] private TooltipRefs _tooltipRefs;
 
     private bool _isClingToMouse;
     private RectTransform _slotRect;
@@ -30,11 +30,11 @@ public class TooltipView : MonoBehaviour
         _offset = offset;
         _isClingToMouse = clingToMouse;
 
-        _tooltip.transform.parent.parent.gameObject.SetActive(true);
+        _tooltipRefs.transform.parent.parent.gameObject.SetActive(true);
 
-        _tooltip.Name.text = itemDef.Name;
-        _tooltip.Type.text = itemDef.type.ToString();
-        _tooltip.Description.text = itemDef.Description;
+        _tooltipRefs.Name.text = itemDef.Name;
+        _tooltipRefs.Type.text = itemDef.type.ToString();
+        _tooltipRefs.Description.text = itemDef.Description;
 
         if (!_isClingToMouse)
         {
@@ -57,9 +57,9 @@ public class TooltipView : MonoBehaviour
 
     public void CloseTooltip()
     {
-        if (_tooltip.gameObject.activeSelf)
+        if (_tooltipRefs.gameObject.activeSelf)
         {
-            _tooltip.transform.parent.parent.gameObject.SetActive(false);
+            _tooltipRefs.transform.parent.parent.gameObject.SetActive(false);
             _isClingToMouse = false;
         }
     }

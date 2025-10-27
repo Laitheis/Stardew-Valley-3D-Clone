@@ -7,6 +7,7 @@
         base.HideMainUIElements();
         base.HideStatusPanel();
         base.HidePlayerInv();
+        base.HideUITooltip();
 
         base.EnableMenuPanel();
     }

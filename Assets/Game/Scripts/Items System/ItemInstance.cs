@@ -1,42 +1,30 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json;
+using System;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
 public class ItemInstance
 {
-    [SerializeField] private ItemDefinition _itemDefinition;
+    [SerializeField, JsonIgnore] private ItemDefinition _itemDefinition;
+    [SerializeField, JsonProperty] private int _id;
+    [SerializeField, Min(0), JsonProperty] private int _count = 0;
+    [SerializeField, JsonProperty] private ItemFlags _itemFlags;
 
-    [SerializeField] private string _guid;
-    [SerializeField][Min(0)] private int _count = 0;
-    [SerializeField] private ItemFlags _itemFlags;
-
-    public ChangeableProperties Properties;
-
-    [System.Serializable]
-    public class ChangeableProperties
-    {
-        [SerializeField] public int CustomPrice;
-    }
-
-    public ItemDefinition ItemDefinition { get => _itemDefinition; set => _itemDefinition = value; }
-
-    public int Price => Properties.CustomPrice != 0 ? Properties.CustomPrice : _itemDefinition.Price;
-    public string Guid => _guid;
-    public int Count => _count;
-    public ItemFlags ItemFlags => _itemFlags;
+    [JsonIgnore] public ItemDefinition ItemDefinition { get => _itemDefinition; set => _itemDefinition = value; }
+    [JsonIgnore] public int Price => _itemDefinition.Price;
+    [JsonIgnore] public int Count => _count;
+    [JsonIgnore] public ItemFlags ItemFlags => _itemFlags;
+    [JsonIgnore] public int Id  => _id; 
 
     public ItemInstance(ItemDefinition definition, int count = 1)
     {
         _itemDefinition = definition;
-        Properties = new ChangeableProperties();
-        Properties.CustomPrice = definition.Price;
-        _guid = System.Guid.NewGuid().ToString();
         _count = count;
     }
 
     public ItemInstance()
     {
-        _guid = System.Guid.NewGuid().ToString();
     }
 
     public void Add(int amount, out int overflow)
@@ -95,12 +83,6 @@ public class ItemInstance
         _count = newCount;
 
         return true;
-    }
-
-    public void SetPrice(int newPrice)
-    {
-        if (newPrice >= 0)
-            Properties.CustomPrice = newPrice;
     }
 
     public bool IsFull() => _count >= _itemDefinition.MaxCountInStack;

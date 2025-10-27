@@ -6,6 +6,8 @@ using Zenject;
 
 public abstract class DestructibleObjectBase : MonoBehaviour
 {
+    [SerializeField] private Texture _damageTex;
+
     protected StatContainter _statContainer;
     protected List<ItemInstance> _pendingLoot;
 
@@ -23,6 +25,7 @@ public abstract class DestructibleObjectBase : MonoBehaviour
 
     [Inject] protected LootGeneratorHandler _lootGenerator;
     [Inject] private SignalBus _signalBus;
+    [Inject(Id = "DamageParticles")] private GameObject _damageParticles;
 
     public virtual void Init(Vector3Int gridPos)
     {
@@ -99,7 +102,7 @@ public abstract class DestructibleObjectBase : MonoBehaviour
 
         HarvestAndCleanup();
 
-        FarmManager.instance.farmTiles.TilesCollection[_gridPos].objectOnTile = null;
+        MainGameManager.instance.farmTiles.TilesCollection[_gridPos].objectOnTile = null;
     }
 
     public virtual void TakeDamage(int amount, ItemType tool)
@@ -111,11 +114,18 @@ public abstract class DestructibleObjectBase : MonoBehaviour
         Debug.Log($"{gameObject} has {amount} damage.");
 
         Stat stat = _statContainer.GetStat(StatTypes.Durability);
-        if (stat != null)
+        if (stat == null) return;
+
+        stat.Value -= amount;
+        _animator.SetTrigger("Damage");
+        var particles = Instantiate(_damageParticles, gameObject.transform.position + new Vector3(0, 1, 0), Quaternion.Euler(new Vector3(-90, 0, 0)));
+
+        Material mat = particles.gameObject.GetComponent<Renderer>().material;
+        if (mat.HasProperty("_BaseMap"))
         {
-            stat.Value -= amount;
-            _animator.SetTrigger("Damage");
+            mat.SetTexture("_BaseMap", _damageTex);
         }
+        Destroy(particles, 2f);
 
         Debug.Log($"new {gameObject} durability is {_statContainer.GetStat(StatTypes.Durability).Value}");
     }

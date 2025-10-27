@@ -60,7 +60,7 @@ public class PlayerToolController : MonoBehaviour, IClickConsumer
         raycaster = _mainCanvas.GetComponent<GraphicRaycaster>();
         eventSystem = EventSystem.current;
         mainCam = Camera.main;
-        _farmTiles = FarmManager.instance.farmTiles.TilesCollection;
+        _farmTiles = MainGameManager.instance.farmTiles.TilesCollection;
     }
 
     private void Update()
@@ -127,7 +127,7 @@ public class PlayerToolController : MonoBehaviour, IClickConsumer
 
     private void HandleToolSwitchInput()
     {
-        var collection = _playerInv.Collection;
+        var collection = _playerInv.ItemsCollection;
 
         if (collection[_selectedSlotHandler.SelectedSlotNum].ItemDefinition != null)
         {
@@ -142,83 +142,80 @@ public class PlayerToolController : MonoBehaviour, IClickConsumer
 
     private bool TryUseTool()
     {
-        if (_hitGround)
+        if (!_hitGround) return false;
+
+        // Check: if we click on Inventory - return
         {
-            Debug.Log("Try use tool");
-
-            // Check: if we click on Inventory - return
+            pointerEventData = new PointerEventData(eventSystem)
             {
-                pointerEventData = new PointerEventData(eventSystem)
-                {
-                    position = Input.mousePosition
-                };
+                position = Input.mousePosition
+            };
 
-                var results = new List<RaycastResult>();
-                raycaster.Raycast(pointerEventData, results);
+            var results = new List<RaycastResult>();
+            raycaster.Raycast(pointerEventData, results);
 
-                foreach (var element in results)
-                {
-                    if (element.gameObject.GetComponent<InventoryHandler>()) return false;
-                }
-            }
-
-            if (isToolUsageFrozen) return false;
-            if (_dragController.IsDragging)
+            foreach (var element in results)
             {
-                isToolUsageFrozen = true;
-                return false;
+                if (element.gameObject.GetComponent<InventoryHandler>()) return false;
             }
-            if (_cooldown.value > 0) return false;
-            // Don't CheckRadius if is Scythe
-            if (CheckRadius(_currTileWorld) == false && !(activeTool == ItemType.Scythe)) return false;
-
-            UseHand(_currTileGrid);
-
-            // Start cooldown
-            {
-                _cooldown.gameObject.SetActive(true);
-                _cooldown.value = 1;
-                DOVirtual.Float(1, 0, _toolDelay, value =>
-                {
-                    _cooldown.value = value;
-                    if (_cooldown.value == 0) _cooldown.gameObject.SetActive(false);
-                });
-            }
-
-            switch (activeTool)
-            {
-                case ItemType.Hoe:
-                    UseHoe(_currTileGrid);
-                    break;
-                case ItemType.WaterCan:
-                    UseWater(_currTileGrid);
-                    break;
-                case ItemType.Scythe:
-                    UseScythe();
-                    break;
-                case ItemType.Axe:
-                    break;
-                case ItemType.Pickaxe:
-                    UsePickaxe();
-                    break;
-                case ItemType.Seed:
-                    UseSeed(_currTileGrid);
-                    break;
-                case ItemType.Trash:
-                    break;
-                case ItemType.Material:
-                    break;
-                case ItemType.Crop:
-                    break;
-                case ItemType.Fertilize:
-                    UseFertilize(_currTileGrid);
-                    break;
-                default:
-                    break;
-            }
-            return true;
         }
-        return false;
+
+        if (isToolUsageFrozen) return false;
+        if (_dragController.IsDragging)
+        {
+            isToolUsageFrozen = true;
+            return false;
+        }
+        if (_cooldown.value > 0) return false;
+        // Don't CheckRadius if is Scythe
+        if (CheckRadius(_currTileWorld) == false && !(activeTool == ItemType.Scythe)) return false;
+
+        UseHand(_currTileGrid);
+
+        // Start cooldown
+        {
+            _cooldown.gameObject.SetActive(true);
+            _cooldown.value = 1;
+            DOVirtual.Float(1, 0, _toolDelay, value =>
+            {
+                _cooldown.value = value;
+                if (_cooldown.value == 0) _cooldown.gameObject.SetActive(false);
+            });
+        }
+
+        switch (activeTool)
+        {
+            case ItemType.Hoe:
+                UseHoe(_currTileGrid);
+                break;
+            case ItemType.WaterCan:
+                UseWater(_currTileGrid);
+                break;
+            case ItemType.Scythe:
+                UseScythe();
+                break;
+            case ItemType.Axe:
+                break;
+            case ItemType.Pickaxe:
+                UsePickaxe();
+                break;
+            case ItemType.Seed:
+                UseSeed(_currTileGrid);
+                break;
+            case ItemType.Trash:
+                break;
+            case ItemType.Material:
+                break;
+            case ItemType.Crop:
+                break;
+            case ItemType.Fertilize:
+                UseFertilize(_currTileGrid);
+                break;
+            default:
+                break;
+        }
+        return true;
+
     }
 
     private void UseScythe()

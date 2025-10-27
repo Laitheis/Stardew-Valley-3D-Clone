@@ -74,15 +74,6 @@ public class GameStateService : MonoBehaviour
         _currentState.EnterState();
         OnChange?.Invoke();
     }
-
-    public void ToState(string stateName)
-    {
-        if (Enum.TryParse(typeof(GameState), stateName, true, out object state))
-        {
-            GameState stateType = (GameState)state;
-            SetState(stateType);
-        }
-    }
 }
 
 

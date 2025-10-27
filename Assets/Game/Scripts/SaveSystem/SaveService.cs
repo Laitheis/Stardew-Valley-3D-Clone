@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using Zenject;
 
 [Serializable]
 public class SaveFileDataList
@@ -17,6 +18,8 @@ public class SaveFileDataList
 public class SaveService : MonoBehaviour
 {
     public static SaveService instance;
+
+    [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
 
     private string SavesFolder => Path.Combine(Application.persistentDataPath, "Saves");
 
@@ -41,7 +44,8 @@ public class SaveService : MonoBehaviour
         string fullPath = Path.Combine(SavesFolder, fileName);
 
         List<string> jsonContents = new List<string>();
-        jsonContents.Add(FarmManager.instance.farmTiles.SaveToJson());
+        jsonContents.Add(MainGameManager.instance.farmTiles.SaveToJson());
+        jsonContents.Add(_playerInv.SaveToJson());
 
         SaveFileDataList data = new SaveFileDataList
         {
@@ -106,9 +110,9 @@ public class SaveService : MonoBehaviour
     [ContextMenu("UseTestSave")]
     public void UseTestSave()
     {
-        FarmManager.instance.ClearAllFarmTiles();
+        MainGameManager.instance.ClearAllFarmTiles();
         SaveDataHolder.instance.saveGuid = Guid.Parse("f3b0a4cb-02e5-4e0f-9f7d-9cb0e0f40f8d");
-        FarmManager.instance.Load();
+        MainGameManager.instance.Load();
     }
 
     [ContextMenu("CreateTestSave")]

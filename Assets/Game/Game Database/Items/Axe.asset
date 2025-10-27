@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Axe
   m_EditorClassIdentifier: 
   isTool: 1
+  _id: 10
   _name: Axe
   type: 5
   _maxCountInStack: 1
