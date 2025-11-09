@@ -2,12 +2,15 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 
 [System.Serializable]
 public class ItemInstance
 {
+    [Inject] private DefinitionDatabase _definitionDatabase;
+
     [SerializeField, JsonIgnore] private ItemDefinition _itemDefinition;
-    [SerializeField, JsonProperty] private int _id;
+    [JsonProperty] public int _id;
     [SerializeField, Min(0), JsonProperty] private int _count = 0;
     [SerializeField, JsonProperty] private ItemFlags _itemFlags;
 
@@ -15,12 +18,12 @@ public class ItemInstance
     [JsonIgnore] public int Price => _itemDefinition.Price;
     [JsonIgnore] public int Count => _count;
     [JsonIgnore] public ItemFlags ItemFlags => _itemFlags;
-    [JsonIgnore] public int Id  => _id; 
 
     public ItemInstance(ItemDefinition definition, int count = 1)
     {
         _itemDefinition = definition;
         _count = count;
+        _id = _definitionDatabase.itemDefinitions.FirstOrDefault(i => i == definition).Id;
     }
 
     public ItemInstance()

@@ -4,6 +4,7 @@ using System.IO;
 
 public static class ScriptableBackup
 {
+    #if UNITY_EDITOR
     [MenuItem("Tools/Backup Scriptables (Resources Only)")]
     public static void BackupResourcesScriptables()
     {
@@ -31,4 +32,5 @@ public static class ScriptableBackup
         AssetDatabase.Refresh();
         Debug.Log($"Backup complete! Saved {count} ScriptableObjects from Resources/");
     }
+#endif
 }

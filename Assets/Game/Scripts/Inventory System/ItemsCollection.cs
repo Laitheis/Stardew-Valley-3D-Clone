@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -249,9 +250,12 @@ public class ItemsCollection : MonoBehaviour, ICollection<ItemInstance>
     {
         foreach (var item in _collection)
         {
-            if (item.ItemDefinition != null && item.Count <= 0)
+            if (item.ItemDefinition != null)
             {
-                item.SetCount(1);
+                if (item.Count <= 0)
+                    item.SetCount(1);
+
+                item._id = Resources.Load<DefinitionDatabase>("DefinitionDatabase").itemDefinitions.FirstOrDefault(i => i == item.ItemDefinition).Id;
             }
         }
     }

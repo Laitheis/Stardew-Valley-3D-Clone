@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Wooden log
   m_EditorClassIdentifier: 
   isTool: 0
-  _id: 9
+  _id: 10
   _name: Wooden Log
   type: 8
   _maxCountInStack: 3

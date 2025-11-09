@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Watering can
   m_EditorClassIdentifier: 
   isTool: 1
-  _id: 8
+  _id: 9
   _name: Watering can
   type: 3
   _maxCountInStack: 1

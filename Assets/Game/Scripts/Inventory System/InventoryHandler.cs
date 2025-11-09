@@ -225,11 +225,11 @@ public class InventoryHandler : MonoBehaviour
 
         List<ItemInstance> data = JsonConvert.DeserializeObject<List<ItemInstance>>(json, settings);
 
-        _itemsCollection.Collection = data;
         var db = Resources.Load<DefinitionDatabase>("DefinitionDatabase");
-        foreach (var item in _itemsCollection.Collection)
+        foreach (var item in data)
         {
-            item.ItemDefinition = db.itemDefinitions.FirstOrDefault(i => i.Id == item.Id);
+            item.ItemDefinition = db.itemDefinitions.FirstOrDefault(i => i.Id == item._id);
         }
+        _itemsCollection.Collection = data;
     }
 }
