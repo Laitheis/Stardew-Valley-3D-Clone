@@ -74,6 +74,11 @@ public class GameStateService : MonoBehaviour
         _currentState.EnterState();
         OnChange?.Invoke();
     }
+
+    public void SetStateByInt(int state)
+    {
+        SetState((GameState)state);
+    }
 }
 
 

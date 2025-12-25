@@ -11,11 +11,15 @@ using UnityEngine.UI;
 
 public class NextDayController : MonoBehaviour
 {
+    [SerializeField] private GameObject _skillUpgradeNotificationPanel;
+
     [SerializeField] private GameObject _confirmPanel;
     [SerializeField] private GameObject _darkScreen;
 
     [Inject] private Canvas _mainCanvas;
     [Inject] private DebrisGeneratorController _debrisGenerator;
+
+    private GameObject darkScreen;
 
     private void Start()
     {
@@ -42,9 +46,10 @@ public class NextDayController : MonoBehaviour
     {
         _confirmPanel.SetActive(false);
 
-        var darkScreen = Instantiate(_darkScreen, _mainCanvas.transform);
+        darkScreen = Instantiate(_darkScreen, _mainCanvas.transform);
         var blackout = darkScreen.GetComponent<CanvasGroup>();
         DG.Tweening.Sequence seq = DOTween.Sequence();
+        seq = DOTween.Sequence();
 
         seq.AppendCallback(() => {
             GameStateService.instance.SetState(GameStateService.GameState.Pending);
@@ -61,15 +66,52 @@ public class NextDayController : MonoBehaviour
 
         seq.AppendCallback(() => NotificationService.DisplayNotification(NotificationService.NotificationColor.Green, "The game is saved..."));
         seq.AppendCallback(() => SaveService.instance.Save());
+
+        if (SkillsManager.instance.isSkillUpgraded)
+        {
+            SkillsManager.instance.needSleepNotification.SetActive(false);
+            SkillsManager.instance.isSkillUpgraded = false;
+
+            _skillUpgradeNotificationPanel.transform.localScale = new Vector3(0, 0, 0);
+            _skillUpgradeNotificationPanel.gameObject.SetActive(true);
+            _skillUpgradeNotificationPanel.gameObject.transform.SetAsLastSibling();
+            seq.Append(_skillUpgradeNotificationPanel.transform.DOScale(Vector3.one, 1.1f).SetEase(Ease.OutBack));
+            seq.AppendInterval(2f);
+            return;
+        }
+
         seq.AppendInterval(3f);
+        seq.Append(_skillUpgradeNotificationPanel.transform.DOScale(Vector3.zero, 1.1f).SetEase(Ease.OutBack));
+        seq.AppendCallback(() => _skillUpgradeNotificationPanel.gameObject.SetActive(false));
+
         seq.AppendCallback(() => { blackout.GetComponent<Image>().raycastTarget = false; });
         seq.AppendCallback(() => {
             GameStateService.instance.SetState(GameStateService.GameState.World);
         });
         seq.Append(blackout.DOFade(0f, 2f));
-        seq.AppendCallback(() => { 
+        seq.AppendCallback(() => {
             Destroy(darkScreen);
         });
     }
 
+
+    public void FinishAnimation()
+    {
+        var blackout = darkScreen.GetComponent<CanvasGroup>();
+
+        DG.Tweening.Sequence seq = DOTween.Sequence();
+
+        seq.Append(_skillUpgradeNotificationPanel.transform.DOScale(Vector3.zero, 1.1f).SetEase(Ease.OutBack));
+        seq.AppendCallback(() => _skillUpgradeNotificationPanel.gameObject.SetActive(false));
+
+        seq.AppendCallback(() => { blackout.GetComponent<Image>().raycastTarget = false; });
+        seq.AppendCallback(() => {
+            GameStateService.instance.SetState(GameStateService.GameState.World);
+        });
+        seq.AppendInterval(1.5f);
+        seq.Append(blackout.DOFade(0f, 2f));
+        seq.AppendCallback(() => {
+            Destroy(darkScreen);
+        });
+    }
 }

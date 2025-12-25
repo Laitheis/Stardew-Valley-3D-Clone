@@ -7,7 +7,7 @@ using Zenject;
 [System.Serializable]
 public class ItemInstance
 {
-    [Inject] private DefinitionDatabase _definitionDatabase;
+    private DefinitionDatabase _definitionDatabase;
 
     [SerializeField, JsonIgnore] private ItemDefinition _itemDefinition;
     [JsonProperty] public int _id;
@@ -21,6 +21,7 @@ public class ItemInstance
 
     public ItemInstance(ItemDefinition definition, int count = 1)
     {
+        _definitionDatabase = ServiceLocator.instance.definitionDatabase;
         _itemDefinition = definition;
         _count = count;
         _id = _definitionDatabase.itemDefinitions.FirstOrDefault(i => i == definition).Id;

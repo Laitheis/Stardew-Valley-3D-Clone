@@ -149,6 +149,8 @@ public class CropController : MonoBehaviour
         quality = CalculateQuality(state);
         quantity = CalculateQuantity(state);
 
+        SkillsManager.instance.skills.First(s => s.name == "Farming").XP += 21;
+
         ItemDefinition itemDef = GetItemByModel(state.model);
         Vector3 pos = new Vector3(tile.x, tile.z, tile.y);
         _signalBus.Fire(new ItemDropEvent(pos, new ItemInstance(itemDef, 1), false));

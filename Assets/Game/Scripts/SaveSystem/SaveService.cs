@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 [Serializable]
@@ -19,7 +20,7 @@ public class SaveService : MonoBehaviour
 {
     public static SaveService instance;
 
-    [Inject(Id = "PlayerInv")] private InventoryHandler _playerInv;
+    private InventoryHandler _playerInv;
 
     private string SavesFolder => Path.Combine(Application.persistentDataPath, "Saves");
 
@@ -32,6 +33,18 @@ public class SaveService : MonoBehaviour
         }
         instance = this;
         DontDestroyOnLoad(this);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode)
+    {
+        if(scene.name == "Gameplay")
+        {
+            SceneContext sceneContext = FindAnyObjectByType<SceneContext>();
+            DiContainer container = sceneContext.Container;
+            _playerInv = container.ResolveId<InventoryHandler>("PlayerInv");
+        }
     }
 
     public void Save()
